@@ -49,7 +49,7 @@ async function getMyPosts(req, res) {
   try {
     const posts = await myPosts(userId);
     res.status(200).json({
-      message: "User found",
+      message: "User posts found",
       posts,
     });
   } catch (error) {
