@@ -9,7 +9,7 @@ const setupMongo = require("./src/config/mongoDB");
 const setupSwagger = require("./src/config/swagger");
 
 const authRoutes = require("./src/routes/authRoutes");
-// const apiRoutes = require("./src/routes/apiRoutes");
+const apiRoutes = require("./src/routes/apiRoutes");
 
 const app = express();
 
@@ -25,7 +25,7 @@ setupMongo();
 setupSwagger(app, serverPort);
 
 // 라우트 설정
-// app.use("/mykor/api/v1", apiRoutes);
+app.use("/mykor/api/v1", apiRoutes);
 app.use("/mykor", authRoutes);
 
 app.listen(serverPort, () => {
