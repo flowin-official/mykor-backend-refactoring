@@ -33,10 +33,15 @@ const {
 async function postKakaoLogin(req, res) {
   const { kakaoUserCode, userName } = req.body;
   try {
-    const tokens = await loginKakaoUser(kakaoUserCode, userName);
+    const { user, accessToken, refreshToken } = await loginKakaoUser(
+      kakaoUserCode,
+      userName
+    );
     res.status(200).json({
       message: "User logged in successfully",
-      tokens,
+      user,
+      accessToken,
+      refreshToken,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

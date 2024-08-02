@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   // password: { type: String, required: true },
   kakaoUserCode: { type: String, required: true, unique: true },
   userName: { type: String, required: true },
+  userEmail: { type: String, default: null, unique: true },
 
   created: { type: Date, default: Date.now },
   updated: { type: Date, default: Date.now },

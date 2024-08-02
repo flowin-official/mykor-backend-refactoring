@@ -63,10 +63,9 @@ async function loginKakaoUser(kakaoUserCode, userName) {
 
     const accessToken = createAccessToken({ id: user._id });
     const refreshToken = createRefreshToken({ id: user._id });
-
     await saveRefreshToken(user._id, refreshToken);
 
-    return { accessToken, refreshToken };
+    return { user, accessToken, refreshToken };
   } catch (error) {
     throw error;
   }
