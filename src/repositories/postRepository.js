@@ -1,11 +1,13 @@
 const Post = require("../models/post");
 
-const createPost = async (title, content, author) => {
+const createPost = async (title, content, author, location, tag) => {
   try {
     const post = await Post.create({
       title,
       content,
       author,
+      location,
+      tag,
     });
     return post;
   } catch (error) {

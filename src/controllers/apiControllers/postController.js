@@ -36,9 +36,9 @@ async function getThisPost(req, res) {
 
 async function postMyPost(req, res) {
   const userId = req.userId;
-  const { title, content } = req.body;
+  const { title, content, country, details, tag } = req.body;
   try {
-    const post = await newPost(title, content, userId);
+    const post = await newPost(title, content, userId, country, details, tag);
     res.status(201).json({
       message: "Post created",
       post,
