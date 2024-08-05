@@ -7,11 +7,7 @@ const userSchema = new mongoose.Schema({
   userName: { type: String, required: true },
 
   userEmail: { type: String, default: null, unique: true },
-  location: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Location",
-    default: null,
-  },
+  userLocation: { type: String, default: null },
 
   created: { type: Date, default: Date.now },
   updated: { type: Date, default: Date.now },

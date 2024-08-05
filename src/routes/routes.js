@@ -33,18 +33,19 @@ const setupRoutes = (app) => {
   router.get("/posts", getAllPosts); // 전체 게시글 가져오기
   router.get("/posts/:location", getLocationPosts); // 지역별 게시글 가져오기
   router.get("/posts/:location/:tag", getLocationTagPosts); // 지역별 태그된 게시물 가져오기
-  router.get("/posts/:postId", getThisPost); // 게시글 조회
+  router.get("/post/:postId", getThisPost); // 게시글 조회
 
   // protected routes
   router.get("/user", authenticateToken, getMyInfo); // 회원 정보
   router.put("/user", authenticateToken, putMyInfo); // 회원 정보 수정
   router.delete("/user", authenticateToken, deleteMyInfo); // 회원 탈퇴
 
-  router.post("/posts", authenticateToken, postMyPost); // 게시글 작성
+  router.post("/post", authenticateToken, postMyPost); // 게시글 작성
   router.get("/user/posts", authenticateToken, getMyPosts); // 내가 쓴 게시물
-  router.put("/posts/:postId", authenticateToken, putMyPost); // 내 게시글 수정
-  router.delete("/posts/:postId", authenticateToken, deleteMyPost); // 내 게시글 삭제
+  router.put("/post/:postId", authenticateToken, putMyPost); // 내 게시글 수정
+  router.delete("/post/:postId", authenticateToken, deleteMyPost); // 내 게시글 삭제
 
+  // 기본 라우트 설정
   app.use("/mykor/api/v1", router);
 };
 

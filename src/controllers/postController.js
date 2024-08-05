@@ -21,8 +21,9 @@ async function getAllPosts(req, res) {
   }
 }
 
+// 게시글 조회
 async function getThisPost(req, res) {
-  const postId = req.params.id;
+  const postId = req.params.postId;
   try {
     const post = await thisPost(postId);
     res.status(200).json({
@@ -36,9 +37,9 @@ async function getThisPost(req, res) {
 
 async function postMyPost(req, res) {
   const userId = req.userId;
-  const { title, content, country, details, tag } = req.body;
+  const { title, content, location, tag } = req.body;
   try {
-    const post = await newPost(title, content, userId, country, details, tag);
+    const post = await newPost(title, content, userId, location, tag);
     res.status(201).json({
       message: "Post created",
       post,
@@ -91,9 +92,9 @@ async function getLocationTagPosts(req, res) {
 async function putMyPost(req, res) {
   const userId = req.userId;
   const postId = req.params.id;
-  const { title, content } = req.body;
+  const { title, content, tag } = req.body;
   try {
-    const post = await modifyMyPost(postId, title, content, userId);
+    const post = await modifyMyPost(postId, title, content, tag);
     res.status(200).json({
       message: "Post updated",
       post,
@@ -107,7 +108,7 @@ async function deleteMyPost(req, res) {
   const userId = req.userId;
   const postId = req.params.id;
   try {
-    const post = await removeMyPost(postId, userId);
+    const post = await removeMyPost(postId);
     res.status(200).json({
       message: "Post deleted",
       post,

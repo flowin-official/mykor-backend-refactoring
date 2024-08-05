@@ -3,18 +3,14 @@ const {
   findAllPosts,
   findPostById,
   findPostsByAuthor,
+  findPostsByLocation,
+  findPostsByLocationTag,
+  updatePost,
+  increasePostView,
 } = require("../repositories/postRepository");
-const { findUserById } = require("../repositories/userRepository");
-const {
-  findLocationByCountryDetails,
-} = require("../repositories/locationRepository");
 
-async function newPost(title, content, userId, country, details, tag) {
+async function newPost(title, content, userId, location, tag) {
   try {
-    // 지원하는 지역정보 확인
-    const location = await findLocationByCountryDetails(country, details);
-    if (!location) throw new Error("Location not found");
-
     // 해당 지역 게시판에 글 작성
     const post = await createPost(title, content, userId, location, tag);
     return post;
@@ -25,8 +21,10 @@ async function newPost(title, content, userId, country, details, tag) {
 
 async function thisPost(postId) {
   try {
+    // 게시글 조회수 1 증가
+    await increasePostView(postId);
+
     const post = await findPostById(postId);
-    if (!post) throw new Error("Post not found");
     return post;
   } catch (error) {
     throw error;
@@ -69,9 +67,9 @@ async function locationTagPosts(location, tag) {
   }
 }
 
-async function modifyMyPost(postId, title, content) {
+async function modifyMyPost(postId, title, content, tag) {
   try {
-    const post = await updatePost(postId, title, content);
+    const post = await updatePost(postId, title, content, tag);
     return post;
   } catch (error) {
     throw error;

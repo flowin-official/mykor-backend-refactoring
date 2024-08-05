@@ -73,6 +73,19 @@ const updatePost = async (postId, title, content, tag) => {
   }
 };
 
+const increasePostView = async (postId) => {
+  try {
+    const post = await Post.findByIdAndUpdate(
+      postId,
+      { $inc: { views: 1 } },
+      { new: true }
+    );
+    return post;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const deletePost = async (postId) => {
   try {
     await Post.findByIdAndDelete(postId);
@@ -86,6 +99,9 @@ module.exports = {
   findAllPosts,
   findPostById,
   findPostsByAuthor,
+  findPostsByLocation,
+  findPostsByLocationTag,
   updatePost,
   deletePost,
+  increasePostView,
 };
