@@ -56,9 +56,18 @@ const findUserByKakaoUserCode = async (kakaoUserCode) => {
   }
 };
 
-const updateUser = async (userId, name) => {
+const updateUser = async (userId, userName, userEmail, country, location) => {
   try {
-    const user = await User.findByIdAndUpdate(userId, { name }, { new: true });
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        userName,
+        userEmail,
+        country,
+        location,
+      },
+      { new: true }
+    );
     return user;
   } catch (error) {
     throw error;

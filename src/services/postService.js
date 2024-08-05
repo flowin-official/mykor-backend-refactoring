@@ -42,4 +42,49 @@ async function myPosts(userId) {
   }
 }
 
-module.exports = { allPosts, thisPost, newPost, myPosts };
+async function locationPosts(location) {
+  try {
+    const posts = await findPostsByLocation(location);
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function locationTagPosts(location, tag) {
+  try {
+    const posts = await findPostsByLocationTag(location, tag);
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function modifyMyPost(postId, title, content) {
+  try {
+    const post = await updatePost(postId, title, content);
+    return post;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function removeMyPost(postId) {
+  try {
+    const post = await deletePost(postId);
+    return post;
+  } catch (error) {
+    throw error;
+  }
+}
+
+module.exports = {
+  allPosts,
+  thisPost,
+  newPost,
+  myPosts,
+  locationPosts,
+  locationTagPosts,
+  modifyMyPost,
+  removeMyPost,
+};
