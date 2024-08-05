@@ -6,8 +6,15 @@ const {
   findPostsByLocation,
   findPostsByLocationTag,
   updatePost,
+  deletePost,
   increasePostView,
+  increasePostLike,
+  decreasePostLike,
 } = require("../repositories/postRepository");
+const {
+  createPostLike,
+  deletePostLike,
+} = require("../repositories/postLikeRepository");
 
 async function newPost(title, content, userId, location, tag) {
   try {
@@ -85,6 +92,26 @@ async function removeMyPost(postId) {
   }
 }
 
+async function likePost(postId, userId) {
+  try {
+    await increasePostLike(postId);
+    const post = await createPostLike(postId, userId);
+    return post;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function unlikePost(postId, userId) {
+  try {
+    await decreasePostLike(postId);
+    const post = await deletePostLike(postId, userId);
+    return post;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   allPosts,
   thisPost,
@@ -94,4 +121,6 @@ module.exports = {
   locationTagPosts,
   modifyMyPost,
   removeMyPost,
+  likePost,
+  unlikePost,
 };

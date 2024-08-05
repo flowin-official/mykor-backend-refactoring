@@ -94,6 +94,32 @@ const deletePost = async (postId) => {
   }
 };
 
+const increasePostLike = async (postId) => {
+  try {
+    const post = await Post.findByIdAndUpdate(
+      postId,
+      { $inc: { likes: 1 } },
+      { new: true }
+    );
+    return post;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const decreasePostLike = async (postId) => {
+  try {
+    const post = await Post.findByIdAndUpdate(
+      postId,
+      { $inc: { likes: -1 } },
+      { new: true }
+    );
+    return post;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createPost,
   findAllPosts,
@@ -104,4 +130,6 @@ module.exports = {
   updatePost,
   deletePost,
   increasePostView,
+  increasePostLike,
+  decreasePostLike,
 };

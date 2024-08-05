@@ -18,6 +18,8 @@ const {
   getThisPost,
   putMyPost,
   deleteMyPost,
+  postLikePost,
+  deleteLikePost,
 } = require("../controllers/postController");
 const authenticateToken = require("../middlewares/authMiddleware");
 
@@ -42,8 +44,11 @@ const setupRoutes = (app) => {
 
   router.post("/post", authenticateToken, postMyPost); // 게시글 작성
   router.get("/user/posts", authenticateToken, getMyPosts); // 내가 쓴 게시물
-  router.put("/post/:postId", authenticateToken, putMyPost); // 내 게시글 수정
-  router.delete("/post/:postId", authenticateToken, deleteMyPost); // 내 게시글 삭제
+  router.put("/post/:id", authenticateToken, putMyPost); // 내 게시글 수정
+  router.delete("/post/:id", authenticateToken, deleteMyPost); // 내 게시글 삭제
+
+  router.post("/post/:id/like", authenticateToken, postLikePost); // 게시글 좋아요
+  router.delete("/post/:id/like", authenticateToken, deleteLikePost); // 게시글 좋아요 취소
 
   // 기본 라우트 설정
   app.use("/mykor/api/v1", router);

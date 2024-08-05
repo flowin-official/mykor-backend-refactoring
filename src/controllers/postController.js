@@ -7,6 +7,8 @@ const {
   locationTagPosts,
   modifyMyPost,
   removeMyPost,
+  likePost,
+  unlikePost,
 } = require("../services/postService");
 
 async function getAllPosts(req, res) {
@@ -23,7 +25,7 @@ async function getAllPosts(req, res) {
 
 // 게시글 조회
 async function getThisPost(req, res) {
-  const postId = req.params.postId;
+  const postId = req.params.id;
   try {
     const post = await thisPost(postId);
     res.status(200).json({
@@ -118,6 +120,34 @@ async function deleteMyPost(req, res) {
   }
 }
 
+async function postLikePost(req, res) {
+  const userId = req.userId;
+  const postId = req.params.id;
+  try {
+    const post = await likePost(postId, userId);
+    res.status(200).json({
+      message: "Post liked",
+      post,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+async function deleteLikePost(req, res) {
+  const userId = req.userId;
+  const postId = req.params.id;
+  try {
+    const post = await unlikePost(postId, userId);
+    res.status(200).json({
+      message: "Post unliked",
+      post,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   getMyPosts,
   postMyPost,
@@ -127,4 +157,6 @@ module.exports = {
   deleteMyPost,
   getLocationPosts,
   getLocationTagPosts,
+  postLikePost,
+  deleteLikePost,
 };
