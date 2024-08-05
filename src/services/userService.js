@@ -3,6 +3,9 @@ const {
   updateUser,
   deleteUser,
 } = require("../repositories/userRepository");
+const {
+  findLocationByCountryDetails,
+} = require("../repositories/locationRepository");
 
 async function myInfo(userId) {
   try {
@@ -13,15 +16,16 @@ async function myInfo(userId) {
   }
 }
 
-async function modifyMyInfo(userId, userName, userEmail, country, location) {
+async function modifyMyInfo(userId, userName, userEmail, country, details) {
+  // country와 details로 location을 찾음.
   try {
-    const user = await updateUser(
-      userId,
-      userName,
-      userEmail,
-      country,
-      location
-    );
+    const location = await findLocationByCountryDetails(country, details);
+
+    if (!location) {
+      throw new Error("Location not found");
+    }
+
+    const user = await updateUser(userId, userName, userEmail, location);
     return user;
   } catch (error) {
     throw error;
