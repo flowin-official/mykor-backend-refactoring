@@ -26,6 +26,7 @@ async function newPost(title, content, userId, location, tag) {
   }
 }
 
+// 댓글도 같이 조회
 async function thisPost(postId) {
   try {
     // 게시글 조회수 1 증가
@@ -102,7 +103,7 @@ async function likePost(postId, userId) {
   }
 }
 
-async function unlikePost(postId, userId) {
+async function dislikePost(postId, userId) {
   try {
     await decreasePostLike(postId);
     const post = await deletePostLike(postId, userId);
@@ -122,5 +123,5 @@ module.exports = {
   modifyMyPost,
   removeMyPost,
   likePost,
-  unlikePost,
+  dislikePost,
 };

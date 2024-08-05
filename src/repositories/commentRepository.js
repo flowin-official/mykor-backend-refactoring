@@ -1,29 +1,89 @@
-const CommentLike = require("../models/commentLike");
+const Comment = require("../models/comment");
 
-const createCommentLike = async (commentId, userId) => {
+const createComment = async (userId, postId, content) => {
   try {
-    const commentLike = await CommentLike.create({
-      comment_id: commentId,
-      user_id: userId,
+    const comment = await Comment.create({
+      userId,
+      postId,
+      content,
     });
-    return commentLike;
+    return comment;
   } catch (error) {
     throw error;
   }
 };
 
-const deleteCommentLike = async (commentId, userId) => {
+const findCommentsByPostId = async (postId) => {
   try {
-    await CommentLike.findOneAndDelete({
-      comment_id: commentId,
-      user_id: userId,
-    });
+    const comments = await Comment.find({ postId });
+    return comments;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const findCommentById = async (commentId) => {
+  try {
+    const comment = await Comment.findById(commentId);
+    return comment;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateComment = async (commentId, content) => {
+  try {
+    const comment = await Comment.findByIdAndUpdate(
+      commentId,
+      { content },
+      { new: true }
+    );
+    return comment;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const deleteComment = async (commentId) => {
+  try {
+    await Comment.findByIdAndDelete(commentId);
+  } catch (error) {
+    throw error;
+  }
+};
+
+const increaseCommentLike = async (commentId) => {
+  try {
+    const comment = await Comment.findByIdAndUpdate(
+      commentId,
+      { $inc: { likes: 1 } },
+      { new: true }
+    );
+    return comment;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const decreaseCommentLike = async (commentId) => {
+  try {
+    const comment = await Comment.findByIdAndUpdate(
+      commentId,
+      { $inc: { likes: -1 } },
+      { new: true }
+    );
+    return comment;
   } catch (error) {
     throw error;
   }
 };
 
 module.exports = {
-  createCommentLike,
-  deleteCommentLike,
+  createComment,
+  findCommentsByPostId,
+  findCommentById,
+  updateComment,
+  deleteComment,
+  increaseCommentLike,
+  decreaseCommentLike,
 };

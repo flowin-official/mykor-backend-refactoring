@@ -8,7 +8,7 @@ const {
   modifyMyPost,
   removeMyPost,
   likePost,
-  unlikePost,
+  dislikePost,
 } = require("../services/postService");
 
 async function getAllPosts(req, res) {
@@ -23,9 +23,9 @@ async function getAllPosts(req, res) {
   }
 }
 
-// 게시글 조회
+// 게시글 조회(댓글도 같이 조회)
 async function getThisPost(req, res) {
-  const postId = req.params.id;
+  const postId = req.params.postId;
   try {
     const post = await thisPost(postId);
     res.status(200).json({
@@ -93,7 +93,7 @@ async function getLocationTagPosts(req, res) {
 
 async function putMyPost(req, res) {
   const userId = req.userId;
-  const postId = req.params.id;
+  const postId = req.params.postId;
   const { title, content, tag } = req.body;
   try {
     const post = await modifyMyPost(postId, title, content, tag);
@@ -108,7 +108,7 @@ async function putMyPost(req, res) {
 
 async function deleteMyPost(req, res) {
   const userId = req.userId;
-  const postId = req.params.id;
+  const postId = req.params.postId;
   try {
     const post = await removeMyPost(postId);
     res.status(200).json({
@@ -122,7 +122,7 @@ async function deleteMyPost(req, res) {
 
 async function postLikePost(req, res) {
   const userId = req.userId;
-  const postId = req.params.id;
+  const postId = req.params.postId;
   try {
     const post = await likePost(postId, userId);
     res.status(200).json({
@@ -136,9 +136,9 @@ async function postLikePost(req, res) {
 
 async function deleteLikePost(req, res) {
   const userId = req.userId;
-  const postId = req.params.id;
+  const postId = req.params.postId;
   try {
-    const post = await unlikePost(postId, userId);
+    const post = await dislikePost(postId, userId);
     res.status(200).json({
       message: "Post unliked",
       post,
