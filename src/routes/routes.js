@@ -16,7 +16,7 @@ const {
   getAllPosts,
   getLocationPosts,
   getLocationTagPosts,
-  getThisPost,
+  // getThisPost,
   putMyPost,
   deleteMyPost,
   postLikePost,

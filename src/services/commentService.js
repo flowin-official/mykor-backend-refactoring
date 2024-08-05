@@ -10,6 +10,7 @@ const {
   createCommentLike,
   deleteCommentLike,
 } = require("../repositories/commentLikeRepository");
+const { increasePostView } = require("../repositories/postRepository");
 
 async function newComment(userId, postId, content) {
   try {
@@ -58,8 +59,11 @@ async function dislikeComment(commentId, userId) {
   }
 }
 
+// 게시물 조회(댓글 조회)이므로 조회수를 올려야함.
 async function commentsOnThisPost(postId) {
   try {
+    // 게시글 조회수 증가
+    await increasePostView(postId);
     const comments = await findCommentsByPostId(postId);
     return comments;
   } catch (error) {

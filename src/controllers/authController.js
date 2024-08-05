@@ -5,31 +5,49 @@ const {
   refreshNewTokens,
 } = require("../services/authService");
 
-// async function postSignup(req, res) {
-//   const { email, password, name } = req.body;
-//   try {
-//     const user = await registerUser(email, password, name);
-//     res.status(201).json({
-//       message: "User created successfully",
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// }
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: 인증 관련 API
+ */
 
-// async function postLogin(req, res) {
-//   const { email, password } = req.body;
-//   try {
-//     const tokens = await loginUser(email, password);
-//     res.status(200).json({
-//       message: "User logged in successfully",
-//       tokens,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// }
-
+/**
+ * @swagger
+ * /login/kakao:
+ *   post:
+ *     summary: 카카오 로그인(회원가입)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               kakaoUserCode:
+ *                 type: string
+ *               userName:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: 로그인 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                 accessToken:
+ *                   type: string
+ *                 refreshToken:
+ *                   type: string
+ *       500:
+ *         description: 서버 에러
+ */
 async function postKakaoLogin(req, res) {
   const { kakaoUserCode, userName } = req.body;
   try {
@@ -48,6 +66,38 @@ async function postKakaoLogin(req, res) {
   }
 }
 
+/**
+ * @swagger
+ * /refresh:
+ *   post:
+ *     summary: 토큰 재발급
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: 토큰 재발급 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 newTokens:
+ *                   type: object
+ *       403:
+ *         description: 리프레시 토큰이 필요합니다.
+ *       500:
+ *         description: 서버 에러
+ */
 async function postRefresh(req, res) {
   const { refreshToken } = req.body;
 

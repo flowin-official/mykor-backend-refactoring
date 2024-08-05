@@ -7,7 +7,6 @@ const {
   findPostsByLocationTag,
   updatePost,
   deletePost,
-  increasePostView,
   increasePostLike,
   decreasePostLike,
 } = require("../repositories/postRepository");
@@ -26,18 +25,18 @@ async function newPost(title, content, userId, location, tag) {
   }
 }
 
-// 댓글도 같이 조회
-async function thisPost(postId) {
-  try {
-    // 게시글 조회수 1 증가
-    await increasePostView(postId);
+// 게시물 조회
+// async function thisPost(postId) {
+//   try {
+//     // 게시글 조회수 1 증가
+//     await increasePostView(postId);
 
-    const post = await findPostById(postId);
-    return post;
-  } catch (error) {
-    throw error;
-  }
-}
+//     const post = await findPostById(postId);
+//     return post;
+//   } catch (error) {
+//     throw error;
+//   }
+// }
 
 async function allPosts() {
   try {
@@ -115,7 +114,7 @@ async function dislikePost(postId, userId) {
 
 module.exports = {
   allPosts,
-  thisPost,
+  // thisPost,
   newPost,
   myPosts,
   locationPosts,

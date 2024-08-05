@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const setupMongo = require("./src/config/mongoDB");
-
+const setupSwagger = require("./src/config/swagger");
 const setupRoutes = require("./src/routes/routes");
 
 const app = express();
@@ -14,10 +14,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-// MongoDB 연결
 setupMongo();
-
-// 라우트 설정
+setupSwagger(app);
 setupRoutes(app);
 
 app.listen(process.env.SERVER_PORT, () => {
