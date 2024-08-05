@@ -1,10 +1,9 @@
 const Location = require("../models/location");
 
-const findLocationByCountryDetails = async (country, details) => {
+const findLocationByCountry = async (country) => {
   try {
     const location = await Location.findOne({
       country,
-      details,
     });
     return location;
   } catch (error) {
@@ -13,5 +12,5 @@ const findLocationByCountryDetails = async (country, details) => {
 };
 
 module.exports = {
-  findLocationByCountryDetails,
+  findLocationByCountry,
 };

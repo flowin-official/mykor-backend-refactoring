@@ -1,7 +1,7 @@
 const {
   newComment,
   commentsInThisPost,
-} = require("../../services/commentService");
+} = require("../services/commentService");
 
 async function postMyComment(req, res) {
   const userId = req.userId;

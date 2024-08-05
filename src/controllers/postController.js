@@ -7,7 +7,7 @@ const {
   locationTagPosts,
   modifyMyPost,
   removeMyPost,
-} = require("../../services/postService");
+} = require("../services/postService");
 
 async function getAllPosts(req, res) {
   try {

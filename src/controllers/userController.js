@@ -2,7 +2,7 @@ const {
   myInfo,
   modifyMyInfo,
   removeMyInfo,
-} = require("../../services/userService");
+} = require("../services/userService");
 
 async function getMyInfo(req, res) {
   const userId = req.userId;
