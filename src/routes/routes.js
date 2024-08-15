@@ -41,6 +41,7 @@ const setupRoutes = (app) => {
 
   router.post("/login/kakao", async (req, res) => {
     const { authCode } = req.body;
+    console.log(authCode);
     const clientId = process.env.KAKAO_CLIENT_ID;
     const clientSecret = process.env.KAKAO_CLIENT_SECRET;
     const redirectUri = process.env.ANDROID_REDIRECT_URI;
@@ -63,11 +64,13 @@ const setupRoutes = (app) => {
         }
       );
 
-      console.log(tokenResponse);
+      console.log("tokenRespose: " + tokenResponse);
 
       const { access_token } = tokenResponse.data;
+      console.log("access_token: " + access_token);
       res.json({ access_token });
     } catch (error) {
+      console.log("error:" + error);
       res.status(500).json({ error: "Failed to authenticate with Kakao." });
     }
   });
