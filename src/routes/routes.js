@@ -56,7 +56,7 @@ const setupRoutes = (app) => {
             client_id: clientId,
             client_secret: clientSecret,
             redirect_uri: redirectUri,
-            authCode,
+            code: authCode,
           },
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
