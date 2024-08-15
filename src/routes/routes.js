@@ -39,15 +39,15 @@ const setupRoutes = (app) => {
   // router.post("/login/kakao", postKakaoLogin); // 카카오 로그인(회원가입)
   router.post("/refresh", postRefresh); // 토큰 재발급
 
-  // router.get("/login/kakao", (req, res) => {
+  // router.post("/login/kakao", (req, res) => {
   //   const clientId = process.env.KAKAO_CLIENT_ID;
   //   const redirectUri = encodeURIComponent(process.env.KAKAO_REDIRECT_URI);
   //   const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
   //   res.redirect(kakaoAuthUrl);
   // });
 
-  router.get("/oauth/kakao/callback", async (req, res) => {
-    const { code } = req.query;
+  router.post("/login/kakao", async (req, res) => {
+    const { code } = req.body;
     const clientId = process.env.KAKAO_CLIENT_ID;
     const clientSecret = process.env.KAKAO_CLIENT_SECRET;
     const redirectUri = process.env.KAKAO_REDIRECT_URI;
@@ -71,6 +71,7 @@ const setupRoutes = (app) => {
       );
 
       const { access_token } = tokenResponse.data;
+      console.log(access_token);
       res.json({ access_token });
     } catch (error) {
       res.status(500).json({ error: "Failed to authenticate with Kakao." });
