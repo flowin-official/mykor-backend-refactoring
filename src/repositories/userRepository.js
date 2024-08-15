@@ -13,11 +13,10 @@ const User = require("../models/user");
 //   }
 // };
 
-const createKakaoUser = async (kakaoUserCode, userName) => {
+const createKakaoUser = async (kakaoUserCode) => {
   try {
     const user = await User.create({
       kakaoUserCode,
-      userName,
     });
     return user;
   } catch (error) {
