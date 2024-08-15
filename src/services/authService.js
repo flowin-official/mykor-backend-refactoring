@@ -68,7 +68,7 @@ async function loginKakaoUser(authCode) {
           client_id: clientId,
           client_secret: clientSecret,
           redirect_uri: redirectUri,
-          code,
+          authCode,
         },
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -77,7 +77,6 @@ async function loginKakaoUser(authCode) {
     );
 
     const { access_token } = tokenResponse.data;
-    console.log(tokenResponse);
     res.json({ access_token });
   } catch (error) {
     res.status(500).json({ error: "Failed to authenticate with Kakao." });
