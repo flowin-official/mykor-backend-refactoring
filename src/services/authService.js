@@ -68,7 +68,7 @@ async function loginKakaoUser(authCode) {
           client_id: clientId,
           client_secret: clientSecret,
           redirect_uri: redirectUri,
-          authCode,
+          code: authCode,
         },
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -76,28 +76,47 @@ async function loginKakaoUser(authCode) {
       }
     );
 
+    // 카카오 서버로부터 받은 액세스 토큰
     const { access_token } = tokenResponse.data;
-    res.json({ access_token });
+
+    // 카카오 서버로부터 받은 액세스 토큰을 기반으로 유저 코드 요청
+    try {
+      const userResponse = await axios.get(
+        "https://kapi.kakao.com/v1/access_token_info",
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      // 유저 코드
+      const { id } = userResponse.data;
+
+      try {
+        // 유저 코드를 기반으로 유저 찾기
+        let user = await findUserByKakaoUserCode(id);
+
+        // 유저가 없으면 새로 생성
+        if (!user) {
+          user = await createKakaoUser(id);
+        }
+
+        // user._id는 생성된 유저의 db상 id임
+        const accessToken = createAccessToken({ id: user._id });
+        const refreshToken = createRefreshToken({ id: user._id });
+        await saveRefreshToken(user._id, refreshToken);
+
+        return { user, accessToken, refreshToken };
+      } catch (error) {
+        throw error;
+      }
+    } catch (error) {
+      throw error;
+    }
   } catch (error) {
     res.status(500).json({ error: "Failed to authenticate with Kakao." });
   }
-
-  // try {
-  //   let user = await findUserByKakaoUserCode(kakaoUserCode);
-
-  //   // 유저가 없으면 새로 생성
-  //   if (!user) {
-  //     user = await createKakaoUser(kakaoUserCode, userName);
-  //   }
-
-  //   const accessToken = createAccessToken({ id: user._id });
-  //   const refreshToken = createRefreshToken({ id: user._id });
-  //   await saveRefreshToken(user._id, refreshToken);
-
-  //   return { user, accessToken, refreshToken };
-  // } catch (error) {
-  //   throw error;
-  // }
 }
 
 async function refreshNewTokens(refreshToken) {

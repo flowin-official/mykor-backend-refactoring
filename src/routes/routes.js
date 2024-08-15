@@ -36,46 +36,10 @@ const setupRoutes = (app) => {
   const router = express.Router();
 
   // unprotected routes
-  // router.post("/login/kakao", postKakaoLogin); // 카카오 로그인(회원가입)
+  router.post("/login/kakao", postKakaoLogin); // 카카오 로그인(회원가입)
   router.post("/refresh", postRefresh); // 토큰 재발급
 
-  router.post("/login/kakao", async (req, res) => {
-    const { authCode } = req.body;
-    console.log(authCode);
-    const clientId = process.env.KAKAO_CLIENT_ID;
-    const clientSecret = process.env.KAKAO_CLIENT_SECRET;
-    const redirectUri = process.env.ANDROID_REDIRECT_URI;
-
-    try {
-      const tokenResponse = await axios.post(
-        "https://kauth.kakao.com/oauth/token",
-        null,
-        {
-          params: {
-            grant_type: "authorization_code",
-            client_id: clientId,
-            client_secret: clientSecret,
-            redirect_uri: redirectUri,
-            code: authCode,
-          },
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-
-      console.log("tokenRespose: " + tokenResponse);
-
-      const { access_token } = tokenResponse.data;
-      console.log("access_token: " + access_token);
-      res.json({ access_token });
-    } catch (error) {
-      console.log("error:" + error);
-      res.status(500).json({ error: "Failed to authenticate with Kakao." });
-    }
-  });
-
-  // 추후 웹 버전에서 로그인 시에 활용 예정
+  // 추후 REST API 웹 방식에서 로그인 시에 활용할 예정
   // router.get("/oauth/kakao/callback", async (req, res) => {
   //   const { authCode } = req.query;
   //   console.log(code);

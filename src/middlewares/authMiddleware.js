@@ -8,7 +8,7 @@ function authenticateToken(req, res, next) {
   verifyAccessToken(token, (err, decoded) => {
     if (err)
       return res.status(500).json({ message: "Failed to authenticate token" });
-    req.userId = decoded.id;
+    req.userId = decoded.id; // 페이로드에 저장된 id
     next();
   });
 }
