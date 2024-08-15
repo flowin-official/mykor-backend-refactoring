@@ -36,48 +36,42 @@ const setupRoutes = (app) => {
   const router = express.Router();
 
   // unprotected routes
-  // router.post("/login/kakao", postKakaoLogin); // 카카오 로그인(회원가입)
+  router.post("/login/kakao", postKakaoLogin); // 카카오 로그인(회원가입)
   router.post("/refresh", postRefresh); // 토큰 재발급
 
-  // router.get("/login/kakao", (req, res) => {
+  // 추후 웹 버전에서 로그인 시에 활용 예정
+  // router.get("/oauth/kakao/callback", async (req, res) => {
+  //   const { authCode } = req.query;
+  //   console.log(code);
   //   const clientId = process.env.KAKAO_CLIENT_ID;
-  //   const redirectUri = encodeURIComponent(process.env.KAKAO_REDIRECT_URI);
-  //   const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
-  //   res.redirect(kakaoAuthUrl);
+  //   const clientSecret = process.env.KAKAO_CLIENT_SECRET;
+  //   const redirectUri = process.env.KAKAO_REDIRECT_URI;
+
+  //   try {
+  //     const tokenResponse = await axios.post(
+  //       "https://kauth.kakao.com/oauth/token",
+  //       null,
+  //       {
+  //         params: {
+  //           grant_type: "authorization_code",
+  //           client_id: clientId,
+  //           client_secret: clientSecret,
+  //           redirect_uri: redirectUri,
+  //           code,
+  //         },
+  //         headers: {
+  //           "Content-Type": "application/x-www-form-urlencoded",
+  //         },
+  //       }
+  //     );
+
+  //     const { access_token } = tokenResponse.data;
+  //     console.log(access_token);
+  //     res.json({ access_token });
+  //   } catch (error) {
+  //     res.status(500).json({ error: "Failed to authenticate with Kakao." });
+  //   }
   // });
-
-  router.get("/oauth/kakao/callback", async (req, res) => {
-    const { code } = req.query;
-    console.log(code);
-    const clientId = process.env.KAKAO_CLIENT_ID;
-    const clientSecret = process.env.KAKAO_CLIENT_SECRET;
-    const redirectUri = process.env.KAKAO_REDIRECT_URI;
-
-    try {
-      const tokenResponse = await axios.post(
-        "https://kauth.kakao.com/oauth/token",
-        null,
-        {
-          params: {
-            grant_type: "authorization_code",
-            client_id: clientId,
-            client_secret: clientSecret,
-            redirect_uri: redirectUri,
-            code,
-          },
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-
-      const { access_token } = tokenResponse.data;
-      console.log(access_token);
-      res.json({ access_token });
-    } catch (error) {
-      res.status(500).json({ error: "Failed to authenticate with Kakao." });
-    }
-  });
 
   router.post("/contact", postContact); // 지역 문의하기
 

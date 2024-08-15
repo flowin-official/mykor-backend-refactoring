@@ -49,12 +49,9 @@ const {
  *         description: 서버 에러
  */
 async function postKakaoLogin(req, res) {
-  const { kakaoUserCode, userName } = req.body;
+  const { authCode } = req.body;
   try {
-    const { user, accessToken, refreshToken } = await loginKakaoUser(
-      kakaoUserCode,
-      userName
-    );
+    const { user, accessToken, refreshToken } = await loginKakaoUser(authCode);
     res.status(200).json({
       message: "User logged in successfully",
       user,
