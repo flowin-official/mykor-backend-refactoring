@@ -25,10 +25,8 @@ const {
  *           schema:
  *             type: object
  *             properties:
- *               kakaoUserCode:
- *                 type: string
- *               userName:
- *                 type: string
+ *               authCode:
+ *               type: string
  *     responses:
  *       200:
  *         description: 로그인 성공
