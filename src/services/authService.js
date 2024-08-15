@@ -78,6 +78,7 @@ async function loginKakaoUser(authCode) {
 
     // 카카오 서버로부터 받은 액세스 토큰
     const { access_token } = tokenResponse.data;
+    console.log("카카오액세스토큰: ", access_token);
 
     // 카카오 서버로부터 받은 액세스 토큰을 기반으로 유저 코드 요청
     try {
@@ -92,6 +93,7 @@ async function loginKakaoUser(authCode) {
 
       // 유저 코드
       const { id } = userResponse.data;
+      console.log("유저코드: ", id);
 
       try {
         // 유저 코드를 기반으로 유저 찾기
@@ -107,14 +109,18 @@ async function loginKakaoUser(authCode) {
         const refreshToken = createRefreshToken({ id: user._id });
         await saveRefreshToken(user._id, refreshToken);
 
+        console.log("유저: ", user);
         return { user, accessToken, refreshToken };
       } catch (error) {
+        console.log("유저 찾기 실패 또는 생성 실패: ", error);
         throw error;
       }
     } catch (error) {
+      console.log("카카오 유저 코드 요청 실패: ", error);
       throw error;
     }
   } catch (error) {
+    console.log("카카오 토큰 요청 실패: ", error);
     res.status(500).json({ error: "Failed to authenticate with Kakao." });
   }
 }
