@@ -84,7 +84,7 @@ async function loginKakaoUser(authCode) {
     // 카카오 서버로부터 받은 액세스 토큰을 기반으로 유저 코드 요청
     try {
       const userResponse = await axios.get(
-        "https://kapi.kakao.com/v1/access_token_info",
+        "https://kapi.kakao.com/v1/user/access_token_info",
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
