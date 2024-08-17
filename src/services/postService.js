@@ -14,9 +14,16 @@ const {
   createPostLike,
   deletePostLike,
 } = require("../repositories/postLikeRepository");
+const { findLocationByCountry } = require("../repositories/locationRepository");
 
-async function newPost(title, content, userId, location, tag) {
+async function newPost(title, content, userId, country, tag) {
   try {
+    // 해당 지역이 존재하는지 확인
+    const location = await findLocationByCountry(country);
+    if (!location) {
+      throw new Error("Location not found");
+    }
+
     // 해당 지역 게시판에 글 작성
     const post = await createPost(title, content, userId, location, tag);
     return post;

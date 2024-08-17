@@ -101,10 +101,13 @@ async function postRefresh(req, res) {
   }
 
   try {
-    const newTokens = await refreshNewTokens(refreshToken);
+    const { newAccessToken, newRefreshToken } = await refreshNewTokens(
+      refreshToken
+    );
     res.status(200).json({
       message: "Tokens refreshed",
-      newTokens,
+      newAccessToken,
+      newRefreshToken,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

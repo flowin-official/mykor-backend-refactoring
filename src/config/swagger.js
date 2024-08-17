@@ -1,7 +1,7 @@
 const dotenv = require("dotenv");
 dotenv.config();
 
-const { IP_ADDRESS, SERVER_PORT } = process.env;
+const { SWAGGER_ADDRESS, SERVER_PORT } = process.env;
 
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
@@ -15,7 +15,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: `http://${IP_ADDRESS}:${SERVER_PORT}/mykor/api/v1`,
+      url: `http://${SWAGGER_ADDRESS}:${SERVER_PORT}/mykor/api/v1`,
     },
   ],
 };
