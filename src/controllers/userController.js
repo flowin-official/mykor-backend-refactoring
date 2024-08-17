@@ -71,7 +71,7 @@ async function getMyInfo(req, res) {
  *                 type: string
  *               userEmail:
  *                 type: string
- *               userLocation:
+ *               country:
  *                 type: string
  *     responses:
  *       200:

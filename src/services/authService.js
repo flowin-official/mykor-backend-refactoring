@@ -106,6 +106,8 @@ async function loginKakaoUser(authCode) {
         // user._id는 생성된 유저의 db상 id임
         const accessToken = createAccessToken({ id: user._id });
         const refreshToken = createRefreshToken({ id: user._id });
+
+        // redis에 리프레시 토큰 저장
         await saveRefreshToken(user._id, refreshToken);
 
         return { user, accessToken, refreshToken };
@@ -132,6 +134,7 @@ async function refreshNewTokens(refreshToken) {
     const newAccessToken = createAccessToken({ id: userId });
     const newRefreshToken = createRefreshToken({ id: userId });
 
+    // redis에 저장된 리프레시 토큰 갱신
     await saveRefreshToken(userId, newRefreshToken);
 
     return { newAccessToken, newRefreshToken };
