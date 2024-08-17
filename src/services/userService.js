@@ -18,7 +18,7 @@ async function modifyMyInfo(userId, userName, userEmail, country) {
   try {
     // 지원 중인 country인지 확인
     const userLocation = await findLocationByCountry(country);
-    if (!location) {
+    if (!userLocation) {
       throw new Error("Location not found");
     }
 
