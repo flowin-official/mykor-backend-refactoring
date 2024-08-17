@@ -134,7 +134,7 @@ async function refreshNewTokens(refreshToken) {
 
     await saveRefreshToken(userId, newRefreshToken);
 
-    return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+    return { newAccessToken, newRefreshToken };
   } catch (error) {
     throw error;
   }
