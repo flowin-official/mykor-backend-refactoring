@@ -72,7 +72,7 @@ async function getAllPosts(req, res) {
  *                 type: string
  *               content:
  *                 type: string
- *               location:
+ *               country:
  *                 type: string
  *               tag:
  *                 type: string
