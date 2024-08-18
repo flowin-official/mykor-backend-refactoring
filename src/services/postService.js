@@ -10,6 +10,7 @@ const {
   increasePostLike,
   decreasePostLike,
   findPostsInRangeByLocationTag,
+  increasePostView,
 } = require("../repositories/postRepository");
 const {
   createPostLike,
