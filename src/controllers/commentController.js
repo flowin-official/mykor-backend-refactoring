@@ -244,53 +244,10 @@ async function deleteLikeComment(req, res) {
   }
 }
 
-/**
- * @swagger
- * /post/{postId}/comments:
- *   get:
- *     summary: 특정 게시글의 모든 댓글 조회
- *     tags: [Comments]
- *     parameters:
- *       - in: path
- *         name: postId
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: 댓글 조회 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 comments:
- *                   type: array
- *                   items:
- *                     type: object
- *       500:
- *         description: 서버 에러
- */
-async function getCommentsOnThisPost(req, res) {
-  const postId = req.params.postId;
-  try {
-    const comments = await commentsOnThisPost(postId);
-    res.status(200).json({
-      message: "Comments found",
-      comments,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
 module.exports = {
   postMyComment,
   putMyComment,
   deleteMyComment,
   postLikeComment,
   deleteLikeComment,
-  getCommentsOnThisPost,
 };

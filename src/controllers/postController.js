@@ -1,6 +1,6 @@
 const {
   allPosts,
-  // thisPost,
+  thisPost,
   newPost,
   myPosts,
   locationPosts,
@@ -9,7 +9,10 @@ const {
   removeMyPost,
   likePost,
   dislikePost,
+  postsInRangeByLocationTag,
 } = require("../services/postService");
+const { isLikedPost, isLikedComment } = require("../services/likeService");
+const { commentsOnThisPost } = require("../services/commentService");
 
 /**
  * @swagger
@@ -17,6 +20,68 @@ const {
  *   name: Posts
  *   description: 게시글 관련 API
  */
+
+async function getPostsInRange(req, res) {
+  const location = req.query.location;
+  const tag = req.query.tag;
+  const lastPostId = req.query.lastPostId;
+  const size = req.query.size;
+  try {
+    const posts = await postsInRangeByLocationTag(
+      location,
+      tag,
+      lastPostId,
+      size
+    );
+    res.status(200).json({
+      message: "Get posts in range",
+      posts,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+async function getThisPost(req, res) {
+  const userId = req.userId; // 비회원이면 null
+  const postId = req.params.postId;
+
+  try {
+    const post = await thisPost(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const comments = await commentsOnThisPost(postId);
+
+    let postLike = false;
+    let commentsLikes = {};
+
+    if (userId) {
+      // 로그인한 사용자일 때만 좋아요 여부 확인
+      postLike = await isLikedPost(postId, userId);
+
+      // 댓글 좋아요 여부 확인
+      for (let comment of comments) {
+        commentsLikes[comment._id] = await isLikedComment(comment._id, userId);
+      }
+    }
+
+    res.status(200).json({
+      message: "This post",
+      post: {
+        ...post,
+        postLike,
+      },
+      comments: comments.map((comment) => ({
+        ...comment,
+        commentLike: commentsLikes[comment._id],
+      })),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 
 /**
  * @swagger
@@ -222,8 +287,10 @@ async function getLocationPosts(req, res) {
 async function getLocationTagPosts(req, res) {
   const location = req.params.location;
   const tag = req.params.tag;
+  const lastPostId = req.query.lastPostId;
+  const size = req.query.size;
   try {
-    const posts = await locationTagPosts(location, tag);
+    const posts = await locationTagPosts(location, tag, lastPostId, size);
     res.status(200).json({
       message: "Location tag posts found",
       posts,
@@ -423,11 +490,12 @@ module.exports = {
   getMyPosts,
   postMyPost,
   getAllPosts,
-  // getThisPost,
+  getThisPost,
   putMyPost,
   deleteMyPost,
   getLocationPosts,
   getLocationTagPosts,
   postLikePost,
   deleteLikePost,
+  getPostsInRange,
 };

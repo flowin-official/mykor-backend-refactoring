@@ -20,7 +20,17 @@ const deleteCommentLike = async (userId, commentId) => {
   }
 };
 
+const findCommentLike = async (userId, commentId) => {
+  try {
+    const commentLike = await CommentLike.findOne({ userId, commentId });
+    return commentLike;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createCommentLike,
   deleteCommentLike,
+  findCommentLike,
 };
