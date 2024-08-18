@@ -75,7 +75,7 @@ async function getThisPost(req, res) {
       },
       comments: comments.map((comment) => ({
         ...comment.toObject(),
-        commentLike: commentsLikes[comment._id],
+        commentLike: commentsLikes[comment._id] || false,
       })),
     });
   } catch (error) {

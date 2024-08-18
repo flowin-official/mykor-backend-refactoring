@@ -62,7 +62,7 @@ const setupRoutes = (app) => {
   router.get("/posts", getPostsInRange); // 범위 내 게시글 가져오기(페이지네이션)
   // router.get("/posts/:location", getLocationPosts); // 지역별 게시글 가져오기
   // router.get("/post/:postId/comments", getCommentsOnThisPost); // 게시물의 댓글 가져오기(게시글 조회)
-  router.get("/post/:postId", getThisPost); // 게시글 조회
+  router.get("/post/:postId", getThisPost); // 게시글 조회)
 
   // protected routes
   router.get("/user", authenticateToken, getMyInfo); // 회원 정보
