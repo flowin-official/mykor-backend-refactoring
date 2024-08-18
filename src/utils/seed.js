@@ -1,7 +1,11 @@
 // 더미 데이터 생성
 
 const mongoose = require("mongoose");
-const { User, Post, Comment, PostLike, CommentLike } = require("../models");
+const { User } = require("../models/user");
+const { Post } = require("../models/post");
+const { Comment } = require("../models/comment");
+const { PostLike } = require("../models/postLike");
+const { CommentLike } = require("../models/commentLike");
 
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME } = process.env;
 const mongoURI = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
