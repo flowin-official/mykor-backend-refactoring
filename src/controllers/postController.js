@@ -22,13 +22,13 @@ const { commentsOnThisPost } = require("../services/commentService");
  */
 
 async function getPostsInRange(req, res) {
-  const location = req.query.location;
+  const country = req.query.location;
   const tag = req.query.tag;
   const lastPostId = req.query.lastPostId;
   const size = req.query.size;
   try {
     const posts = await postsInRangeByLocationTag(
-      location,
+      country,
       tag,
       lastPostId,
       size

@@ -18,8 +18,14 @@ const {
 const { findLocationByCountry } = require("../repositories/locationRepository");
 const { findCommentsByPostId } = require("../repositories/commentRepository");
 
-async function postsInRangeByLocationTag(location, tag, lastPostId, size) {
+async function postsInRangeByLocationTag(country, tag, lastPostId, size) {
   try {
+    // 지원하는 지역인지 확인
+    const location = await findLocationByCountry(country);
+    if (!location) {
+      throw new Error("Location not found");
+    }
+
     const posts = await findPostsInRangeByLocationTag(
       location,
       tag,
