@@ -17,7 +17,7 @@ const {
   getAllPosts,
   getLocationPosts,
   getLocationTagPosts,
-  // getThisPost,
+  getThisPost,
   putMyPost,
   deleteMyPost,
   postLikePost,
@@ -29,13 +29,13 @@ const {
   deleteMyComment,
   postLikeComment,
   deleteLikeComment,
-  getCommentsOnThisPost,
 } = require("../controllers/commentController");
 const { createAccessToken } = require("../utils/jwt");
 
 const setupRoutes = (app) => {
   const router = express.Router();
 
+  // 테스트용 액세스토큰 발급 라우트
   router.post("/test", (req, res) => {
     const userId = "66c05fbb8447ad8d87f8f335";
     const accessToken = createAccessToken({ id: userId });
@@ -56,6 +56,37 @@ const setupRoutes = (app) => {
   // unprotected routes
   router.post("/login/kakao", postKakaoLogin); // 카카오 로그인(회원가입)
   router.post("/refresh", postRefresh); // 토큰 재발급
+
+  router.post("/contact", postContact); // 지역 문의하기
+
+  router.get("/posts", getPostsInRange); // 범위 내 게시글 가져오기(페이지네이션)
+  // router.get("/posts/:location", getLocationPosts); // 지역별 게시글 가져오기
+  // router.get("/post/:postId/comments", getCommentsOnThisPost); // 게시물의 댓글 가져오기(게시글 조회)
+  router.get("/post/:postId", getThisPost); // 게시글 조회
+
+  // protected routes
+  router.get("/user", authenticateToken, getMyInfo); // 회원 정보
+  router.put("/user", authenticateToken, putMyInfo); // 회원 정보 수정
+  router.delete("/user", authenticateToken, deleteMyInfo); // 회원 탈퇴
+
+  router.post("/post", authenticateToken, postMyPost); // 게시글 작성
+  router.get("/user/posts", authenticateToken, getMyPosts); // 내가 쓴 게시물 보기
+  router.put("/post/:postId", authenticateToken, putMyPost); // 내 게시글 수정
+  router.delete("/post/:postId", authenticateToken, deleteMyPost); // 내 게시글 삭제
+
+  router.post("/post/:postId/like", authenticateToken, postLikePost); // 게시글 좋아요
+  router.delete("/post/:postId/like", authenticateToken, deleteLikePost); // 게시글 좋아요 취소
+
+  router.post("/comment", authenticateToken, postMyComment); // 게시물에 댓글 작성
+  router.put("/comment/:commentId", authenticateToken, putMyComment); // 내 댓글 수정
+  router.delete("/comment/:commentId", authenticateToken, deleteMyComment); // 내 댓글 삭제
+
+  router.post("/comment/:commentId/like", authenticateToken, postLikeComment); // 댓글 좋아요
+  router.delete(
+    "/comment/:commentId/like",
+    authenticateToken,
+    deleteLikeComment
+  ); // 댓글 좋아요 취소
 
   // 추후 REST API 웹 방식에서 로그인 시에 활용할 예정
   // router.get("/oauth/kakao/callback", async (req, res) => {
@@ -90,38 +121,6 @@ const setupRoutes = (app) => {
   //     res.status(500).json({ error: "Failed to authenticate with Kakao." });
   //   }
   // });
-
-  router.post("/contact", postContact); // 지역 문의하기
-
-  router.get("/posts", getPostsInRange); // 범위 내 게시글 가져오기(페이지네이션)
-  router.get("/posts/:location", getLocationPosts); // 지역별 게시글 가져오기
-  router.get("/posts/:location/:tag", getLocationTagPosts); // 지역별 태그된 게시물 가져오기
-  router.get("/post/:postId/comments", getCommentsOnThisPost); // 게시물의 댓글 가져오기(게시글 조회)
-  // router.get("/post/:postId", getThisPost); // 게시글 조회
-
-  // protected routes
-  router.get("/user", authenticateToken, getMyInfo); // 회원 정보
-  router.put("/user", authenticateToken, putMyInfo); // 회원 정보 수정
-  router.delete("/user", authenticateToken, deleteMyInfo); // 회원 탈퇴
-
-  router.post("/post", authenticateToken, postMyPost); // 게시글 작성
-  router.get("/user/posts", authenticateToken, getMyPosts); // 내가 쓴 게시물 보기
-  router.put("/post/:postId", authenticateToken, putMyPost); // 내 게시글 수정
-  router.delete("/post/:postId", authenticateToken, deleteMyPost); // 내 게시글 삭제
-
-  router.post("/post/:postId/like", authenticateToken, postLikePost); // 게시글 좋아요
-  router.delete("/post/:postId/like", authenticateToken, deleteLikePost); // 게시글 좋아요 취소
-
-  router.post("/comment", authenticateToken, postMyComment); // 게시물에 댓글 작성
-  router.put("/comment/:commentId", authenticateToken, putMyComment); // 내 댓글 수정
-  router.delete("/comment/:commentId", authenticateToken, deleteMyComment); // 내 댓글 삭제
-
-  router.post("/comment/:commentId/like", authenticateToken, postLikeComment); // 댓글 좋아요
-  router.delete(
-    "/comment/:commentId/like",
-    authenticateToken,
-    deleteLikeComment
-  ); // 댓글 좋아요 취소
 
   // 기본 라우트 설정
   app.use("/mykor/api/v1", router);

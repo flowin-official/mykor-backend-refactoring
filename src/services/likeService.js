@@ -1,11 +1,13 @@
 const {
   createPostLike,
   deletePostLike,
+  findPostLike,
 } = require("../repositories/postLikeRepository");
 const {
   createCommentLike,
   deleteCommentLike,
-} = require("../repositories/commentRepository");
+  findCommentLike,
+} = require("../repositories/commentLikeRepository");
 
 async function likePost(postId, userId) {
   try {
@@ -41,9 +43,31 @@ async function unlikeComment(commentId, userId) {
   }
 }
 
+async function isLikedPost(postId, userId) {
+  try {
+    const postLike = await findPostLike(postId, userId);
+    if (postLike) return true;
+    return false;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function isLikedComment(commentId, userId) {
+  try {
+    const commentLike = await findCommentLike(commentId, userId);
+    if (commentLike) return true;
+    return false;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   likePost,
   unlikePost,
   likeComment,
   unlikeComment,
+  isLikedPost,
+  isLikedComment,
 };

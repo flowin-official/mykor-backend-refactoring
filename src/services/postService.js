@@ -9,17 +9,23 @@ const {
   deletePost,
   increasePostLike,
   decreasePostLike,
-  findPostsInRange,
+  findPostsInRangeByLocationTag,
 } = require("../repositories/postRepository");
 const {
   createPostLike,
   deletePostLike,
 } = require("../repositories/postLikeRepository");
 const { findLocationByCountry } = require("../repositories/locationRepository");
+const { findCommentsByPostId } = require("../repositories/commentRepository");
 
-async function postsInRange(lastPostId, size) {
+async function postsInRangeByLocationTag(location, tag, lastPostId, size) {
   try {
-    const posts = await findPostsInRange(lastPostId, size);
+    const posts = await findPostsInRangeByLocationTag(
+      location,
+      tag,
+      lastPostId,
+      size
+    );
     return posts;
   } catch (error) {
     throw error;
@@ -43,17 +49,16 @@ async function newPost(title, content, userId, country, tag) {
 }
 
 // 게시물 조회
-// async function thisPost(postId) {
-//   try {
-//     // 게시글 조회수 1 증가
-//     await increasePostView(postId);
-
-//     const post = await findPostById(postId);
-//     return post;
-//   } catch (error) {
-//     throw error;
-//   }
-// }
+async function thisPost(postId) {
+  try {
+    // 게시글 조회수 1 증가
+    await increasePostView(postId);
+    const post = await findPostById(postId);
+    return post;
+  } catch (error) {
+    throw error;
+  }
+}
 
 async function allPosts() {
   try {
@@ -131,7 +136,7 @@ async function dislikePost(postId, userId) {
 
 module.exports = {
   allPosts,
-  // thisPost,
+  thisPost,
   newPost,
   myPosts,
   locationPosts,
@@ -140,5 +145,5 @@ module.exports = {
   removeMyPost,
   likePost,
   dislikePost,
-  postsInRange,
+  postsInRangeByLocationTag,
 };

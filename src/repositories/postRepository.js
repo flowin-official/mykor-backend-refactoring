@@ -1,10 +1,19 @@
 const Post = require("../models/post");
 
-const findPostsInRange = async (lastPostId, size) => {
+const findPostsInRangeByLocationTag = async (
+  location,
+  tag,
+  lastPostId,
+  size
+) => {
   try {
-    const posts = await Post.find({ _id: { $lt: lastPostId } })
-      .sort({ _id: -1 })
-      .limit(size);
+    const posts = await Post.find({
+      location,
+      tag,
+      _id: { $lt: lastPostId }, // lastPostId부터 이전의 게시글들을 가져옴
+    })
+      .sort({ _id: -1 }) // 최신 게시글부터 가져옴
+      .limit(size); // size만큼 가져옴
     return posts;
   } catch (error) {
     throw error;
@@ -143,5 +152,5 @@ module.exports = {
   increasePostView,
   increasePostLike,
   decreasePostLike,
-  findPostsInRange,
+  findPostsInRangeByLocationTag,
 };

@@ -20,7 +20,20 @@ const deletePostLike = async (postId, userId) => {
   }
 };
 
+const findPostLike = async (postId, userId) => {
+  try {
+    const postLike = await PostLike.findOne({
+      post_id: postId,
+      user_id: userId,
+    });
+    return postLike;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createPostLike,
   deletePostLike,
+  findPostLike,
 };
