@@ -11,6 +11,7 @@ const {
   deleteMyInfo,
 } = require("../controllers/userController");
 const {
+  getPostsInRange,
   getMyPosts,
   postMyPost,
   getAllPosts,
@@ -30,9 +31,27 @@ const {
   deleteLikeComment,
   getCommentsOnThisPost,
 } = require("../controllers/commentController");
+const { createAccessToken } = require("../utils/jwt");
 
 const setupRoutes = (app) => {
   const router = express.Router();
+
+  router.post("/test", (req, res) => {
+    const userId = "66c05fbb8447ad8d87f8f335";
+    const accessToken = createAccessToken({ id: userId });
+    const user = {
+      _id: "66c05fbb8447ad8d87f8f335",
+      userLocation: "66c010709cab1badf1eade78",
+      userName: "qqq",
+      userEmail: "a@a.a",
+      kakaoUserCode: "1",
+    };
+    res.json({
+      message: "test user",
+      user,
+      accessToken,
+    });
+  });
 
   // unprotected routes
   router.post("/login/kakao", postKakaoLogin); // 카카오 로그인(회원가입)
@@ -74,7 +93,7 @@ const setupRoutes = (app) => {
 
   router.post("/contact", postContact); // 지역 문의하기
 
-  router.get("/posts", getAllPosts); // 전체 게시글 가져오기
+  router.get("/posts", getPostsInRange); // 범위 내 게시글 가져오기(페이지네이션)
   router.get("/posts/:location", getLocationPosts); // 지역별 게시글 가져오기
   router.get("/posts/:location/:tag", getLocationTagPosts); // 지역별 태그된 게시물 가져오기
   router.get("/post/:postId/comments", getCommentsOnThisPost); // 게시물의 댓글 가져오기(게시글 조회)

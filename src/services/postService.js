@@ -9,12 +9,22 @@ const {
   deletePost,
   increasePostLike,
   decreasePostLike,
+  findPostsInRange,
 } = require("../repositories/postRepository");
 const {
   createPostLike,
   deletePostLike,
 } = require("../repositories/postLikeRepository");
 const { findLocationByCountry } = require("../repositories/locationRepository");
+
+async function postsInRange(lastPostId, size) {
+  try {
+    const posts = await findPostsInRange(lastPostId, size);
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+}
 
 async function newPost(title, content, userId, country, tag) {
   try {
@@ -130,4 +140,5 @@ module.exports = {
   removeMyPost,
   likePost,
   dislikePost,
+  postsInRange,
 };

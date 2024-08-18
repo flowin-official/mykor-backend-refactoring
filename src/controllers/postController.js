@@ -9,6 +9,7 @@ const {
   removeMyPost,
   likePost,
   dislikePost,
+  postsInRange,
 } = require("../services/postService");
 
 /**
@@ -17,6 +18,22 @@ const {
  *   name: Posts
  *   description: 게시글 관련 API
  */
+
+async function getPostsInRange(req, res) {
+  const lastPostId = req.query.lastPostId;
+  const size = req.query.size;
+  const location = req.params.location;
+  const tag = req.params.tag;
+  try {
+    const posts = await postsInRange(lastPostId, size);
+    res.status(200).json({
+      message: "Get posts in range",
+      posts,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 
 /**
  * @swagger
@@ -222,8 +239,10 @@ async function getLocationPosts(req, res) {
 async function getLocationTagPosts(req, res) {
   const location = req.params.location;
   const tag = req.params.tag;
+  const lastPostId = req.query.lastPostId;
+  const size = req.query.size;
   try {
-    const posts = await locationTagPosts(location, tag);
+    const posts = await locationTagPosts(location, tag, lastPostId, size);
     res.status(200).json({
       message: "Location tag posts found",
       posts,
@@ -430,4 +449,5 @@ module.exports = {
   getLocationTagPosts,
   postLikePost,
   deleteLikePost,
+  getPostsInRange,
 };

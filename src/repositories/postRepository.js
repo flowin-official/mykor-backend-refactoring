@@ -1,5 +1,16 @@
 const Post = require("../models/post");
 
+const findPostsInRange = async (lastPostId, size) => {
+  try {
+    const posts = await Post.find({ _id: { $lt: lastPostId } })
+      .sort({ _id: -1 })
+      .limit(size);
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const createPost = async (title, content, author, location, tag) => {
   try {
     const post = await Post.create({
@@ -132,4 +143,5 @@ module.exports = {
   increasePostView,
   increasePostLike,
   decreasePostLike,
+  findPostsInRange,
 };
