@@ -7,12 +7,22 @@ const findPostsInRangeByLocationTag = async (
   size
 ) => {
   try {
-    const posts = await Post.find({
+    const query = {
       location,
-      tag,
-      _id: { $lt: lastPostId }, // lastPostId부터 이전의 게시글들을 가져옴
-    })
-      .sort({ _id: -1 }) // 최신 게시글부터 가져옴
+    };
+
+    // 태그가 있으면 태그 조건 추가
+    if (tag) {
+      query.tag = tag;
+    }
+
+    // lastPostId가 있을 때만 _id 조건 추가
+    if (lastPostId) {
+      query._id = { $lt: lastPostId };
+    }
+
+    const posts = await Post.find(query)
+      .sort({ _id: -1 }) // 최신 게시글부터 가져오기 위해 내림차순 정렬
       .limit(size); // size만큼 가져옴
     return posts;
   } catch (error) {
