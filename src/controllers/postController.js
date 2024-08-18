@@ -70,11 +70,11 @@ async function getThisPost(req, res) {
     res.status(200).json({
       message: "This post",
       post: {
-        ...post,
+        ...post.toObject(),
         postLike,
       },
       comments: comments.map((comment) => ({
-        ...comment,
+        ...comment.toObject(),
         commentLike: commentsLikes[comment._id],
       })),
     });
