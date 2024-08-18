@@ -22,7 +22,7 @@ const { commentsOnThisPost } = require("../services/commentService");
  */
 
 async function getPostsInRange(req, res) {
-  const country = req.query.location;
+  const country = req.query.country;
   const tag = req.query.tag;
   const lastPostId = req.query.lastPostId;
   const size = req.query.size;
