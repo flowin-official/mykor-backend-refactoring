@@ -150,6 +150,26 @@ const decreasePostLike = async (postId) => {
   }
 };
 
+// 게시글 검색
+const findPostsWithKeywordByLocation = async (location, keyword) => {
+  try {
+    const keywords = keyword.split(" ").filter((word) => word.trim() !== "");
+
+    const posts = await Post.find({
+      location,
+      $and: keywords.map((word) => ({
+        $or: [
+          { title: { $regex: word, $options: "i" } },
+          { content: { $regex: word, $options: "i" } },
+        ],
+      })),
+    });
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createPost,
   findAllPosts,
@@ -163,4 +183,5 @@ module.exports = {
   increasePostLike,
   decreasePostLike,
   findPostsInRangeByLocationTag,
+  findPostsWithKeywordByLocation,
 };

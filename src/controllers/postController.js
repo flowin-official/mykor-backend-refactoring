@@ -10,6 +10,7 @@ const {
   likePost,
   dislikePost,
   postsInRangeByLocationTag,
+  searchingPosts,
 } = require("../services/postService");
 const { isLikedPost, isLikedComment } = require("../services/likeService");
 const { commentsOnThisPost } = require("../services/commentService");
@@ -77,6 +78,20 @@ async function getThisPost(req, res) {
         ...comment.toObject(),
         commentLike: commentsLikes[comment._id] || false,
       })),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+async function getPostsSearch(req, res) {
+  const country = req.query.country;
+  const keyword = req.query.keyword;
+  try {
+    const posts = await searchingPosts(country, keyword);
+    res.status(200).json({
+      message: "Searched posts",
+      posts,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -498,4 +513,5 @@ module.exports = {
   postLikePost,
   deleteLikePost,
   getPostsInRange,
+  getPostsSearch,
 };

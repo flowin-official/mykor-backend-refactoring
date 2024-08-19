@@ -11,6 +11,7 @@ const {
   decreasePostLike,
   findPostsInRangeByLocationTag,
   increasePostView,
+  findPostsWithKeywordByLocation,
 } = require("../repositories/postRepository");
 const {
   createPostLike,
@@ -62,6 +63,20 @@ async function thisPost(postId) {
     await increasePostView(postId);
     const post = await findPostById(postId);
     return post;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function searchingPosts(country, keyword) {
+  try {
+    const location = await findLocationByCountry(country);
+    if (!location) {
+      throw new Error("Location not found");
+    }
+
+    const posts = await findPostsWithKeywordByLocation(location, keyword);
+    return posts;
   } catch (error) {
     throw error;
   }
@@ -153,4 +168,5 @@ module.exports = {
   likePost,
   dislikePost,
   postsInRangeByLocationTag,
+  searchingPosts,
 };

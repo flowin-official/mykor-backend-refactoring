@@ -22,6 +22,7 @@ const {
   deleteMyPost,
   postLikePost,
   deleteLikePost,
+  getPostsSearch,
 } = require("../controllers/postController");
 const {
   postMyComment,
@@ -80,6 +81,7 @@ const setupRoutes = (app) => {
   // router.get("/posts/:location", getLocationPosts); // 지역별 게시글 가져오기
   // router.get("/post/:postId/comments", getCommentsOnThisPost); // 게시물의 댓글 가져오기(게시글 조회)
   router.get("/post/:postId", getThisPost); // 게시글 조회)
+  router.get("/posts/search", getPostsSearch); // 검색 게시글 가져오기
 
   // protected routes
   router.get("/user", authenticateToken, getMyInfo); // 회원 정보
