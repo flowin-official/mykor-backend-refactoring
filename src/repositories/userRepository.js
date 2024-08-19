@@ -55,13 +55,12 @@ const findUserByKakaoUserCode = async (kakaoUserCode) => {
   }
 };
 
-const updateUser = async (userId, userName, userEmail, userLocation) => {
+const updateUser = async (userId, userName, userLocation) => {
   try {
     const user = await User.findByIdAndUpdate(
       userId,
       {
         userName,
-        userEmail,
         userLocation,
       },
       { new: true }

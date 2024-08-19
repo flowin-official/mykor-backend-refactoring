@@ -4,7 +4,6 @@ const {
   removeComment,
   likeComment,
   dislikeComment,
-  commentsOnThisPost,
 } = require("../services/commentService");
 
 /**
@@ -20,8 +19,13 @@ const {
  *   post:
  *     summary: 댓글 작성
  *     tags: [Comments]
- *     security:
- *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *     requestBody:
  *       required: true
  *       content:
@@ -68,8 +72,13 @@ async function postMyComment(req, res) {
  *   put:
  *     summary: 댓글 수정
  *     tags: [Comments]
- *     security:
- *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *     parameters:
  *       - in: path
  *         name: commentId
@@ -105,7 +114,7 @@ async function putMyComment(req, res) {
   const commentId = req.params.commentId;
   const content = req.body.content;
   try {
-    const comment = await modifyComment(commentId, content);
+    const comment = await modifyComment(commentId, content, userId);
     res.status(200).json({
       message: "Comment updated",
       comment,
@@ -121,9 +130,13 @@ async function putMyComment(req, res) {
  *   delete:
  *     summary: 댓글 삭제
  *     tags: [Comments]
- *     security:
- *       - BearerAuth: []
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: path
  *         name: commentId
  *         required: true
@@ -148,7 +161,7 @@ async function deleteMyComment(req, res) {
   const userId = req.userId;
   const commentId = req.params.commentId;
   try {
-    const comment = await removeComment(commentId);
+    const comment = await removeComment(commentId, userId);
     res.status(200).json({
       message: "Comment deleted",
       comment,
@@ -164,9 +177,13 @@ async function deleteMyComment(req, res) {
  *   post:
  *     summary: 댓글 좋아요
  *     tags: [Comments]
- *     security:
- *       - BearerAuth: []
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: path
  *         name: commentId
  *         required: true
@@ -207,9 +224,13 @@ async function postLikeComment(req, res) {
  *   delete:
  *     summary: 댓글 좋아요 취소
  *     tags: [Comments]
- *     security:
- *       - BearerAuth: []
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: path
  *         name: commentId
  *         required: true

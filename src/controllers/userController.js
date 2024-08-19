@@ -70,8 +70,6 @@ async function getMyInfo(req, res) {
  *             properties:
  *               userName:
  *                 type: string
- *               userEmail:
- *                 type: string
  *               country:
  *                 type: string
  *     responses:
@@ -86,9 +84,9 @@ async function getMyInfo(req, res) {
  */
 async function putMyInfo(req, res) {
   const userId = req.userId;
-  const { userName, userEmail, country } = req.body;
+  const { userName, country } = req.body;
   try {
-    const user = await modifyMyInfo(userId, userName, userEmail, country);
+    const user = await modifyMyInfo(userId, userName, country);
     res.status(200).json({
       message: "User updated",
       user,
@@ -127,6 +125,38 @@ async function deleteMyInfo(req, res) {
   }
 }
 
+/**
+ * @swagger
+ * /user/:userId:
+ *   delete:
+ *     summary: 유저 정보 조회
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: 유저 정보 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     userName:
+ *                       type: string
+ *                     userLocation:
+ *                       type: object
+ *       500:
+ *         description: 서버 에러
+ */
 async function getUserInfo(req, res) {
   const userId = req.params.userId;
   try {

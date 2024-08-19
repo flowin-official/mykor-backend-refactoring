@@ -24,7 +24,7 @@ const { commentsOnThisPost } = require("../services/commentService");
 
 /**
  * @swagger
- * /posts/range:
+ * /posts:
  *   get:
  *     summary: 범위 내 게시글 가져오기
  *     tags: [Posts]
@@ -48,7 +48,6 @@ const { commentsOnThisPost } = require("../services/commentService");
  *         name: size
  *         schema:
  *           type: integer
- *           default: 10
  *         description: 한 페이지에 가져올 게시글 수
  *     responses:
  *       200:
@@ -212,47 +211,17 @@ async function getPostsSearch(req, res) {
 
 /**
  * @swagger
- * /posts:
- *   get:
- *     summary: 모든 게시글 가져오기
- *     tags: [Posts]
- *     responses:
- *       200:
- *         description: 모든 게시글 조회 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 posts:
- *                   type: array
- *                   items:
- *                     type: object
- *       500:
- *         description: 서버 에러
- */
-async function getAllPosts(req, res) {
-  try {
-    const posts = await allPosts();
-    res.status(200).json({
-      message: "All posts",
-      posts,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-/**
- * @swagger
  * /post:
  *   post:
  *     summary: 게시글 작성
  *     tags: [Posts]
- *     security:
- *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *     requestBody:
  *       required: true
  *       content:
@@ -303,8 +272,13 @@ async function postMyPost(req, res) {
  *   get:
  *     summary: 내가 쓴 게시글 가져오기
  *     tags: [Posts]
- *     security:
- *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *     responses:
  *       200:
  *         description: 내가 쓴 게시글 조회 성공
@@ -341,9 +315,13 @@ async function getMyPosts(req, res) {
  *   put:
  *     summary: 게시글 수정
  *     tags: [Posts]
- *     security:
- *       - BearerAuth: []
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: path
  *         name: postId
  *         required: true
@@ -382,7 +360,7 @@ async function putMyPost(req, res) {
   const postId = req.params.postId;
   const { title, content, tag } = req.body;
   try {
-    const post = await modifyMyPost(postId, title, content, tag);
+    const post = await modifyMyPost(postId, title, content, userId, tag);
     res.status(200).json({
       message: "Post updated",
       post,
@@ -398,9 +376,13 @@ async function putMyPost(req, res) {
  *   delete:
  *     summary: 게시글 삭제
  *     tags: [Posts]
- *     security:
- *       - BearerAuth: []
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: path
  *         name: postId
  *         required: true
@@ -441,9 +423,13 @@ async function deleteMyPost(req, res) {
  *   post:
  *     summary: 게시글 좋아요
  *     tags: [Posts]
- *     security:
- *       - BearerAuth: []
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: path
  *         name: postId
  *         required: true
@@ -484,9 +470,13 @@ async function postLikePost(req, res) {
  *   delete:
  *     summary: 게시글 좋아요 취소
  *     tags: [Posts]
- *     security:
- *       - BearerAuth: []
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: path
  *         name: postId
  *         required: true
@@ -524,7 +514,6 @@ async function deleteLikePost(req, res) {
 module.exports = {
   getMyPosts,
   postMyPost,
-  getAllPosts,
   getThisPost,
   putMyPost,
   deleteMyPost,

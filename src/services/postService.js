@@ -118,9 +118,15 @@ async function locationTagPosts(location, tag) {
   }
 }
 
-async function modifyMyPost(postId, title, content, tag) {
+async function modifyMyPost(postId, title, content, userId, tag) {
   try {
-    const post = await updatePost(postId, title, content, tag);
+    let post = await findPostById(postId);
+    // 작성자와 수정요청자가 같은지 확인
+    if (post.author.toString() !== userId) {
+      throw new Error("Not authorized");
+    }
+
+    post = await updatePost(postId, title, content, tag);
     return post;
   } catch (error) {
     throw error;

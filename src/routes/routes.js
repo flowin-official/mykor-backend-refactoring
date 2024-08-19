@@ -75,8 +75,6 @@ const setupRoutes = (app) => {
   router.post("/contact", postContact); // 지역 문의하기
 
   router.get("/posts", getPostsInRange); // 범위 내 게시글 가져오기(페이지네이션)
-  // router.get("/posts/:location", getLocationPosts); // 지역별 게시글 가져오기
-  // router.get("/post/:postId/comments", getCommentsOnThisPost); // 게시물의 댓글 가져오기(게시글 조회)
   router.get("/post/:postId", getThisPost); // 게시글 조회
   router.get("/posts/search", getPostsSearch); // 검색 게시글 가져오기
 
@@ -107,40 +105,6 @@ const setupRoutes = (app) => {
     authenticateToken,
     deleteLikeComment
   ); // 댓글 좋아요 취소
-
-  // 추후 REST API 웹 방식에서 로그인 시에 활용할 예정
-  // router.get("/oauth/kakao/callback", async (req, res) => {
-  //   const { authCode } = req.query;
-  //   console.log(code);
-  //   const clientId = process.env.KAKAO_CLIENT_ID;
-  //   const clientSecret = process.env.KAKAO_CLIENT_SECRET;
-  //   const redirectUri = process.env.KAKAO_REDIRECT_URI;
-
-  //   try {
-  //     const tokenResponse = await axios.post(
-  //       "https://kauth.kakao.com/oauth/token",
-  //       null,
-  //       {
-  //         params: {
-  //           grant_type: "authorization_code",
-  //           client_id: clientId,
-  //           client_secret: clientSecret,
-  //           redirect_uri: redirectUri,
-  //           code,
-  //         },
-  //         headers: {
-  //           "Content-Type": "application/x-www-form-urlencoded",
-  //         },
-  //       }
-  //     );
-
-  //     const { access_token } = tokenResponse.data;
-  //     console.log(access_token);
-  //     res.json({ access_token });
-  //   } catch (error) {
-  //     res.status(500).json({ error: "Failed to authenticate with Kakao." });
-  //   }
-  // });
 
   // 기본 라우트 설정
   app.use("/mykor/api/v1", router);

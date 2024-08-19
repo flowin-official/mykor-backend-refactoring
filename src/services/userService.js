@@ -14,7 +14,7 @@ async function myInfo(userId) {
   }
 }
 
-async function modifyMyInfo(userId, userName, userEmail, country) {
+async function modifyMyInfo(userId, userName, country) {
   try {
     // 지원 중인 country인지 확인
     const userLocation = await findLocationByCountry(country);
@@ -22,7 +22,7 @@ async function modifyMyInfo(userId, userName, userEmail, country) {
       throw new Error("Location not found");
     }
 
-    const user = await updateUser(userId, userName, userEmail, userLocation);
+    const user = await updateUser(userId, userName, userLocation);
     return user;
   } catch (error) {
     throw error;

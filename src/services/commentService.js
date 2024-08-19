@@ -20,18 +20,28 @@ async function newComment(userId, postId, content) {
   }
 }
 
-async function modifyComment(commentId, content) {
+async function modifyComment(commentId, content, userId) {
   try {
-    const comment = await updateComment(commentId, content);
+    let comment = await findCommentById(commentId);
+    // 댓글 작성자 확인
+    if (comment.userId !== userId) {
+      throw new Error("You are not the author of this comment");
+    }
+    comment = await updateComment(commentId, content);
     return comment;
   } catch (error) {
     throw error;
   }
 }
 
-async function removeComment(commentId) {
+async function removeComment(commentId, userId) {
   try {
-    const comment = await deleteComment(commentId);
+    let comment = await findCommentById(commentId);
+    // 댓글 작성자 확인
+    if (comment.userId !== userId) {
+      throw new Error("You are not the author of this comment");
+    }
+    comment = await deleteComment(commentId);
     return comment;
   } catch (error) {
     throw error;
