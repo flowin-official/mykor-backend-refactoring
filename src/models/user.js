@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   kakaoUserCode: { type: String, required: true, unique: true },
 
   userName: { type: String, default: null },
-  userEmail: { type: String, default: null, unique: true },
+  userEmail: { type: String, default: null },
   userLocation: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Location",
