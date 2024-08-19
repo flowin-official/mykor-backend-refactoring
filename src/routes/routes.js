@@ -43,7 +43,7 @@ const setupRoutes = (app) => {
     const user = {
       _id: userId,
       userLocation: "66c010709cab1badf1eade78",
-      userName: "qqq",
+      userName: "test",
       kakaoUserCode: "1",
     };
     res.json({
@@ -59,7 +59,7 @@ const setupRoutes = (app) => {
     const user = {
       _id: userId,
       userLocation: "66c010709cab1badf1eade7a",
-      userName: "bbb",
+      userName: "test2",
       kakaoUserCode: "2",
     };
     res.json({
