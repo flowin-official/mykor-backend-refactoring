@@ -113,14 +113,20 @@ async function loginKakaoUser(authCode) {
         // redis에 리프레시 토큰 저장
         await saveRefreshToken(user._id, refreshToken);
 
+        console.log("유저: ", user);
+        console.log("액세스토큰: ", accessToken);
+        console.log("리프레시토큰: ", refreshToken);
         return { user, accessToken, refreshToken };
       } catch (error) {
+        console.log("유저 찾기 에러: ", error);
         throw error;
       }
     } catch (error) {
+      console.log("유저 코드 요청 에러: ", error);
       throw error;
     }
   } catch (error) {
+    console.log("액세스 토큰 요청 에러: ", error);
     res.status(500).json({ error: "Failed to authenticate with Kakao." });
   }
 }

@@ -57,6 +57,7 @@ async function postKakaoLogin(req, res) {
       refreshToken,
     });
   } catch (error) {
+    console.log("카카오 controller 에러: " + error);
     res.status(500).json({ message: error.message });
   }
 }
