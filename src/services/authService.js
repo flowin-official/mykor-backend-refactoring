@@ -14,6 +14,7 @@ const {
   saveRefreshToken,
   findRefreshToken,
 } = require("../repositories/refreshTokenRepository");
+const jwt = require("jsonwebtoken");
 
 // async function registerUser(email, password, name) {
 //   try {
@@ -53,6 +54,47 @@ const {
 //   }
 // }
 
+async function loginAppleUser(authCode) {
+  const algorithm = process.env.ALG;
+  const appleAuthKey = process.env.APPLE_AUTHKEY;
+  const appleBundleID = process.env.APPLE_BUNDLE_ID;
+  const appleIssuer = process.env.APPLE_TEAM_ID;
+  const appleKeyID = process.env.APPLE_KEY_ID;
+  const expiresIn = 15777000;
+
+  const clientSecret = jwt.sign(
+    {},
+    appleAuthKey,
+    {
+      algorithm: algorithm,
+      keyid: appleKeyID,
+      issuer: appleIssuer,
+      audience: "https://appleid.apple.com",
+      subject: appleBundleID,
+      expiresIn: expiresIn
+    }
+  );
+
+  const tokenResponse = await axios.post(
+    "https://appleid.apple.com/auth/token",
+    {
+      params: {
+        grant_type: 'authorization_code',
+        code: authCode,
+        client_secret: clientSecret,
+        client_id: appleBundleID,
+      },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    },
+  );
+
+    // 카카오 서버로부터 받은 액세스 토큰
+    const { access_token } = tokenResponse.data;
+    console.log("Apple Access Token:" + access_token);
+}
+
 async function loginKakaoUser(authCode) {
   const clientId = process.env.KAKAO_CLIENT_ID;
   const clientSecret = process.env.KAKAO_CLIENT_SECRET;
@@ -74,7 +116,8 @@ async function loginKakaoUser(authCode) {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-      }
+      },
+
     );
 
     // 카카오 서버로부터 받은 액세스 토큰
@@ -146,6 +189,7 @@ async function refreshNewTokens(refreshToken) {
 module.exports = {
   // registerUser,
   // loginUser,
+  loginAppleUser,
   loginKakaoUser,
   refreshNewTokens,
 };

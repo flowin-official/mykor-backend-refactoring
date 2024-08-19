@@ -18,6 +18,8 @@ setupMongo();
 setupSwagger(app);
 setupRoutes(app);
 
+console.log("hello, flowin!");
+
 app.listen(process.env.SERVER_PORT, () => {
   console.log(`Server is running on port ${process.env.SERVER_PORT}`);
 });

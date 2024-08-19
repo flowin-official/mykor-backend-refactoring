@@ -2,6 +2,7 @@ const express = require("express");
 const authenticateToken = require("../middlewares/authMiddleware");
 const {
   postKakaoLogin,
+  postAppleLogin,
   postRefresh,
 } = require("../controllers/authController");
 const { postContact } = require("../controllers/contactController");
@@ -36,6 +37,7 @@ const setupRoutes = (app) => {
 
   // unprotected routes
   router.post("/login/kakao", postKakaoLogin); // 카카오 로그인(회원가입)
+  router.post("/login/apple", postAppleLogin); // 애플 로그인(회원가입)
   router.post("/refresh", postRefresh); // 토큰 재발급
 
   // 추후 REST API 웹 방식에서 로그인 시에 활용할 예정
