@@ -11,7 +11,7 @@ const { allLocations } = require("../services/locationService");
  * @swagger
  * /locations:
  *   get:
- *     summary: 모든 장소 가져오기
+ *     summary: 지원중인 모든 장소 조회
  *     tags: [Locations]
  *     responses:
  *       200:

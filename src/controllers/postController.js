@@ -88,7 +88,7 @@ async function getPostsInRange(req, res) {
  * @swagger
  * /post/{postId}:
  *   get:
- *     summary: 특정 게시글 가져오기
+ *     summary: 게시글 조회(댓글포함)
  *     tags: [Posts]
  *     parameters:
  *       - in: path

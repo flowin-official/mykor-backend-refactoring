@@ -52,7 +52,7 @@ async function getMyInfo(req, res) {
  * @swagger
  * /user:
  *   put:
- *     summary: 내 정보 수정
+ *     summary: 내 정보 수정(이름, 지역)
  *     tags: [Users]
  *     parameters:
  *       - in: header
@@ -100,7 +100,7 @@ async function putMyInfo(req, res) {
  * @swagger
  * /user:
  *   delete:
- *     summary: 내 정보 삭제
+ *     summary: 회원 탈퇴?
  *     tags: [Users]
  *     parameters:
  *       - in: header
@@ -111,7 +111,7 @@ async function putMyInfo(req, res) {
  *         description: JWT token
  *     responses:
  *       200:
- *         description: 내 정보 삭제 성공
+ *         description: 회원 탈퇴 성공
  *       500:
  *         description: 서버 에러
  */
@@ -128,7 +128,7 @@ async function deleteMyInfo(req, res) {
 /**
  * @swagger
  * /user/:userId:
- *   delete:
+ *   get:
  *     summary: 유저 정보 조회
  *     tags: [Users]
  *     parameters:
