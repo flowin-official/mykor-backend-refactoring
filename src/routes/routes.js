@@ -38,13 +38,12 @@ const setupRoutes = (app) => {
 
   // 테스트용 액세스토큰 발급 라우트
   router.post("/test", (req, res) => {
-    const userId = "66c05fbb8447ad8d87f8f335";
+    const userId = "66c2f9ac6cbec92da7aa3182";
     const accessToken = createAccessToken({ id: userId });
     const user = {
       _id: userId,
       userLocation: "66c010709cab1badf1eade78",
       userName: "qqq",
-      userEmail: "a@a.a",
       kakaoUserCode: "1",
     };
     res.json({
@@ -55,13 +54,12 @@ const setupRoutes = (app) => {
   });
 
   router.post("/test2", (req, res) => {
-    const userId = "66c27aa06cbec92da7aa3171";
+    const userId = "66c2f9df6cbec92da7aa3183";
     const accessToken = createAccessToken({ id: userId });
     const user = {
       _id: userId,
       userLocation: "66c010709cab1badf1eade7a",
       userName: "bbb",
-      userEmail: "b@b.b",
       kakaoUserCode: "2",
     };
     res.json({
