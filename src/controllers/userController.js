@@ -2,6 +2,7 @@ const {
   myInfo,
   modifyMyInfo,
   removeMyInfo,
+  userInfo,
 } = require("../services/userService");
 
 /**
@@ -126,8 +127,25 @@ async function deleteMyInfo(req, res) {
   }
 }
 
+async function getUserInfo(req, res) {
+  const userId = req.params.userId;
+  try {
+    const user = await userInfo(userId);
+    res.status(200).json({
+      message: "User found",
+      user: {
+        userName: user.userName,
+        userLocation: user.userLocation,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   getMyInfo,
   putMyInfo,
   deleteMyInfo,
+  getUserInfo,
 };

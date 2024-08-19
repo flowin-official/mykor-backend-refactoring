@@ -37,8 +37,18 @@ async function removeMyInfo(userId) {
   }
 }
 
+async function userInfo(userId) {
+  try {
+    const user = await findUserById(userId);
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   myInfo,
   modifyMyInfo,
   removeMyInfo,
+  userInfo,
 };

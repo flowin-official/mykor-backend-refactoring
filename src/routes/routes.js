@@ -1,5 +1,6 @@
 const express = require("express");
 const authenticateToken = require("../middlewares/authMiddleware");
+const { createAccessToken } = require("../utils/jwt");
 const {
   postKakaoLogin,
   postRefresh,
@@ -9,6 +10,7 @@ const {
   getMyInfo,
   putMyInfo,
   deleteMyInfo,
+  getUserInfo,
 } = require("../controllers/userController");
 const {
   getPostsInRange,
@@ -31,7 +33,7 @@ const {
   postLikeComment,
   deleteLikeComment,
 } = require("../controllers/commentController");
-const { createAccessToken } = require("../utils/jwt");
+const { getLocations } = require("../controllers/locationController");
 
 const setupRoutes = (app) => {
   const router = express.Router();
@@ -80,6 +82,10 @@ const setupRoutes = (app) => {
   // router.get("/post/:postId/comments", getCommentsOnThisPost); // 게시물의 댓글 가져오기(게시글 조회)
   router.get("/post/:postId", getThisPost); // 게시글 조회
   router.get("/posts/search", getPostsSearch); // 검색 게시글 가져오기
+
+  router.get("/user/:userId", getUserInfo); // 유저 정보 가져오기(비로그인으로 접근가능한 정보)
+
+  router.get("/locations", getLocations); // 지역 정보 가져오기
 
   // protected routes
   router.get("/user", authenticateToken, getMyInfo); // 회원 정보

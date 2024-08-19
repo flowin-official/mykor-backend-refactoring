@@ -24,7 +24,17 @@ const findLocationByCountryDetails = async (country, details) => {
   }
 };
 
+const findAllLocations = async () => {
+  try {
+    const locations = await Location.find();
+    return locations;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   findLocationByCountry,
   findLocationByCountryDetails,
+  findAllLocations,
 };
