@@ -1,5 +1,35 @@
 const { allLocations } = require("../services/locationService");
 
+/**
+ * @swagger
+ * tags:
+ *   name: Locations
+ *   description: 장소 관련 API
+ */
+
+/**
+ * @swagger
+ * /locations:
+ *   get:
+ *     summary: 모든 장소 가져오기
+ *     tags: [Locations]
+ *     responses:
+ *       200:
+ *         description: 모든 장소 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 locations:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       500:
+ *         description: 서버 에러
+ */
 async function getLocations(req, res) {
   try {
     const locations = await allLocations();

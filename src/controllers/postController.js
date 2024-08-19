@@ -22,82 +22,6 @@ const { commentsOnThisPost } = require("../services/commentService");
  *   description: 게시글 관련 API
  */
 
-async function getPostsInRange(req, res) {
-  const country = req.query.country;
-  const tag = req.query.tag;
-  const lastPostId = req.query.lastPostId;
-  const size = req.query.size;
-  try {
-    const posts = await postsInRangeByLocationTag(
-      country,
-      tag,
-      lastPostId,
-      size
-    );
-    res.status(200).json({
-      message: "Get posts in range",
-      posts,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-async function getThisPost(req, res) {
-  const userId = req.userId; // 비회원이면 null
-  const postId = req.params.postId;
-
-  try {
-    const post = await thisPost(postId);
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-
-    const comments = await commentsOnThisPost(postId);
-
-    let postLike = false;
-    let commentsLikes = {};
-
-    if (userId) {
-      // 로그인한 사용자일 때만 좋아요 여부 확인
-      postLike = await isLikedPost(postId, userId);
-
-      // 댓글 좋아요 여부 확인
-      for (let comment of comments) {
-        commentsLikes[comment._id] = await isLikedComment(comment._id, userId);
-      }
-    }
-
-    res.status(200).json({
-      message: "This post",
-      post: {
-        ...post.toObject(),
-        postLike,
-      },
-      comments: comments.map((comment) => ({
-        ...comment.toObject(),
-        commentLike: commentsLikes[comment._id] || false,
-      })),
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-async function getPostsSearch(req, res) {
-  const country = req.query.country;
-  const keyword = req.query.keyword;
-  try {
-    const posts = await searchingPosts(country, keyword);
-    res.status(200).json({
-      message: "Searched posts",
-      posts,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
 /**
  * @swagger
  * /posts:
@@ -225,19 +149,19 @@ async function getMyPosts(req, res) {
 
 /**
  * @swagger
- * /posts/{location}:
+ * /post/{postId}:
  *   get:
- *     summary: 지역별 게시글 가져오기
+ *     summary: 특정 게시글 가져오기
  *     tags: [Posts]
  *     parameters:
  *       - in: path
- *         name: location
+ *         name: postId
  *         required: true
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: 지역별 게시글 조회 성공
+ *         description: 게시글 조회 성공
  *         content:
  *           application/json:
  *             schema:
@@ -245,20 +169,52 @@ async function getMyPosts(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 posts:
+ *                 post:
+ *                   type: object
+ *                 comments:
  *                   type: array
  *                   items:
  *                     type: object
+ *       404:
+ *         description: 게시글을 찾을 수 없습니다.
  *       500:
  *         description: 서버 에러
  */
-async function getLocationPosts(req, res) {
-  const location = req.params.location;
+async function getThisPost(req, res) {
+  const userId = req.userId; // 비회원이면 null
+  const postId = req.params.postId;
+
   try {
-    const posts = await locationPosts(location);
+    const post = await thisPost(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const comments = await commentsOnThisPost(postId);
+
+    let postLike = false;
+    let commentsLikes = {};
+
+    if (userId) {
+      // 로그인한 사용자일 때만 좋아요 여부 확인
+      postLike = await isLikedPost(postId, userId);
+
+      // 댓글 좋아요 여부 확인
+      for (let comment of comments) {
+        commentsLikes[comment._id] = await isLikedComment(comment._id, userId);
+      }
+    }
+
     res.status(200).json({
-      message: "Location posts found",
-      posts,
+      message: "This post",
+      post: {
+        ...post.toObject(),
+        postLike,
+      },
+      comments: comments.map((comment) => ({
+        ...comment.toObject(),
+        commentLike: commentsLikes[comment._id] || false,
+      })),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -267,24 +223,26 @@ async function getLocationPosts(req, res) {
 
 /**
  * @swagger
- * /posts/{location}/{tag}:
+ * /posts/search:
  *   get:
- *     summary: 지역별 태그된 게시물 가져오기
+ *     summary: 게시글 검색
  *     tags: [Posts]
  *     parameters:
- *       - in: path
- *         name: location
- *         required: true
+ *       - in: query
+ *         name: country
  *         schema:
  *           type: string
- *       - in: path
+ *       - in: query
  *         name: tag
- *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: keyword
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: 지역별 태그된 게시물 조회 성공
+ *         description: 검색된 게시글 조회 성공
  *         content:
  *           application/json:
  *             schema:
@@ -299,15 +257,12 @@ async function getLocationPosts(req, res) {
  *       500:
  *         description: 서버 에러
  */
-async function getLocationTagPosts(req, res) {
-  const location = req.params.location;
-  const tag = req.params.tag;
-  const lastPostId = req.query.lastPostId;
-  const size = req.query.size;
+async function getSearchPosts(req, res) {
+  const { country, tag, keyword } = req.query;
   try {
-    const posts = await locationTagPosts(location, tag, lastPostId, size);
+    const posts = await searchingPosts(country, tag, keyword);
     res.status(200).json({
-      message: "Location tag posts found",
+      message: "Search results",
       posts,
     });
   } catch (error) {
@@ -319,7 +274,7 @@ async function getLocationTagPosts(req, res) {
  * @swagger
  * /post/{postId}:
  *   put:
- *     summary: 게시글 수정
+ *     summary: 특정 게시글 수정
  *     tags: [Posts]
  *     security:
  *       - BearerAuth: []
@@ -354,15 +309,22 @@ async function getLocationTagPosts(req, res) {
  *                   type: string
  *                 post:
  *                   type: object
+ *       404:
+ *         description: 게시글을 찾을 수 없습니다.
  *       500:
  *         description: 서버 에러
  */
-async function putMyPost(req, res) {
+async function updateThisPost(req, res) {
   const userId = req.userId;
   const postId = req.params.postId;
   const { title, content, tag } = req.body;
+
   try {
-    const post = await modifyMyPost(postId, title, content, tag);
+    const post = await modifyMyPost(postId, userId, title, content, tag);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
     res.status(200).json({
       message: "Post updated",
       post,
@@ -376,7 +338,7 @@ async function putMyPost(req, res) {
  * @swagger
  * /post/{postId}:
  *   delete:
- *     summary: 게시글 삭제
+ *     summary: 특정 게시글 삭제
  *     tags: [Posts]
  *     security:
  *       - BearerAuth: []
@@ -396,19 +358,22 @@ async function putMyPost(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 post:
- *                   type: object
+ *       404:
+ *         description: 게시글을 찾을 수 없습니다.
  *       500:
  *         description: 서버 에러
  */
-async function deleteMyPost(req, res) {
+async function deleteThisPost(req, res) {
   const userId = req.userId;
   const postId = req.params.postId;
   try {
-    const post = await removeMyPost(postId);
+    const post = await removeMyPost(postId, userId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
     res.status(200).json({
       message: "Post deleted",
-      post,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -417,7 +382,7 @@ async function deleteMyPost(req, res) {
 
 /**
  * @swagger
- * /post/{postId}/like:
+ * /post/like/{postId}:
  *   post:
  *     summary: 게시글 좋아요
  *     tags: [Posts]
@@ -431,7 +396,7 @@ async function deleteMyPost(req, res) {
  *           type: string
  *     responses:
  *       200:
- *         description: 게시글 좋아요 성공
+ *         description: 좋아요 성공
  *         content:
  *           application/json:
  *             schema:
@@ -439,19 +404,21 @@ async function deleteMyPost(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 post:
- *                   type: object
+ *                 likeCount:
+ *                   type: number
+ *       404:
+ *         description: 게시글을 찾을 수 없습니다.
  *       500:
  *         description: 서버 에러
  */
-async function postLikePost(req, res) {
+async function postLike(req, res) {
   const userId = req.userId;
   const postId = req.params.postId;
   try {
-    const post = await likePost(postId, userId);
+    const { likeCount } = await likePost(postId, userId);
     res.status(200).json({
       message: "Post liked",
-      post,
+      likeCount,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -460,8 +427,8 @@ async function postLikePost(req, res) {
 
 /**
  * @swagger
- * /post/{postId}/like:
- *   delete:
+ * /post/dislike/{postId}:
+ *   post:
  *     summary: 게시글 좋아요 취소
  *     tags: [Posts]
  *     security:
@@ -474,7 +441,7 @@ async function postLikePost(req, res) {
  *           type: string
  *     responses:
  *       200:
- *         description: 게시글 좋아요 취소 성공
+ *         description: 좋아요 취소 성공
  *         content:
  *           application/json:
  *             schema:
@@ -482,19 +449,21 @@ async function postLikePost(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 post:
- *                   type: object
+ *                 likeCount:
+ *                   type: number
+ *       404:
+ *         description: 게시글을 찾을 수 없습니다.
  *       500:
  *         description: 서버 에러
  */
-async function deleteLikePost(req, res) {
+async function postDislike(req, res) {
   const userId = req.userId;
   const postId = req.params.postId;
   try {
-    const post = await dislikePost(postId, userId);
+    const { likeCount } = await dislikePost(postId, userId);
     res.status(200).json({
-      message: "Post unliked",
-      post,
+      message: "Post disliked",
+      likeCount,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -502,16 +471,13 @@ async function deleteLikePost(req, res) {
 }
 
 module.exports = {
-  getMyPosts,
-  postMyPost,
   getAllPosts,
   getThisPost,
-  putMyPost,
-  deleteMyPost,
-  getLocationPosts,
-  getLocationTagPosts,
-  postLikePost,
-  deleteLikePost,
-  getPostsInRange,
-  getPostsSearch,
+  postMyPost,
+  getMyPosts,
+  getSearchPosts,
+  updateThisPost,
+  deleteThisPost,
+  postLike,
+  postDislike,
 };
