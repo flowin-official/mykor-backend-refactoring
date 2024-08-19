@@ -1,10 +1,7 @@
 const {
-  allPosts,
   thisPost,
   newPost,
   myPosts,
-  locationPosts,
-  locationTagPosts,
   modifyMyPost,
   removeMyPost,
   likePost,

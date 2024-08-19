@@ -79,7 +79,6 @@ async function postMyComment(req, res) {
  *         schema:
  *           type: string
  *         description: JWT token
- *     parameters:
  *       - in: path
  *         name: commentId
  *         required: true
