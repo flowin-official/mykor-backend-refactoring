@@ -113,6 +113,8 @@ async function getPostsInRange(req, res) {
  *                   type: object
  *                   properties:
  *                     comments:
+ *                       type: integer
+ *                     comments_list:
  *                       type: array
  *                       items:
  *                         type: object
