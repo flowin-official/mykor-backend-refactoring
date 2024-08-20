@@ -108,10 +108,11 @@ async function getPostsInRange(req, res) {
  *                   type: string
  *                 post:
  *                   type: object
- *                   comments:
- *                     type: array
- *                     items:
- *                       type: object
+ *                   properties:
+ *                     comments:
+ *                       type: array
+ *                       items:
+ *                         type: object
  *       404:
  *         description: 게시글을 찾을 수 없습니다.
  *       500:
