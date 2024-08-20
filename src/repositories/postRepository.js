@@ -72,24 +72,6 @@ const findPostsByAuthor = async (authorId) => {
   }
 };
 
-const findPostsByLocation = async (location) => {
-  try {
-    const posts = await Post.find({ location });
-    return posts;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const findPostsByLocationTag = async (location, tag) => {
-  try {
-    const posts = await Post.find({ location, tag });
-    return posts;
-  } catch (error) {
-    throw error;
-  }
-};
-
 const updatePost = async (postId, title, content, tag) => {
   try {
     const post = await Post.findByIdAndUpdate(
@@ -175,8 +157,6 @@ module.exports = {
   findAllPosts,
   findPostById,
   findPostsByAuthor,
-  findPostsByLocation,
-  findPostsByLocationTag,
   updatePost,
   deletePost,
   increasePostView,
