@@ -70,7 +70,7 @@ async function getMyInfo(req, res) {
  *             properties:
  *               userName:
  *                 type: string
- *               country:
+ *               locationId:
  *                 type: string
  *     responses:
  *       200:
