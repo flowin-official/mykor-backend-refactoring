@@ -142,26 +142,6 @@ async function removeMyPost(postId) {
   }
 }
 
-async function likePost(postId, userId) {
-  try {
-    await increasePostLike(postId);
-    const post = await createPostLike(postId, userId);
-    return post;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function dislikePost(postId, userId) {
-  try {
-    await decreasePostLike(postId);
-    const post = await deletePostLike(postId, userId);
-    return post;
-  } catch (error) {
-    throw error;
-  }
-}
-
 module.exports = {
   allPosts,
   thisPost,
@@ -171,8 +151,6 @@ module.exports = {
   locationTagPosts,
   modifyMyPost,
   removeMyPost,
-  likePost,
-  dislikePost,
   postsInRangeByLocationTag,
   searchingPosts,
 };

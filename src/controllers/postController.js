@@ -4,12 +4,15 @@ const {
   myPosts,
   modifyMyPost,
   removeMyPost,
-  likePost,
-  dislikePost,
   postsInRangeByLocationTag,
   searchingPosts,
 } = require("../services/postService");
-const { isLikedPost, isLikedComment } = require("../services/likeService");
+const {
+  isLikedPost,
+  isLikedComment,
+  likePost,
+  dislikePost,
+} = require("../services/likeService");
 const { commentsOnThisPost } = require("../services/commentService");
 
 /**
@@ -148,7 +151,8 @@ async function getThisPost(req, res) {
         ...post.toObject(),
         postLike,
       },
-      comments: comments.map((comment) => ({
+      comments: comments.length,
+      comments_list: comments.map((comment) => ({
         ...comment.toObject(),
         commentLike: commentsLikes[comment._id] || false,
       })),

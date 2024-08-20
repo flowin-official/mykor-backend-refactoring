@@ -18,7 +18,7 @@ async function likePost(postId, userId) {
   }
 }
 
-async function unlikePost(postId, userId) {
+async function dislikePost(postId, userId) {
   try {
     await deletePostLike(postId, userId);
   } catch (error) {
@@ -35,7 +35,7 @@ async function likeComment(commentId, userId) {
   }
 }
 
-async function unlikeComment(commentId, userId) {
+async function dislikeComment(commentId, userId) {
   try {
     await deleteCommentLike(commentId, userId);
   } catch (error) {
@@ -65,9 +65,9 @@ async function isLikedComment(commentId, userId) {
 
 module.exports = {
   likePost,
-  unlikePost,
+  dislikePost,
   likeComment,
-  unlikeComment,
+  dislikeComment,
   isLikedPost,
   isLikedComment,
 };
