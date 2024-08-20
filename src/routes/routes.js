@@ -31,6 +31,7 @@ const {
   deleteLikeComment,
 } = require("../controllers/commentController");
 const { getLocations } = require("../controllers/locationController");
+const { getTags } = require("../controllers/tagController");
 
 const setupRoutes = (app) => {
   const router = express.Router();
@@ -81,6 +82,8 @@ const setupRoutes = (app) => {
   router.get("/user/:userId", getUserInfo); // 유저 정보 가져오기(비로그인으로 접근가능한 정보)
 
   router.get("/locations", getLocations); // 지역 정보 가져오기
+
+  router.get("/tags", getTags); // 태그 정보 가져오기
 
   // protected routes
   router.get("/user", authenticateToken, getMyInfo); // 회원 정보
