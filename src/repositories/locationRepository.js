@@ -33,8 +33,18 @@ const findAllLocations = async () => {
   }
 };
 
+const findLocationById = async (locationId) => {
+  try {
+    const location = await Location.findById(locationId);
+    return location;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   findLocationByCountry,
   findLocationByCountryDetails,
   findAllLocations,
+  findLocationById,
 };
