@@ -1,10 +1,9 @@
 const {
   newComment,
-  modifyComment,
-  removeComment,
-  likeComment,
-  dislikeComment,
+  modifyMyComment,
+  removeMyComment,
 } = require("../services/commentService");
+const { likeComment, dislikeComment } = require("../services/likeService");
 
 /**
  * @swagger

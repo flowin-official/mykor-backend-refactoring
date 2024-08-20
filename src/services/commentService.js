@@ -2,25 +2,25 @@ const {
   createComment,
   updateComment,
   deleteComment,
-  increaseCommentLike,
-  decreaseCommentLike,
   findCommentsByPostId,
 } = require("../repositories/commentRepository");
 const {
-  createCommentLike,
-  deleteCommentLike,
-} = require("../repositories/commentLikeRepository");
+  increasePostComment,
+  decreasePostComment,
+} = require("../repositories/postRepository");
 
 async function newComment(userId, postId, content) {
   try {
     const comment = await createComment(userId, postId, content);
+    await increasePostComment(postId); // 게시글의 댓글 카운트 증가
+
     return comment;
   } catch (error) {
     throw error;
   }
 }
 
-async function modifyComment(commentId, content, userId) {
+async function modifyMyComment(commentId, content, userId) {
   try {
     let comment = await findCommentById(commentId);
     // 댓글 작성자 확인
@@ -34,41 +34,20 @@ async function modifyComment(commentId, content, userId) {
   }
 }
 
-async function removeComment(commentId, userId) {
+async function removeMyComment(commentId, userId) {
   try {
     let comment = await findCommentById(commentId);
     // 댓글 작성자 확인
     if (comment.userId !== userId) {
       throw new Error("You are not the author of this comment");
     }
-    comment = await deleteComment(commentId);
-    return comment;
+    await deleteComment(commentId);
+    await decreasePostComment(comment.postId); // 게시글의 댓글 카운트 감소
   } catch (error) {
     throw error;
   }
 }
 
-async function likeComment(commentId, userId) {
-  try {
-    await increaseCommentLike(commentId); // 좋아요 증가
-    const comment = await createCommentLike(commentId, userId);
-    return comment;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function dislikeComment(commentId, userId) {
-  try {
-    await decreaseCommentLike(commentId); // 좋아요 감소
-    const comment = await deleteCommentLike(commentId, userId);
-    return comment;
-  } catch (error) {
-    throw error;
-  }
-}
-
-// 댓글 조회
 async function commentsOnThisPost(postId) {
   try {
     const comments = await findCommentsByPostId(postId);
@@ -80,9 +59,7 @@ async function commentsOnThisPost(postId) {
 
 module.exports = {
   newComment,
-  modifyComment,
-  removeComment,
-  likeComment,
-  dislikeComment,
+  modifyMyComment,
+  removeMyComment,
   commentsOnThisPost,
 };

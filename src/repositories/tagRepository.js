@@ -1,4 +1,4 @@
-const Tag = require("../models/tags");
+const Tag = require("../models/tag");
 
 const findAllTags = async () => {
   try {
@@ -9,6 +9,16 @@ const findAllTags = async () => {
   }
 };
 
+const findTagById = async (tagId) => {
+  try {
+    const tag = await Tag.findById(tagId);
+    return tag;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   findAllTags,
+  findTagById,
 };

@@ -91,9 +91,15 @@ async function getPostsInRange(req, res) {
  * @swagger
  * /post/{postId}:
  *   get:
- *     summary: 게시글 조회(댓글포함)
+ *     summary: 게시글 조회(로그인/비로그인 구분)
  *     tags: [Posts]
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: path
  *         name: postId
  *         required: true
@@ -112,8 +118,6 @@ async function getPostsInRange(req, res) {
  *                 post:
  *                   type: object
  *                   properties:
- *                     comments:
- *                       type: integer
  *                     comments_list:
  *                       type: array
  *                       items:
@@ -124,7 +128,7 @@ async function getPostsInRange(req, res) {
  *         description: 서버 에러
  */
 async function getThisPost(req, res) {
-  const userId = req.userId; // 비회원이면 null
+  const userId = req.userId;
   const postId = req.params.postId;
 
   try {
@@ -138,9 +142,8 @@ async function getThisPost(req, res) {
     let postLike = false;
     let commentsLikes = {};
 
-    if (userId) {
-      // 로그인한 사용자일 때만 좋아요 여부 확인
-      postLike = await isLikedPost(postId, userId);
+    if (req.isAuthenticated) {
+      postLike = await isLikedPost(postId, userId); // 로그인한 사용자일 때만 좋아요 여부 확인
 
       // 댓글 좋아요 여부 확인
       for (let comment of comments) {
@@ -153,7 +156,6 @@ async function getThisPost(req, res) {
       post: {
         ...post.toObject(),
         postLike,
-        comments: comments.length,
         comments_list: comments.map((comment) => ({
           ...comment.toObject(),
           commentLike: commentsLikes[comment._id] || false,
@@ -239,7 +241,7 @@ async function getPostsSearch(req, res) {
  *                 type: string
  *               locationId:
  *                 type: string
- *               tag:
+ *               tagId:
  *                 type: string
  *     responses:
  *       201:
@@ -258,9 +260,9 @@ async function getPostsSearch(req, res) {
  */
 async function postMyPost(req, res) {
   const userId = req.userId;
-  const { title, content, locationId, tag } = req.body;
+  const { title, content, locationId, tagId } = req.body;
   try {
-    const post = await newPost(title, content, userId, locationId, tag);
+    const post = await newPost(title, content, userId, locationId, tagId);
     res.status(201).json({
       message: "Post created",
       post,
@@ -342,7 +344,7 @@ async function getMyPosts(req, res) {
  *                 type: string
  *               content:
  *                 type: string
- *               tag:
+ *               tagId:
  *                 type: string
  *     responses:
  *       200:
@@ -362,9 +364,9 @@ async function getMyPosts(req, res) {
 async function putMyPost(req, res) {
   const userId = req.userId;
   const postId = req.params.postId;
-  const { title, content, tag } = req.body;
+  const { title, content, tagId } = req.body;
   try {
-    const post = await modifyMyPost(postId, title, content, userId, tag);
+    const post = await modifyMyPost(postId, title, content, userId, tagId);
     res.status(200).json({
       message: "Post updated",
       post,

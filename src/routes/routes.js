@@ -76,7 +76,6 @@ const setupRoutes = (app) => {
   router.post("/contact", postContact); // 지역 문의하기
 
   router.get("/posts", getPostsInRange); // 범위 내 게시글 가져오기(페이지네이션)
-  router.get("/post/:postId", getThisPost); // 게시글 조회
   router.get("/posts/search", getPostsSearch); // 검색 게시글 가져오기
 
   router.get("/user/:userId", getUserInfo); // 유저 정보 가져오기(비로그인으로 접근가능한 정보)
@@ -85,6 +84,7 @@ const setupRoutes = (app) => {
 
   router.get("/tags", getTags); // 태그 정보 가져오기
 
+  router.get("/post/:postId", authenticateToken, getThisPost); // 게시글 조회(로그인/비로그인 구분)
   // protected routes
   router.get("/user", authenticateToken, getMyInfo); // 회원 정보
   router.put("/user", authenticateToken, putMyInfo); // 회원 정보 수정

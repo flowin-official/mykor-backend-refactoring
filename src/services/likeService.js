@@ -12,6 +12,10 @@ const {
   increasePostLike,
   decreasePostLike,
 } = require("../repositories/postRepository");
+const {
+  increaseCommentLike,
+  decreaseCommentLike,
+} = require("../repositories/commentRepository");
 
 async function likePost(postId, userId) {
   try {
@@ -20,8 +24,7 @@ async function likePost(postId, userId) {
       throw new Error("이미 좋아요한 게시글입니다.");
     }
     postLike = await createPostLike(postId, userId);
-
-    await increasePostLike(postId); // 좋아요 수 증가
+    await increasePostLike(postId); // 게시글 좋아요 수 증가
 
     return postLike;
   } catch (error) {
@@ -36,9 +39,8 @@ async function dislikePost(postId, userId) {
       throw new Error("좋아요하지 않은 게시글입니다.");
     }
 
-    await decreasePostLike(postId); // 좋아요 수 감소
-
     await deletePostLike(postId, userId);
+    await decreasePostLike(postId); // 게시글 좋아요 수 감소
   } catch (error) {
     throw error;
   }
@@ -50,8 +52,9 @@ async function likeComment(commentId, userId) {
     if (commentLike) {
       throw new Error("이미 좋아요한 댓글입니다.");
     }
-
     commentLike = await createCommentLike(commentId, userId);
+    await increaseCommentLike(commentId); // 댓글 좋아요 수 증가
+
     return commentLike;
   } catch (error) {
     throw error;
@@ -66,6 +69,7 @@ async function dislikeComment(commentId, userId) {
     }
 
     await deleteCommentLike(commentId, userId);
+    await decreaseCommentLike(commentId); // 댓글 좋아요 수 감소
   } catch (error) {
     throw error;
   }

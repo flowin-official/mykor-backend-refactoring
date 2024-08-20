@@ -152,6 +152,32 @@ const findPostsWithKeywordByLocation = async (location, keyword) => {
   }
 };
 
+const increasePostComment = async (postId) => {
+  try {
+    const post = await Post.findByIdAndUpdate(
+      postId,
+      { $inc: { comments: 1 } },
+      { new: true }
+    );
+    return post;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const decreasePostComment = async (postId) => {
+  try {
+    const post = await Post.findByIdAndUpdate(
+      postId,
+      { $inc: { comments: -1 } },
+      { new: true }
+    );
+    return post;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createPost,
   findAllPosts,
@@ -164,4 +190,6 @@ module.exports = {
   decreasePostLike,
   findPostsInRangeByLocationTag,
   findPostsWithKeywordByLocation,
+  increasePostComment,
+  decreasePostComment,
 };

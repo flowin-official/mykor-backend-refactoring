@@ -36,6 +36,11 @@ const {
  *         description: 서버 에러
  */
 async function getMyInfo(req, res) {
+  // if (!req.isAuthenticated) {
+  //   res.status(401).json({ message: "Unauthorized" });
+  //   return;
+  // }
+
   const userId = req.userId;
   try {
     const user = await myInfo(userId);
