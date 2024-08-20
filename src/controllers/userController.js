@@ -84,9 +84,9 @@ async function getMyInfo(req, res) {
  */
 async function putMyInfo(req, res) {
   const userId = req.userId;
-  const { userName, country } = req.body;
+  const { userName, locationId } = req.body;
   try {
-    const user = await modifyMyInfo(userId, userName, country);
+    const user = await modifyMyInfo(userId, userName, locationId);
     res.status(200).json({
       message: "User updated",
       user,
