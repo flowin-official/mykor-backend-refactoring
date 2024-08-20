@@ -3,8 +3,6 @@ const {
   findAllPosts,
   findPostById,
   findPostsByAuthor,
-  findPostsByLocation,
-  findPostsByLocationTag,
   updatePost,
   deletePost,
   increasePostLike,
@@ -17,13 +15,12 @@ const {
   createPostLike,
   deletePostLike,
 } = require("../repositories/postLikeRepository");
-const { findLocationByCountry } = require("../repositories/locationRepository");
-const { findCommentsByPostId } = require("../repositories/commentRepository");
+const { findLocationById } = require("../repositories/locationRepository");
 
-async function postsInRangeByLocationTag(country, tag, lastPostId, size) {
+async function postsInRangeByLocationTag(locationId, tag, lastPostId, size) {
   try {
     // 지원하는 지역인지 확인
-    const location = await findLocationByCountry(country);
+    const location = await findLocationById(locationId);
     if (!location) {
       throw new Error("Location not found");
     }
@@ -40,10 +37,10 @@ async function postsInRangeByLocationTag(country, tag, lastPostId, size) {
   }
 }
 
-async function newPost(title, content, userId, country, tag) {
+async function newPost(title, content, userId, locationId, tag) {
   try {
     // 해당 지역이 존재하는지 확인
-    const location = await findLocationByCountry(country);
+    const location = await findLocationById(locationId);
     if (!location) {
       throw new Error("Location not found");
     }
@@ -68,9 +65,9 @@ async function thisPost(postId) {
   }
 }
 
-async function searchingPosts(country, keyword) {
+async function searchingPosts(locationId, keyword) {
   try {
-    const location = await findLocationByCountry(country);
+    const location = await findLocationById(locationId);
     if (!location) {
       throw new Error("Location not found");
     }
@@ -94,24 +91,6 @@ async function allPosts() {
 async function myPosts(userId) {
   try {
     const posts = await findPostsByAuthor(userId);
-    return posts;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function locationPosts(location) {
-  try {
-    const posts = await findPostsByLocation(location);
-    return posts;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function locationTagPosts(location, tag) {
-  try {
-    const posts = await findPostsByLocationTag(location, tag);
     return posts;
   } catch (error) {
     throw error;
@@ -167,8 +146,6 @@ module.exports = {
   thisPost,
   newPost,
   myPosts,
-  locationPosts,
-  locationTagPosts,
   modifyMyPost,
   removeMyPost,
   likePost,

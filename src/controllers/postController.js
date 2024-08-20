@@ -27,10 +27,10 @@ const { commentsOnThisPost } = require("../services/commentService");
  *     tags: [Posts]
  *     parameters:
  *       - in: query
- *         name: country
+ *         name: locationId
  *         schema:
  *           type: string
- *         description: 게시글을 가져올 국가
+ *         description: 게시글을 가져올 국가코드
  *       - in: query
  *         name: tag
  *         schema:
@@ -64,13 +64,13 @@ const { commentsOnThisPost } = require("../services/commentService");
  *         description: 서버 에러
  */
 async function getPostsInRange(req, res) {
-  const country = req.query.country;
+  const locationId = req.query.locationId;
   const tag = req.query.tag;
   const lastPostId = req.query.lastPostId;
   const size = req.query.size;
   try {
     const posts = await postsInRangeByLocationTag(
-      country,
+      locationId,
       tag,
       lastPostId,
       size
@@ -166,7 +166,7 @@ async function getThisPost(req, res) {
  *     tags: [Posts]
  *     parameters:
  *       - in: query
- *         name: country
+ *         name: locationId
  *         schema:
  *           type: string
  *         description: 게시글을 검색할 국가
@@ -193,10 +193,10 @@ async function getThisPost(req, res) {
  *         description: 서버 에러
  */
 async function getPostsSearch(req, res) {
-  const country = req.query.country;
+  const locationId = req.query.locationId;
   const keyword = req.query.keyword;
   try {
-    const posts = await searchingPosts(country, keyword);
+    const posts = await searchingPosts(locationId, keyword);
     res.status(200).json({
       message: "Searched posts",
       posts,
@@ -230,7 +230,7 @@ async function getPostsSearch(req, res) {
  *                 type: string
  *               content:
  *                 type: string
- *               country:
+ *               locationId:
  *                 type: string
  *               tag:
  *                 type: string
@@ -251,9 +251,9 @@ async function getPostsSearch(req, res) {
  */
 async function postMyPost(req, res) {
   const userId = req.userId;
-  const { title, content, country, tag } = req.body;
+  const { title, content, locationId, tag } = req.body;
   try {
-    const post = await newPost(title, content, userId, country, tag);
+    const post = await newPost(title, content, userId, locationId, tag);
     res.status(201).json({
       message: "Post created",
       post,
