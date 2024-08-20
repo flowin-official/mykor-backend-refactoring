@@ -108,10 +108,10 @@ async function getPostsInRange(req, res) {
  *                   type: string
  *                 post:
  *                   type: object
- *                 comments:
- *                   type: array
- *                   items:
- *                     type: object
+ *                   comments:
+ *                     type: array
+ *                     items:
+ *                       type: object
  *       404:
  *         description: 게시글을 찾을 수 없습니다.
  *       500:
@@ -147,11 +147,11 @@ async function getThisPost(req, res) {
       post: {
         ...post.toObject(),
         postLike,
+        comments: comments.map((comment) => ({
+          ...comment.toObject(),
+          commentLike: commentsLikes[comment._id] || false,
+        })),
       },
-      comments: comments.map((comment) => ({
-        ...comment.toObject(),
-        commentLike: commentsLikes[comment._id] || false,
-      })),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
