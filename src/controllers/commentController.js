@@ -112,7 +112,7 @@ async function putMyComment(req, res) {
   const commentId = req.params.commentId;
   const content = req.body.content;
   try {
-    const comment = await modifyComment(commentId, content, userId);
+    const comment = await modifyMyComment(commentId, content, userId);
     res.status(200).json({
       message: "Comment updated",
       comment,
@@ -159,7 +159,7 @@ async function deleteMyComment(req, res) {
   const userId = req.userId;
   const commentId = req.params.commentId;
   try {
-    const comment = await removeComment(commentId, userId);
+    const comment = await removeMyComment(commentId, userId);
     res.status(200).json({
       message: "Comment deleted",
       comment,
