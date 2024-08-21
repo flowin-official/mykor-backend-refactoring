@@ -3,6 +3,7 @@ const {
   updateComment,
   deleteComment,
   findCommentsByPostId,
+  findCommentById,
 } = require("../repositories/commentRepository");
 const {
   increasePostComment,
