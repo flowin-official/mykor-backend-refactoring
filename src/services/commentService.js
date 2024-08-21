@@ -25,7 +25,7 @@ async function modifyMyComment(commentId, content, userId) {
   try {
     let comment = await findCommentById(commentId);
     // 댓글 작성자 확인
-    if (comment.userId !== userId) {
+    if (comment.userId._id !== userId) {
       throw new Error("You are not the author of this comment");
     }
     comment = await updateComment(commentId, content);
@@ -39,7 +39,7 @@ async function removeMyComment(commentId, userId) {
   try {
     let comment = await findCommentById(commentId);
     // 댓글 작성자 확인
-    if (comment.userId !== userId) {
+    if (comment.userId._id !== userId) {
       throw new Error("You are not the author of this comment");
     }
     await deleteComment(commentId);
