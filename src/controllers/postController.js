@@ -265,7 +265,11 @@ async function postMyPost(req, res) {
     const post = await newPost(title, content, userId, locationId, tagId);
     res.status(201).json({
       message: "Post created",
-      post,
+      post: {
+        ...post.toObject(),
+        location: post.location._id,
+        tag: post.tag._id,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
