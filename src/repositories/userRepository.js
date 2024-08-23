@@ -1,18 +1,5 @@
 const User = require("../models/user");
 
-// const createUser = async (email, password, name) => {
-//   try {
-//     const user = await User.create({
-//       email,
-//       password,
-//       name,
-//     });
-//     return user;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
-
 const createKakaoUser = async (kakaoUserCode) => {
   try {
     const user = await User.create({
@@ -23,17 +10,6 @@ const createKakaoUser = async (kakaoUserCode) => {
     throw error;
   }
 };
-
-// const findUserByEmail = async (email) => {
-//   try {
-//     const user = await User.findOne({
-//       email,
-//     });
-//     return user;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
 
 const findUserById = async (userId) => {
   try {
@@ -55,13 +31,13 @@ const findUserByKakaoUserCode = async (kakaoUserCode) => {
   }
 };
 
-const updateUser = async (userId, userName, userLocation) => {
+const updateUser = async (userId, nickname, locationId) => {
   try {
     const user = await User.findByIdAndUpdate(
       userId,
       {
-        userName,
-        userLocation,
+        nickname,
+        location: locationId,
       },
       { new: true }
     );
@@ -80,10 +56,8 @@ const deleteUser = async (userId) => {
 };
 
 module.exports = {
-  // createUser,
   createKakaoUser,
   findUserByKakaoUserCode,
-  // findUserByEmail,
   findUserById,
   updateUser,
   deleteUser,

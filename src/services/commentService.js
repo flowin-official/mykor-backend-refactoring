@@ -8,12 +8,24 @@ const {
 const {
   increasePostComment,
   decreasePostComment,
+  findPostById,
 } = require("../repositories/postRepository");
+const { findUserById } = require("../repositories/userRepository");
 
 async function newComment(userId, postId, content) {
   try {
-    const comment = await createComment(userId, postId, content);
-    await increasePostComment(postId); // 게시글의 댓글 카운트 증가
+    // 유저 및 게시글 검증
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const post = await findPostById(postId);
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+    const comment = await createComment(user, post, content);
+    await increasePostComment(post._id); // 게시글의 댓글 카운트 증가
 
     return comment;
   } catch (error) {
@@ -23,13 +35,22 @@ async function newComment(userId, postId, content) {
 
 async function modifyMyComment(commentId, content, userId) {
   try {
-    let comment = await findCommentById(commentId);
-    // 댓글 작성자 확인
-    if (comment.userId.toString() !== userId) {
-      throw new Error("You are not the author of this comment");
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
     }
-    comment = await updateComment(commentId, content);
-    return comment;
+    let comment = await findCommentById(commentId);
+    if (!comment) {
+      throw new Error("Comment not found");
+    }
+
+    // 댓글 작성자 확인
+    if (comment.author.toString() !== user._id.toString()) {
+      throw new Error("댓글 작성자가 아닙니다");
+    } else {
+      comment = await updateComment(comment, content);
+      return comment;
+    }
   } catch (error) {
     throw error;
   }
@@ -37,13 +58,22 @@ async function modifyMyComment(commentId, content, userId) {
 
 async function removeMyComment(commentId, userId) {
   try {
-    let comment = await findCommentById(commentId);
-    // 댓글 작성자 확인
-    if (comment.userId.toString() !== userId) {
-      throw new Error("You are not the author of this comment");
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
     }
-    await deleteComment(commentId);
-    await decreasePostComment(comment.postId); // 게시글의 댓글 카운트 감소
+    let comment = await findCommentById(commentId);
+    if (!comment) {
+      throw new Error("Comment not found");
+    }
+
+    // 댓글 작성자 확인
+    if (comment.author.toString() !== user._id.toString()) {
+      throw new Error("댓글 작성자가 아닙니다");
+    } else {
+      comment = await deleteComment(comment);
+      await decreasePostComment(comment.post._id); // 게시글의 댓글 카운트 감소
+    }
   } catch (error) {
     throw error;
   }
@@ -51,7 +81,12 @@ async function removeMyComment(commentId, userId) {
 
 async function commentsOnThisPost(postId) {
   try {
-    const comments = await findCommentsByPostId(postId);
+    const post = await findPostById(postId);
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+    const comments = await findCommentsByPostId(post);
     return comments;
   } catch (error) {
     throw error;

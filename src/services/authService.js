@@ -1,7 +1,5 @@
 const axios = require("axios");
 const {
-  // createUser,
-  // findUserByEmail,
   createKakaoUser,
   findUserByKakaoUserCode,
 } = require("../repositories/userRepository");
@@ -57,7 +55,6 @@ async function loginKakaoUser(authCode) {
   const clientId = process.env.KAKAO_CLIENT_ID;
   const clientSecret = process.env.KAKAO_CLIENT_SECRET;
   const redirectUri = process.env.NATIVE_REDIRECT_URI;
-  console.log("입력된 authCode: ", authCode);
 
   // 카카오 서버 측에 authCode를 통해 카카오 인증을 요청하고 토큰 받기
   try {
@@ -80,7 +77,6 @@ async function loginKakaoUser(authCode) {
 
     // 카카오 서버로부터 받은 액세스 토큰
     const { access_token } = tokenResponse.data;
-    console.log("카카오 액세스토큰: ", access_token);
 
     // 카카오 서버로부터 받은 액세스 토큰을 기반으로 유저 코드 요청
     try {
@@ -95,7 +91,6 @@ async function loginKakaoUser(authCode) {
 
       // 유저 코드
       const { id } = userResponse.data;
-      console.log("카카오 유저코드: ", id);
 
       try {
         // 유저 코드를 기반으로 유저 찾기
@@ -113,20 +108,14 @@ async function loginKakaoUser(authCode) {
         // redis에 리프레시 토큰 저장
         await saveRefreshToken(user._id, refreshToken);
 
-        console.log("유저: ", user);
-        console.log("액세스토큰: ", accessToken);
-        console.log("리프레시토큰: ", refreshToken);
         return { user, accessToken, refreshToken };
       } catch (error) {
-        console.log("유저 찾기 에러: ", error);
         throw error;
       }
     } catch (error) {
-      console.log("유저 코드 요청 에러: ", error);
       throw error;
     }
   } catch (error) {
-    console.log("액세스 토큰 요청 에러: ", error);
     res.status(500).json({ error: "Failed to authenticate with Kakao." });
   }
 }
@@ -153,8 +142,6 @@ async function refreshNewTokens(refreshToken) {
 }
 
 module.exports = {
-  // registerUser,
-  // loginUser,
   loginKakaoUser,
   refreshNewTokens,
 };

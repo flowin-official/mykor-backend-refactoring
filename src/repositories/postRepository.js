@@ -45,15 +45,6 @@ const createPost = async (title, content, author, location, tag) => {
   }
 };
 
-const findAllPosts = async () => {
-  try {
-    const posts = await Post.find();
-    return posts;
-  } catch (error) {
-    throw error;
-  }
-};
-
 const findPostById = async (postId) => {
   try {
     const post = await Post.findById(postId);
@@ -63,9 +54,9 @@ const findPostById = async (postId) => {
   }
 };
 
-const findPostsByAuthor = async (authorId) => {
+const findPostsByUserId = async (userId) => {
   try {
-    const posts = await Post.find({ author: authorId });
+    const posts = await Post.find({ author: userId });
     return posts;
   } catch (error) {
     throw error;
@@ -180,9 +171,8 @@ const decreasePostComment = async (postId) => {
 
 module.exports = {
   createPost,
-  findAllPosts,
   findPostById,
-  findPostsByAuthor,
+  findPostsByUserId,
   updatePost,
   deletePost,
   increasePostView,

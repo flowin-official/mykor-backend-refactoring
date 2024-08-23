@@ -1,8 +1,7 @@
 const {
   createPost,
-  findAllPosts,
   findPostById,
-  findPostsByAuthor,
+  findPostsByUserId,
   updatePost,
   deletePost,
   findPostsInRangeByLocationTag,
@@ -11,13 +10,20 @@ const {
 } = require("../repositories/postRepository");
 const { findLocationById } = require("../repositories/locationRepository");
 const { findTagById } = require("../repositories/tagRepository");
+const { findUserById } = require("../repositories/userRepository");
 
-async function postsInRangeByLocationTag(locationId, tag, lastPostId, size) {
+async function postsInRangeByLocationTag(locationId, tagId, lastPostId, size) {
   try {
     // 지원하는 지역인지 확인
     const location = await findLocationById(locationId);
     if (!location) {
       throw new Error("Location not found");
+    }
+
+    // 지원하는 태그인지 확인
+    const tag = await findTagById(tagId);
+    if (!tag) {
+      throw new Error("Tag not found");
     }
 
     const posts = await findPostsInRangeByLocationTag(
@@ -56,9 +62,12 @@ async function newPost(title, content, userId, locationId, tagId) {
 // 게시물 조회
 async function thisPost(postId) {
   try {
-    // 게시글 조회수 1 증가
-    await increasePostView(postId);
     const post = await findPostById(postId);
+    if (!post) {
+      throw new Error("게시물이 없습니다.");
+    }
+
+    await increasePostView(postId); // 게시글 조회수 1 증가
     return post;
   } catch (error) {
     throw error;
@@ -90,7 +99,7 @@ async function allPosts() {
 
 async function myPosts(userId) {
   try {
-    const posts = await findPostsByAuthor(userId);
+    const posts = await findPostsByUserId(userId);
     return posts;
   } catch (error) {
     throw error;
@@ -100,17 +109,24 @@ async function myPosts(userId) {
 async function modifyMyPost(postId, title, content, userId, tagId) {
   try {
     let post = await findPostById(postId);
-    // 작성자와 수정요청자가 같은지 확인
-    if (post.author.toString() !== userId) {
-      throw new Error("Not authorized");
+    if (!post) {
+      throw new Error("Post not found");
     }
-    // 해당 태그가 존재하는지 확인
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
     const tag = await findTagById(tagId);
     if (!tag) {
       throw new Error("Tag not found");
     }
 
-    post = await updatePost(postId, title, content, tag);
+    // 작성자와 수정요청자가 같은지 확인
+    if (post.author.toString() !== user._id.toString()) {
+      throw new Error("글 작성자가 아닙니다.");
+    }
+
+    post = await updatePost(post, title, content, tag);
     return post;
   } catch (error) {
     throw error;
@@ -119,7 +135,12 @@ async function modifyMyPost(postId, title, content, userId, tagId) {
 
 async function removeMyPost(postId) {
   try {
-    await deletePost(postId);
+    const post = await findPostById(postId);
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+    await deletePost(post);
   } catch (error) {
     throw error;
   }

@@ -3,6 +3,7 @@ const {
   modifyMyComment,
   removeMyComment,
 } = require("../services/commentService");
+const { reportComment } = require("../services/reportService");
 const { likeComment, dislikeComment } = require("../services/likeService");
 
 /**
@@ -58,7 +59,11 @@ async function postMyComment(req, res) {
     const comment = await newComment(userId, postId, content);
     res.status(200).json({
       message: "Comment created",
-      comment,
+      comment: {
+        ...comment.toObject(),
+        post: comment.post._id,
+        author: comment.author._id,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -263,10 +268,70 @@ async function deleteLikeComment(req, res) {
   }
 }
 
+/**
+ * @swagger
+ * /comment/{commentId}/report:
+ *   post:
+ *     summary: 댓글 신고
+ *     tags: [Comments]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               reason:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: 댓글 신고완료
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 post:
+ *                   type: object
+ *       500:
+ *         description: 서버 에러
+ */
+async function postReportComment(req, res) {
+  const userId = req.userId;
+  const commentId = req.params.commentId;
+  const { reason, content } = req.body;
+  try {
+    const comment = await reportComment(commentId, userId, reason, content);
+    res.status(200).json({
+      message: "Comment reported",
+      comment,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   postMyComment,
   putMyComment,
   deleteMyComment,
   postLikeComment,
   deleteLikeComment,
+  postReportComment,
 };

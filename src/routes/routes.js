@@ -22,6 +22,7 @@ const {
   postLikePost,
   deleteLikePost,
   getPostsSearch,
+  postReportPost,
 } = require("../controllers/postController");
 const {
   postMyComment,
@@ -29,6 +30,7 @@ const {
   deleteMyComment,
   postLikeComment,
   deleteLikeComment,
+  postReportComment,
 } = require("../controllers/commentController");
 const { getLocations } = require("../controllers/locationController");
 const { getTags } = require("../controllers/tagController");
@@ -42,8 +44,8 @@ const setupRoutes = (app) => {
     const accessToken = createAccessToken({ id: userId });
     const user = {
       _id: userId,
-      userLocation: "66c010709cab1badf1eade78",
-      userName: "test",
+      location: "66c010709cab1badf1eade78",
+      nickname: "test",
       kakaoUserCode: "1",
     };
     res.json({
@@ -58,8 +60,8 @@ const setupRoutes = (app) => {
     const accessToken = createAccessToken({ id: userId });
     const user = {
       _id: userId,
-      userLocation: "66c010709cab1badf1eade7a",
-      userName: "test2",
+      location: "66c010709cab1badf1eade7a",
+      nickname: "test2",
       kakaoUserCode: "2",
     };
     res.json({
@@ -98,6 +100,8 @@ const setupRoutes = (app) => {
   router.post("/post/:postId/like", authenticateToken, postLikePost); // 게시글 좋아요
   router.delete("/post/:postId/like", authenticateToken, deleteLikePost); // 게시글 좋아요 취소
 
+  router.post("/post/:postId/report", authenticateToken, postReportPost); // 게시글 신고
+
   router.post("/comment", authenticateToken, postMyComment); // 게시물에 댓글 작성
   router.put("/comment/:commentId", authenticateToken, putMyComment); // 내 댓글 수정
   router.delete("/comment/:commentId", authenticateToken, deleteMyComment); // 내 댓글 삭제
@@ -108,6 +112,12 @@ const setupRoutes = (app) => {
     authenticateToken,
     deleteLikeComment
   ); // 댓글 좋아요 취소
+
+  router.post(
+    "/comment/:commentId/report",
+    authenticateToken,
+    postReportComment
+  ); // 댓글 신고
 
   // 기본 라우트 설정
   app.use("/mykor/api/v1", router);

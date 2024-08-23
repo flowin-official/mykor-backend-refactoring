@@ -8,21 +8,29 @@ const { findLocationById } = require("../repositories/locationRepository");
 async function myInfo(userId) {
   try {
     const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     return user;
   } catch (error) {
     throw error;
   }
 }
 
-async function modifyMyInfo(userId, userName, locationId) {
+async function modifyMyInfo(userId, nickname, locationId) {
   try {
+    let user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
     // 지원 중인 location인지 확인
-    const userLocation = await findLocationById(locationId);
-    if (!userLocation) {
+    const location = await findLocationById(locationId);
+    if (!location) {
       throw new Error("Location not found");
     }
 
-    const user = await updateUser(userId, userName, userLocation);
+    user = await updateUser(user, nickname, location);
     return user;
   } catch (error) {
     throw error;
@@ -31,7 +39,12 @@ async function modifyMyInfo(userId, userName, locationId) {
 
 async function removeMyInfo(userId) {
   try {
-    await deleteUser(userId);
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await deleteUser(user);
   } catch (error) {
     throw error;
   }
@@ -40,6 +53,10 @@ async function removeMyInfo(userId) {
 async function userInfo(userId) {
   try {
     const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     return user;
   } catch (error) {
     throw error;

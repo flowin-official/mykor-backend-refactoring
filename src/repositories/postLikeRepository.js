@@ -3,8 +3,8 @@ const PostLike = require("../models/postLike");
 const createPostLike = async (postId, userId) => {
   try {
     const postLike = await PostLike.create({
-      post_id: postId,
-      user_id: userId,
+      post: postId,
+      user: userId,
     });
     return postLike;
   } catch (error) {
@@ -14,7 +14,7 @@ const createPostLike = async (postId, userId) => {
 
 const deletePostLike = async (postId, userId) => {
   try {
-    await PostLike.findOneAndDelete({ post_id: postId, user_id: userId });
+    await PostLike.findOneAndDelete({ post: postId, user: userId });
   } catch (error) {
     throw error;
   }
@@ -23,8 +23,8 @@ const deletePostLike = async (postId, userId) => {
 const findPostLike = async (postId, userId) => {
   try {
     const postLike = await PostLike.findOne({
-      post_id: postId,
-      user_id: userId,
+      post: postId,
+      user: userId,
     });
     return postLike;
   } catch (error) {

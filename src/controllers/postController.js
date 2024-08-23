@@ -13,6 +13,7 @@ const {
   likePost,
   dislikePost,
 } = require("../services/likeService");
+const { reportPost } = require("../services/reportService");
 const { commentsOnThisPost } = require("../services/commentService");
 
 /**
@@ -35,7 +36,7 @@ const { commentsOnThisPost } = require("../services/commentService");
  *           type: string
  *         description: 게시글을 가져올 국가코드
  *       - in: query
- *         name: tag
+ *         name: tagId
  *         schema:
  *           type: string
  *         description: 게시글의 태그
@@ -68,13 +69,13 @@ const { commentsOnThisPost } = require("../services/commentService");
  */
 async function getPostsInRange(req, res) {
   const locationId = req.query.locationId;
-  const tag = req.query.tag;
+  const tagId = req.query.tagId;
   const lastPostId = req.query.lastPostId;
   const size = req.query.size;
   try {
     const posts = await postsInRangeByLocationTag(
       locationId,
-      tag,
+      tagId,
       lastPostId,
       size
     );
@@ -156,7 +157,7 @@ async function getThisPost(req, res) {
       post: {
         ...post.toObject(),
         postLike,
-        comments_list: comments.map((comment) => ({
+        commentsList: comments.map((comment) => ({
           ...comment.toObject(),
           commentLike: commentsLikes[comment._id] || false,
         })),
@@ -521,6 +522,65 @@ async function deleteLikePost(req, res) {
   }
 }
 
+/**
+ * @swagger
+ * /post/{postId}/report:
+ *   post:
+ *     summary: 게시글 신고
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               reason:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: 게시글 신고완료
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 post:
+ *                   type: object
+ *       500:
+ *         description: 서버 에러
+ */
+async function postReportPost(req, res) {
+  const userId = req.userId;
+  const postId = req.params.postId;
+  const { reason, content } = req.body;
+  try {
+    const post = await reportPost(postId, userId, reason, content);
+    res.status(201).json({
+      message: "Post reported",
+      post,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   getMyPosts,
   postMyPost,
@@ -531,4 +591,5 @@ module.exports = {
   deleteLikePost,
   getPostsInRange,
   getPostsSearch,
+  postReportPost,
 };
