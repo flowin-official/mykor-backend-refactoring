@@ -92,8 +92,6 @@ const setupRoutes = (app) => {
   router.put("/user", authenticateToken, putMyInfo); // 회원 정보 수정
   router.delete("/user", authenticateToken, deleteMyInfo); // 회원 탈퇴
 
-  router.get("/notifications", authenticateToken, getMyNotifications); // 알림 가져오기
-
   router.post("/post", authenticateToken, postMyPost); // 게시글 작성
   router.get("/posts/user", authenticateToken, getMyPosts); // 내가 쓴 게시물 보기
   router.put("/post/:postId", authenticateToken, putMyPost); // 내 게시글 수정
