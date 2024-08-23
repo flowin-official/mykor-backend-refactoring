@@ -20,15 +20,9 @@ async function postsInRangeByLocationTag(locationId, tagId, lastPostId, size) {
       throw new Error("Location not found");
     }
 
-    // 지원하는 태그인지 확인
-    const tag = await findTagById(tagId);
-    if (!tag) {
-      throw new Error("Tag not found");
-    }
-
     const posts = await findPostsInRangeByLocationTag(
       location,
-      tag,
+      tagId,
       lastPostId,
       size
     );

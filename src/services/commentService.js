@@ -24,8 +24,10 @@ async function newComment(userId, postId, content) {
       throw new Error("Post not found");
     }
 
-    const comment = await createComment(user, post, content);
+    const comment = await createComment(user, post, content); // 댓글 생성
     await increasePostComment(post._id); // 게시글의 댓글 카운트 증가
+
+    // notification 생성
 
     return comment;
   } catch (error) {
