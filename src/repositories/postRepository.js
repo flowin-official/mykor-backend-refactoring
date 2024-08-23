@@ -67,7 +67,7 @@ const updatePost = async (postId, title, content, tag) => {
   try {
     const post = await Post.findByIdAndUpdate(
       postId,
-      { title, content, tag },
+      { title, content, tag, updatedAt: Date.now() },
       { new: true }
     );
     return post;

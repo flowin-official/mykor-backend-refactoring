@@ -93,7 +93,7 @@ const setupRoutes = (app) => {
   router.delete("/user", authenticateToken, deleteMyInfo); // 회원 탈퇴
 
   router.post("/post", authenticateToken, postMyPost); // 게시글 작성
-  router.get("/user/posts", authenticateToken, getMyPosts); // 내가 쓴 게시물 보기
+  router.get("/posts/user", authenticateToken, getMyPosts); // 내가 쓴 게시물 보기
   router.put("/post/:postId", authenticateToken, putMyPost); // 내 게시글 수정
   router.delete("/post/:postId", authenticateToken, deleteMyPost); // 내 게시글 삭제
 

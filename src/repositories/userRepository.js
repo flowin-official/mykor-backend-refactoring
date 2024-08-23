@@ -38,6 +38,7 @@ const updateUser = async (userId, nickname, locationId) => {
       {
         nickname,
         location: locationId,
+        updatedAt: Date.now(),
       },
       { new: true }
     );

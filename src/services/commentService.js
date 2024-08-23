@@ -71,8 +71,8 @@ async function removeMyComment(commentId, userId) {
     if (comment.author.toString() !== user._id.toString()) {
       throw new Error("댓글 작성자가 아닙니다");
     } else {
+      await decreasePostComment(comment.post); // 게시글의 댓글 카운트 감소
       comment = await deleteComment(comment);
-      await decreasePostComment(comment.post._id); // 게시글의 댓글 카운트 감소
     }
   } catch (error) {
     throw error;

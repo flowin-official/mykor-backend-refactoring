@@ -279,7 +279,7 @@ async function postMyPost(req, res) {
 
 /**
  * @swagger
- * /user/posts:
+ * /posts/user:
  *   get:
  *     summary: 내가 쓴 게시글 가져오기
  *     tags: [Posts]
@@ -418,10 +418,9 @@ async function deleteMyPost(req, res) {
   const userId = req.userId;
   const postId = req.params.postId;
   try {
-    const post = await removeMyPost(postId);
+    await removeMyPost(userId, postId);
     res.status(200).json({
       message: "Post deleted",
-      post,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -465,10 +464,14 @@ async function postLikePost(req, res) {
   const userId = req.userId;
   const postId = req.params.postId;
   try {
-    const post = await likePost(postId, userId);
+    const postLike = await likePost(postId, userId);
     res.status(200).json({
       message: "Post liked",
-      post,
+      postLike: {
+        ...postLike.toObject(),
+        post: postLike.post._id,
+        user: postLike.user._id,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -503,8 +506,6 @@ async function postLikePost(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 post:
- *                   type: object
  *       500:
  *         description: 서버 에러
  */
@@ -512,10 +513,9 @@ async function deleteLikePost(req, res) {
   const userId = req.userId;
   const postId = req.params.postId;
   try {
-    const post = await dislikePost(postId, userId);
+    await dislikePost(postId, userId);
     res.status(200).json({
       message: "Post unliked",
-      post,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -525,7 +525,7 @@ async function deleteLikePost(req, res) {
 /**
  * @swagger
  * /post/{postId}/report:
- *   post:
+ *   delete:
  *     summary: 게시글 신고
  *     tags: [Posts]
  *     parameters:

@@ -35,7 +35,7 @@ const updateComment = async (commentId, content) => {
   try {
     const comment = await Comment.findByIdAndUpdate(
       commentId,
-      { content },
+      { content, updatedAt: Date.now() },
       { new: true }
     );
     return comment;

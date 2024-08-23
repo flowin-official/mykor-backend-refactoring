@@ -60,8 +60,8 @@ async function dislikePost(postId, userId) {
     if (!postLike) {
       throw new Error("좋아요하지 않은 게시글입니다.");
     } else {
-      await deletePostLike(post, user);
       await decreasePostLike(post); // 게시글 좋아요 수 감소
+      await deletePostLike(post, user);
     }
   } catch (error) {
     throw error;
@@ -107,8 +107,8 @@ async function dislikeComment(commentId, userId) {
     if (!commentLike) {
       throw new Error("좋아요하지 않은 댓글입니다.");
     } else {
-      await deleteCommentLike(comment, user);
       await decreaseCommentLike(comment); // 댓글 좋아요 수 감소
+      await deleteCommentLike(comment, user);
     }
   } catch (error) {
     throw error;

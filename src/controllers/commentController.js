@@ -155,8 +155,6 @@ async function putMyComment(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 comment:
- *                   type: object
  *       500:
  *         description: 서버 에러
  */
@@ -164,10 +162,9 @@ async function deleteMyComment(req, res) {
   const userId = req.userId;
   const commentId = req.params.commentId;
   try {
-    const comment = await removeMyComment(commentId, userId);
+    await removeMyComment(commentId, userId);
     res.status(200).json({
       message: "Comment deleted",
-      comment,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -202,7 +199,7 @@ async function deleteMyComment(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 comment:
+ *                 commentLike:
  *                   type: object
  *       500:
  *         description: 서버 에러
@@ -211,10 +208,10 @@ async function postLikeComment(req, res) {
   const userId = req.userId;
   const commentId = req.params.commentId;
   try {
-    const comment = await likeComment(commentId, userId);
+    const commentLike = await likeComment(commentId, userId);
     res.status(200).json({
       message: "Comment liked",
-      comment,
+      commentLike,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -249,8 +246,6 @@ async function postLikeComment(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 comment:
- *                   type: object
  *       500:
  *         description: 서버 에러
  */
@@ -258,10 +253,9 @@ async function deleteLikeComment(req, res) {
   const userId = req.userId;
   const commentId = req.params.commentId;
   try {
-    const comment = await dislikeComment(commentId, userId);
+    await dislikeComment(commentId, userId);
     res.status(200).json({
       message: "Comment unliked",
-      comment,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -99,7 +99,12 @@ async function allPosts() {
 
 async function myPosts(userId) {
   try {
-    const posts = await findPostsByUserId(userId);
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const posts = await findPostsByUserId(user);
     return posts;
   } catch (error) {
     throw error;
@@ -124,23 +129,32 @@ async function modifyMyPost(postId, title, content, userId, tagId) {
     // 작성자와 수정요청자가 같은지 확인
     if (post.author.toString() !== user._id.toString()) {
       throw new Error("글 작성자가 아닙니다.");
+    } else {
+      post = await updatePost(post, title, content, tag);
+      return post;
     }
-
-    post = await updatePost(post, title, content, tag);
-    return post;
   } catch (error) {
     throw error;
   }
 }
 
-async function removeMyPost(postId) {
+async function removeMyPost(userId, postId) {
   try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
     const post = await findPostById(postId);
     if (!post) {
       throw new Error("Post not found");
     }
 
-    await deletePost(post);
+    // 작성자와 삭제요청자가 같은지 확인
+    if (post.author.toString() !== user._id.toString()) {
+      throw new Error("글 작성자가 아닙니다.");
+    } else {
+      await deletePost(post);
+    }
   } catch (error) {
     throw error;
   }
