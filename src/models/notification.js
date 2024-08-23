@@ -14,7 +14,7 @@ const notificationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Comment",
   },
-  message: {
+  category: {
     type: String,
     required: true,
   },
@@ -24,3 +24,6 @@ const notificationSchema = new mongoose.Schema({
   },
   created: { type: Date, default: Date.now },
 });
+
+const Notification = mongoose.model("Notification", notificationSchema);
+module.exports = Notification;

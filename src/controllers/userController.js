@@ -73,7 +73,7 @@ async function getMyInfo(req, res) {
  *           schema:
  *             type: object
  *             properties:
- *               userName:
+ *               nickname:
  *                 type: string
  *               locationId:
  *                 type: string
@@ -89,9 +89,9 @@ async function getMyInfo(req, res) {
  */
 async function putMyInfo(req, res) {
   const userId = req.userId;
-  const { userName, locationId } = req.body;
+  const { nickname, locationId } = req.body;
   try {
-    const user = await modifyMyInfo(userId, userName, locationId);
+    const user = await modifyMyInfo(userId, nickname, locationId);
     res.status(200).json({
       message: "User updated",
       user,
