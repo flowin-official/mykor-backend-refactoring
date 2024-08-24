@@ -14,9 +14,12 @@ const createNotification = async (user, post, comment, category) => {
   }
 };
 
-const findNotReadNoticiationByUser = async (user) => {
+const findNotReadNoticiationByUserId = async (userId) => {
   try {
-    const notifications = await Notification.find({ user, read: false });
+    const notifications = await Notification.find({
+      user: userId,
+      read: false,
+    });
     return notifications;
   } catch (error) {
     throw error;
@@ -28,6 +31,14 @@ const modifyNotificationToReadById = async (notificationId) => {
     const notification = await Notification.findById(notificationId);
     notification.read = true;
     await notification.save();
+  } catch (error) {
+    throw error;
+  }
+};
+
+const findNotificationById = async (notificationId) => {
+  try {
+    const notification = await Notification.findById(notificationId);
     return notification;
   } catch (error) {
     throw error;
@@ -36,6 +47,7 @@ const modifyNotificationToReadById = async (notificationId) => {
 
 module.exports = {
   createNotification,
-  findNotReadNoticiationByUser,
+  findNotReadNoticiationByUserId,
   modifyNotificationToReadById,
+  findNotificationById,
 };

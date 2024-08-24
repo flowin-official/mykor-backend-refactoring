@@ -4,6 +4,7 @@ const {
   removeMyInfo,
   userInfo,
 } = require("../services/userService");
+const { newBlockUser } = require("../services/userBlockService");
 
 /**
  * @swagger
@@ -178,9 +179,49 @@ async function getUserInfo(req, res) {
   }
 }
 
+/**
+ * @swagger
+ * /user/block:
+ *   post:
+ *     summary: 유저 차단
+ *     tags: [Users]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               blockedUserId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: 유저 차단 성공
+ *       500:
+ *         description: 서버 에러
+ */
+async function postBlockUser(req, res) {
+  const userId = req.userId;
+  const { blockedUserId } = req.params.blockedUserId;
+  try {
+    await newBlockUser(userId, blockedUserId);
+    res.status(200).json({ message: "User blocked" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   getMyInfo,
   putMyInfo,
   deleteMyInfo,
   getUserInfo,
+  postBlockUser,
 };
