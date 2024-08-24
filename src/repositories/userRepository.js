@@ -24,6 +24,17 @@ const createKakaoUser = async (kakaoUserCode) => {
   }
 };
 
+const createAppleUser = async (appleUserCode) => {
+  try {
+    const user = await User.create({
+      appleUserCode,
+    });
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
 // const findUserByEmail = async (email) => {
 //   try {
 //     const user = await User.findOne({
@@ -55,6 +66,17 @@ const findUserByKakaoUserCode = async (kakaoUserCode) => {
   }
 };
 
+const findUserByAppleUserCode = async (appleUserCode) => {
+  try {
+    const user = await User.findOne({
+      appleUserCode,
+    });
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
 const updateUser = async (userId, userName, userEmail, userLocation) => {
   try {
     const user = await User.findByIdAndUpdate(
@@ -83,7 +105,9 @@ const deleteUser = async (userId) => {
 module.exports = {
   // createUser,
   createKakaoUser,
+  createAppleUser,
   findUserByKakaoUserCode,
+  findUserByAppleUserCode,
   // findUserByEmail,
   findUserById,
   updateUser,
