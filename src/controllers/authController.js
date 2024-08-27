@@ -1,6 +1,4 @@
 const {
-  // registerUser,
-  // loginUser,
   loginAppleUser,
   loginKakaoUser,
   refreshNewTokens,
@@ -27,7 +25,8 @@ const {
  *             type: object
  *             properties:
  *               authCode:
- *                type: string
+ *                 type: string
+ *                 description: 카카오 인증 코드
  *     responses:
  *       200:
  *         description: 로그인 성공
@@ -40,6 +39,7 @@ const {
  *                   type: string
  *                 user:
  *                   type: object
+ *                   description: 사용자 정보
  *                 accessToken:
  *                   type: string
  *                 refreshToken:
@@ -127,6 +127,7 @@ async function postAppleLogin(req, res) {
  *             properties:
  *               refreshToken:
  *                 type: string
+ *                 description: 리프레시 토큰
  *     responses:
  *       200:
  *         description: 토큰 재발급 성공
@@ -137,8 +138,10 @@ async function postAppleLogin(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 newTokens:
- *                   type: object
+ *                 newAccessToken:
+ *                   type: string
+ *                 newRefreshToken:
+ *                   type: string
  *       403:
  *         description: 리프레시 토큰이 필요합니다.
  *       500:
@@ -166,8 +169,6 @@ async function postRefresh(req, res) {
 }
 
 module.exports = {
-  // postSignup,
-  // postLogin,
   postAppleLogin,
   postKakaoLogin,
   postRefresh,

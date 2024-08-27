@@ -1,11 +1,10 @@
 const {
   newComment,
-  modifyComment,
-  removeComment,
-  likeComment,
-  dislikeComment,
-  commentsOnThisPost,
+  modifyMyComment,
+  removeMyComment,
 } = require("../services/commentService");
+const { reportComment } = require("../services/reportService");
+const { likeComment, dislikeComment } = require("../services/likeService");
 
 /**
  * @swagger
@@ -20,8 +19,13 @@ const {
  *   post:
  *     summary: 댓글 작성
  *     tags: [Comments]
- *     security:
- *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *     requestBody:
  *       required: true
  *       content:
@@ -55,7 +59,11 @@ async function postMyComment(req, res) {
     const comment = await newComment(userId, postId, content);
     res.status(200).json({
       message: "Comment created",
-      comment,
+      comment: {
+        ...comment.toObject(),
+        post: comment.post._id,
+        author: comment.author._id,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -68,9 +76,13 @@ async function postMyComment(req, res) {
  *   put:
  *     summary: 댓글 수정
  *     tags: [Comments]
- *     security:
- *       - BearerAuth: []
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: path
  *         name: commentId
  *         required: true
@@ -105,7 +117,7 @@ async function putMyComment(req, res) {
   const commentId = req.params.commentId;
   const content = req.body.content;
   try {
-    const comment = await modifyComment(commentId, content);
+    const comment = await modifyMyComment(commentId, content, userId);
     res.status(200).json({
       message: "Comment updated",
       comment,
@@ -121,9 +133,13 @@ async function putMyComment(req, res) {
  *   delete:
  *     summary: 댓글 삭제
  *     tags: [Comments]
- *     security:
- *       - BearerAuth: []
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: path
  *         name: commentId
  *         required: true
@@ -139,8 +155,6 @@ async function putMyComment(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 comment:
- *                   type: object
  *       500:
  *         description: 서버 에러
  */
@@ -148,10 +162,9 @@ async function deleteMyComment(req, res) {
   const userId = req.userId;
   const commentId = req.params.commentId;
   try {
-    const comment = await removeComment(commentId);
+    await removeMyComment(commentId, userId);
     res.status(200).json({
       message: "Comment deleted",
-      comment,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -164,9 +177,13 @@ async function deleteMyComment(req, res) {
  *   post:
  *     summary: 댓글 좋아요
  *     tags: [Comments]
- *     security:
- *       - BearerAuth: []
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: path
  *         name: commentId
  *         required: true
@@ -182,7 +199,7 @@ async function deleteMyComment(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 comment:
+ *                 commentLike:
  *                   type: object
  *       500:
  *         description: 서버 에러
@@ -191,10 +208,10 @@ async function postLikeComment(req, res) {
   const userId = req.userId;
   const commentId = req.params.commentId;
   try {
-    const comment = await likeComment(commentId, userId);
+    const commentLike = await likeComment(commentId, userId);
     res.status(200).json({
       message: "Comment liked",
-      comment,
+      commentLike,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -207,9 +224,13 @@ async function postLikeComment(req, res) {
  *   delete:
  *     summary: 댓글 좋아요 취소
  *     tags: [Comments]
- *     security:
- *       - BearerAuth: []
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: path
  *         name: commentId
  *         required: true
@@ -225,8 +246,6 @@ async function postLikeComment(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 comment:
- *                   type: object
  *       500:
  *         description: 서버 에러
  */
@@ -234,10 +253,9 @@ async function deleteLikeComment(req, res) {
   const userId = req.userId;
   const commentId = req.params.commentId;
   try {
-    const comment = await dislikeComment(commentId, userId);
+    await dislikeComment(commentId, userId);
     res.status(200).json({
       message: "Comment unliked",
-      comment,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -246,19 +264,36 @@ async function deleteLikeComment(req, res) {
 
 /**
  * @swagger
- * /post/{postId}/comments:
- *   get:
- *     summary: 특정 게시글의 모든 댓글 조회
+ * /comment/{commentId}/report:
+ *   post:
+ *     summary: 댓글 신고
  *     tags: [Comments]
  *     parameters:
- *       - in: path
- *         name: postId
+ *       - in: header
+ *         name: x-access-token
  *         required: true
  *         schema:
  *           type: string
+ *         description: JWT token
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               reason:
+ *                 type: string
+ *               content:
+ *                 type: string
  *     responses:
  *       200:
- *         description: 댓글 조회 성공
+ *         description: 댓글 신고완료
  *         content:
  *           application/json:
  *             schema:
@@ -266,20 +301,20 @@ async function deleteLikeComment(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 comments:
- *                   type: array
- *                   items:
- *                     type: object
+ *                 post:
+ *                   type: object
  *       500:
  *         description: 서버 에러
  */
-async function getCommentsOnThisPost(req, res) {
-  const postId = req.params.postId;
+async function postReportComment(req, res) {
+  const userId = req.userId;
+  const commentId = req.params.commentId;
+  const { reason, content } = req.body;
   try {
-    const comments = await commentsOnThisPost(postId);
+    const comment = await reportComment(commentId, userId, reason, content);
     res.status(200).json({
-      message: "Comments found",
-      comments,
+      message: "Comment reported",
+      comment,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -292,5 +327,5 @@ module.exports = {
   deleteMyComment,
   postLikeComment,
   deleteLikeComment,
-  getCommentsOnThisPost,
+  postReportComment,
 };

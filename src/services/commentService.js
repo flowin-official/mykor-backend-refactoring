@@ -2,69 +2,97 @@ const {
   createComment,
   updateComment,
   deleteComment,
-  increaseCommentLike,
-  decreaseCommentLike,
   findCommentsByPostId,
+  findCommentById,
 } = require("../repositories/commentRepository");
 const {
-  createCommentLike,
-  deleteCommentLike,
-} = require("../repositories/commentLikeRepository");
-const { increasePostView } = require("../repositories/postRepository");
+  increasePostComment,
+  decreasePostComment,
+  findPostById,
+} = require("../repositories/postRepository");
+const { findUserById } = require("../repositories/userRepository");
+const {
+  createNotification,
+} = require("../repositories/notificationRepository");
 
 async function newComment(userId, postId, content) {
   try {
-    const comment = await createComment(userId, postId, content);
+    // 유저 및 게시글 검증
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const post = await findPostById(postId);
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+    const comment = await createComment(user, post, content); // 댓글 생성
+    await increasePostComment(post._id); // 게시글의 댓글 카운트 증가
+
+    // notification 생성
+    await createNotification(user, post, comment, "댓글");
+
     return comment;
   } catch (error) {
     throw error;
   }
 }
 
-async function modifyComment(commentId, content) {
+async function modifyMyComment(commentId, content, userId) {
   try {
-    const comment = await updateComment(commentId, content);
-    return comment;
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    let comment = await findCommentById(commentId);
+    if (!comment) {
+      throw new Error("Comment not found");
+    }
+
+    // 댓글 작성자 확인
+    if (comment.author.toString() !== user._id.toString()) {
+      throw new Error("댓글 작성자가 아닙니다");
+    } else {
+      comment = await updateComment(comment, content);
+      return comment;
+    }
   } catch (error) {
     throw error;
   }
 }
 
-async function removeComment(commentId) {
+async function removeMyComment(commentId, userId) {
   try {
-    const comment = await deleteComment(commentId);
-    return comment;
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    let comment = await findCommentById(commentId);
+    if (!comment) {
+      throw new Error("Comment not found");
+    }
+
+    // 댓글 작성자 확인
+    if (comment.author.toString() !== user._id.toString()) {
+      throw new Error("댓글 작성자가 아닙니다");
+    } else {
+      await decreasePostComment(comment.post); // 게시글의 댓글 카운트 감소
+      comment = await deleteComment(comment);
+    }
   } catch (error) {
     throw error;
   }
 }
 
-async function likeComment(commentId, userId) {
-  try {
-    await increaseCommentLike(commentId); // 좋아요 증가
-    const comment = await createCommentLike(commentId, userId);
-    return comment;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function dislikeComment(commentId, userId) {
-  try {
-    await decreaseCommentLike(commentId); // 좋아요 감소
-    const comment = await deleteCommentLike(commentId, userId);
-    return comment;
-  } catch (error) {
-    throw error;
-  }
-}
-
-// 게시물 조회(댓글 조회)이므로 조회수를 올려야함.
 async function commentsOnThisPost(postId) {
   try {
-    // 게시글 조회수 증가
-    await increasePostView(postId);
-    const comments = await findCommentsByPostId(postId);
+    const post = await findPostById(postId);
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+    const comments = await findCommentsByPostId(post);
     return comments;
   } catch (error) {
     throw error;
@@ -73,9 +101,7 @@ async function commentsOnThisPost(postId) {
 
 module.exports = {
   newComment,
-  modifyComment,
-  removeComment,
-  likeComment,
-  dislikeComment,
+  modifyMyComment,
+  removeMyComment,
   commentsOnThisPost,
 };

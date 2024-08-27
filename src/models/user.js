@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  // email: { type: String, required: true, unique: true },
-  // password: { type: String, required: true },
   kakaoUserCode: { type: String, default: null, required: false, unique: true },
   appleUserCode: { type: String, default: null, required: false, unique: true },
 
-  userName: { type: String, default: null },
-  userEmail: { type: String, default: null, unique: true },
-  userLocation: {
+  nickname: {
+    type: String,
+    default: "user" + `${Math.floor(Math.random() * 99999999)}`,
+  },
+  location: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Location",
     default: null,

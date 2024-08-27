@@ -3,8 +3,8 @@ const Comment = require("../models/comment");
 const createComment = async (userId, postId, content) => {
   try {
     const comment = await Comment.create({
-      userId,
-      postId,
+      author: userId,
+      post: postId,
       content,
     });
     return comment;
@@ -15,7 +15,7 @@ const createComment = async (userId, postId, content) => {
 
 const findCommentsByPostId = async (postId) => {
   try {
-    const comments = await Comment.find({ postId });
+    const comments = await Comment.find({ post: postId });
     return comments;
   } catch (error) {
     throw error;
@@ -35,7 +35,7 @@ const updateComment = async (commentId, content) => {
   try {
     const comment = await Comment.findByIdAndUpdate(
       commentId,
-      { content },
+      { content, updatedAt: Date.now() },
       { new: true }
     );
     return comment;

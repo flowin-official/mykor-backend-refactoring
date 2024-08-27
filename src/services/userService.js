@@ -3,26 +3,34 @@ const {
   updateUser,
   deleteUser,
 } = require("../repositories/userRepository");
-const { findLocationByCountry } = require("../repositories/locationRepository");
+const { findLocationById } = require("../repositories/locationRepository");
 
 async function myInfo(userId) {
   try {
     const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     return user;
   } catch (error) {
     throw error;
   }
 }
 
-async function modifyMyInfo(userId, userName, userEmail, country) {
+async function modifyMyInfo(userId, nickname, locationId) {
   try {
-    // 지원 중인 country인지 확인
-    const userLocation = await findLocationByCountry(country);
-    if (!userLocation) {
+    let user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    // 지원 중인 location인지 확인
+    const location = await findLocationById(locationId);
+    if (!location) {
       throw new Error("Location not found");
     }
 
-    const user = await updateUser(userId, userName, userEmail, userLocation);
+    user = await updateUser(user, nickname, location);
     return user;
   } catch (error) {
     throw error;
@@ -31,7 +39,25 @@ async function modifyMyInfo(userId, userName, userEmail, country) {
 
 async function removeMyInfo(userId) {
   try {
-    await deleteUser(userId);
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await deleteUser(user);
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function userInfo(userId) {
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return user;
   } catch (error) {
     throw error;
   }
@@ -41,4 +67,5 @@ module.exports = {
   myInfo,
   modifyMyInfo,
   removeMyInfo,
+  userInfo,
 };

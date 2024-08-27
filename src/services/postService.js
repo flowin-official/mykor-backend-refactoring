@@ -1,27 +1,48 @@
 const {
   createPost,
-  findAllPosts,
   findPostById,
-  findPostsByAuthor,
-  findPostsByLocation,
-  findPostsByLocationTag,
+  findPostsByUserId,
   updatePost,
   deletePost,
-  increasePostLike,
-  decreasePostLike,
+  findPostsInRangeByLocationTag,
+  increasePostView,
+  findPostsWithKeywordByLocation,
 } = require("../repositories/postRepository");
-const {
-  createPostLike,
-  deletePostLike,
-} = require("../repositories/postLikeRepository");
-const { findLocationByCountry } = require("../repositories/locationRepository");
+const { findLocationById } = require("../repositories/locationRepository");
+const { findTagById } = require("../repositories/tagRepository");
+const { findUserById } = require("../repositories/userRepository");
 
-async function newPost(title, content, userId, country, tag) {
+async function postsInRangeByLocationTag(locationId, tagId, lastPostId, size) {
   try {
-    // 해당 지역이 존재하는지 확인
-    const location = await findLocationByCountry(country);
+    // 지원하는 지역인지 확인
+    const location = await findLocationById(locationId);
     if (!location) {
       throw new Error("Location not found");
+    }
+
+    const posts = await findPostsInRangeByLocationTag(
+      location,
+      tagId,
+      lastPostId,
+      size
+    );
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function newPost(title, content, userId, locationId, tagId) {
+  try {
+    // 해당 지역이 존재하는지 확인
+    const location = await findLocationById(locationId);
+    if (!location) {
+      throw new Error("Location not found");
+    }
+    // 해당 태그가 존재하는지 확인
+    const tag = await findTagById(tagId);
+    if (!tag) {
+      throw new Error("Tag not found");
     }
 
     // 해당 지역 게시판에 글 작성
@@ -33,17 +54,33 @@ async function newPost(title, content, userId, country, tag) {
 }
 
 // 게시물 조회
-// async function thisPost(postId) {
-//   try {
-//     // 게시글 조회수 1 증가
-//     await increasePostView(postId);
+async function thisPost(postId) {
+  try {
+    const post = await findPostById(postId);
+    if (!post) {
+      throw new Error("게시물이 없습니다.");
+    }
 
-//     const post = await findPostById(postId);
-//     return post;
-//   } catch (error) {
-//     throw error;
-//   }
-// }
+    await increasePostView(postId); // 게시글 조회수 1 증가
+    return post;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function searchingPosts(locationId, keyword) {
+  try {
+    const location = await findLocationById(locationId);
+    if (!location) {
+      throw new Error("Location not found");
+    }
+
+    const posts = await findPostsWithKeywordByLocation(location, keyword);
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+}
 
 async function allPosts() {
   try {
@@ -56,64 +93,62 @@ async function allPosts() {
 
 async function myPosts(userId) {
   try {
-    const posts = await findPostsByAuthor(userId);
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const posts = await findPostsByUserId(user);
     return posts;
   } catch (error) {
     throw error;
   }
 }
 
-async function locationPosts(location) {
+async function modifyMyPost(postId, title, content, userId, tagId) {
   try {
-    const posts = await findPostsByLocation(location);
-    return posts;
+    let post = await findPostById(postId);
+    if (!post) {
+      throw new Error("Post not found");
+    }
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const tag = await findTagById(tagId);
+    if (!tag) {
+      throw new Error("Tag not found");
+    }
+
+    // 작성자와 수정요청자가 같은지 확인
+    if (post.author.toString() !== user._id.toString()) {
+      throw new Error("글 작성자가 아닙니다.");
+    } else {
+      post = await updatePost(post, title, content, tag);
+      return post;
+    }
   } catch (error) {
     throw error;
   }
 }
 
-async function locationTagPosts(location, tag) {
+async function removeMyPost(userId, postId) {
   try {
-    const posts = await findPostsByLocationTag(location, tag);
-    return posts;
-  } catch (error) {
-    throw error;
-  }
-}
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const post = await findPostById(postId);
+    if (!post) {
+      throw new Error("Post not found");
+    }
 
-async function modifyMyPost(postId, title, content, tag) {
-  try {
-    const post = await updatePost(postId, title, content, tag);
-    return post;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function removeMyPost(postId) {
-  try {
-    const post = await deletePost(postId);
-    return post;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function likePost(postId, userId) {
-  try {
-    await increasePostLike(postId);
-    const post = await createPostLike(postId, userId);
-    return post;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function dislikePost(postId, userId) {
-  try {
-    await decreasePostLike(postId);
-    const post = await deletePostLike(postId, userId);
-    return post;
+    // 작성자와 삭제요청자가 같은지 확인
+    if (post.author.toString() !== user._id.toString()) {
+      throw new Error("글 작성자가 아닙니다.");
+    } else {
+      await deletePost(post);
+    }
   } catch (error) {
     throw error;
   }
@@ -121,13 +156,11 @@ async function dislikePost(postId, userId) {
 
 module.exports = {
   allPosts,
-  // thisPost,
+  thisPost,
   newPost,
   myPosts,
-  locationPosts,
-  locationTagPosts,
   modifyMyPost,
   removeMyPost,
-  likePost,
-  dislikePost,
+  postsInRangeByLocationTag,
+  searchingPosts,
 };

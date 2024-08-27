@@ -1,24 +1,73 @@
 const {
   createPostLike,
   deletePostLike,
+  findPostLike,
 } = require("../repositories/postLikeRepository");
 const {
   createCommentLike,
   deleteCommentLike,
+  findCommentLike,
+} = require("../repositories/commentLikeRepository");
+const {
+  findPostById,
+  increasePostLike,
+  decreasePostLike,
+} = require("../repositories/postRepository");
+const {
+  findCommentById,
+  increaseCommentLike,
+  decreaseCommentLike,
 } = require("../repositories/commentRepository");
+const { findUserById } = require("../repositories/userRepository");
+const {
+  createNotification,
+  modifyNotificationToReadById,
+} = require("../repositories/notificationRepository");
 
 async function likePost(postId, userId) {
   try {
-    const postLike = await createPostLike(postId, userId);
+    const post = await findPostById(postId);
+    if (!post) {
+      throw new Error("게시글이 존재하지 않습니다.");
+    }
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("사용자가 존재하지 않습니다.");
+    }
+
+    let postLike = await findPostLike(post, user);
+    if (postLike) {
+      throw new Error("이미 좋아요한 게시글입니다.");
+    } else {
+      await createNotification(user, post, null, "좋아요"); // 알림 생성
+      postLike = await createPostLike(post, user);
+      await increasePostLike(post); // 게시글 좋아요 수 증가
+    }
+
     return postLike;
   } catch (error) {
     throw error;
   }
 }
 
-async function unlikePost(postId, userId) {
+async function dislikePost(postId, userId) {
   try {
-    await deletePostLike(postId, userId);
+    const post = await findPostById(postId);
+    if (!post) {
+      throw new Error("게시글이 존재하지 않습니다.");
+    }
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("사용자가 존재하지 않습니다.");
+    }
+
+    const postLike = await findPostLike(post, user);
+    if (!postLike) {
+      throw new Error("좋아요하지 않은 게시글입니다.");
+    } else {
+      await decreasePostLike(post); // 게시글 좋아요 수 감소
+      await deletePostLike(post, user);
+    }
   } catch (error) {
     throw error;
   }
@@ -26,16 +75,85 @@ async function unlikePost(postId, userId) {
 
 async function likeComment(commentId, userId) {
   try {
-    const commentLike = await createCommentLike(commentId, userId);
+    const comment = await findCommentById(commentId);
+    if (!comment) {
+      throw new Error("댓글이 존재하지 않습니다.");
+    }
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("사용자가 존재하지 않습니다.");
+    }
+
+    let commentLike = await findCommentLike(comment, user);
+    if (commentLike) {
+      throw new Error("이미 좋아요한 댓글입니다.");
+    } else {
+      await createNotification(user, comment.post, comment, "좋아요"); // 알림 생성
+      commentLike = await createCommentLike(comment, user);
+      await increaseCommentLike(comment); // 댓글 좋아요 수 증가
+    }
     return commentLike;
   } catch (error) {
     throw error;
   }
 }
 
-async function unlikeComment(commentId, userId) {
+async function dislikeComment(commentId, userId) {
   try {
-    await deleteCommentLike(commentId, userId);
+    const comment = await findCommentById(commentId);
+    if (!comment) {
+      throw new Error("댓글이 존재하지 않습니다.");
+    }
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("사용자가 존재하지 않습니다.");
+    }
+
+    const commentLike = await findCommentLike(comment, user);
+    if (!commentLike) {
+      throw new Error("좋아요하지 않은 댓글입니다.");
+    } else {
+      await decreaseCommentLike(comment); // 댓글 좋아요 수 감소
+      await deleteCommentLike(comment, user);
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function isLikedPost(postId, userId) {
+  try {
+    const post = await findPostById(postId);
+    if (!post) {
+      throw new Error("게시글이 존재하지 않습니다.");
+    }
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("사용자가 존재하지 않습니다.");
+    }
+
+    const postLike = await findPostLike(post, user);
+    if (postLike) return true;
+    return false;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function isLikedComment(commentId, userId) {
+  try {
+    const comment = await findCommentById(commentId);
+    if (!comment) {
+      throw new Error("댓글이 존재하지 않습니다.");
+    }
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("사용자가 존재하지 않습니다.");
+    }
+
+    const commentLike = await findCommentLike(comment, user);
+    if (commentLike) return true;
+    return false;
   } catch (error) {
     throw error;
   }
@@ -43,7 +161,9 @@ async function unlikeComment(commentId, userId) {
 
 module.exports = {
   likePost,
-  unlikePost,
+  dislikePost,
   likeComment,
-  unlikeComment,
+  dislikeComment,
+  isLikedPost,
+  isLikedComment,
 };

@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
 const postLikeSchema = new mongoose.Schema({
-  post_id: {
+  post: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Post",
     required: true,
   },
-  user_id: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
@@ -14,7 +14,7 @@ const postLikeSchema = new mongoose.Schema({
   created: { type: Date, default: Date.now },
 });
 
-postLikeSchema.index({ post_id: 1, user_id: 1 }, { unique: true });
+postLikeSchema.index({ post: 1, user: 1 }, { unique: true });
 
 const PostLike = mongoose.model("PostLike", postLikeSchema);
 module.exports = PostLike;
