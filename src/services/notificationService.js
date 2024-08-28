@@ -1,6 +1,6 @@
 const {
   createNotification,
-  findNotReadNoticiationByUserId,
+  findNoticiationByUserId,
   modifyNotificationToReadById,
   findNotificationById,
 } = require("../repositories/notificationRepository");
@@ -13,7 +13,7 @@ async function notificationsByUser(userId) {
       throw new Error("User not found");
     }
 
-    const notifications = await findNotReadNoticiationByUserId(userId); // 안읽은 알림만 가져오기
+    const notifications = await findNoticiationByUserId(userId);
     return notifications;
   } catch (error) {
     throw error;

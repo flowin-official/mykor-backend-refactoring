@@ -50,6 +50,11 @@ const { commentsOnThisPost } = require("../services/commentService");
  *         schema:
  *           type: integer
  *         description: 한 페이지에 가져올 게시글 수
+ *       - in: query
+ *         name: hot
+ *         schema:
+ *           type: bool
+ *         description: 인기순 정렬 여부
  *     responses:
  *       200:
  *         description: 범위 내 게시글 조회 성공
@@ -72,12 +77,14 @@ async function getPostsInRange(req, res) {
   const tagId = req.query.tagId;
   const lastPostId = req.query.lastPostId;
   const size = req.query.size;
+  const hot = req.query.hot;
   try {
     const posts = await postsInRangeByLocationTag(
       locationId,
       tagId,
       lastPostId,
-      size
+      size,
+      hot
     );
     res.status(200).json({
       message: "Get posts in range",
@@ -185,6 +192,16 @@ async function getThisPost(req, res) {
  *         schema:
  *           type: string
  *         description: 검색할 키워드
+ *       - in: query
+ *         name: lastPostId
+ *         schema:
+ *           type: string
+ *         description: 이전 페이지의 마지막 게시글 ID
+ *       - in: query
+ *         name: size
+ *         schema:
+ *           type: string
+ *         description: 한 페이지에 가져올 게시글 수
  *     responses:
  *       200:
  *         description: 게시글 검색 성공
@@ -205,8 +222,10 @@ async function getThisPost(req, res) {
 async function getPostsSearch(req, res) {
   const locationId = req.query.locationId;
   const keyword = req.query.keyword;
+  const lastPostId = req.query.lastPostId;
+  const size = req.query.size;
   try {
-    const posts = await searchingPosts(locationId, keyword);
+    const posts = await searchingPosts(locationId, keyword, lastPostId, size);
     res.status(200).json({
       message: "Searched posts",
       posts,

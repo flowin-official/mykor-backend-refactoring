@@ -92,6 +92,7 @@ async function getThisNotification(req, res) {
   const notificationId = req.params.notificationId;
   try {
     const notification = await readNotification(userId, notificationId);
+    // 여기서 게시글로 이동하는 로직까지 추가해야하나?
     res.status(200).json({
       message: "Notification selected",
       notification,

@@ -12,19 +12,29 @@ const { findLocationById } = require("../repositories/locationRepository");
 const { findTagById } = require("../repositories/tagRepository");
 const { findUserById } = require("../repositories/userRepository");
 
-async function postsInRangeByLocationTag(locationId, tagId, lastPostId, size) {
+async function postsInRangeByLocationTag(
+  locationId,
+  tagId,
+  lastPostId,
+  size,
+  hot
+) {
   try {
     // 지원하는 지역인지 확인
     const location = await findLocationById(locationId);
     if (!location) {
-      throw new Error("Location not found");
+      throw new Error("지원하지 않는 지역입니다.");
+    }
+    if (!hot) {
+      throw new Error("최신순 정렬/인기순 정렬을 선택해주세요.");
     }
 
     const posts = await findPostsInRangeByLocationTag(
       location,
       tagId,
       lastPostId,
-      size
+      size,
+      hot
     );
     return posts;
   } catch (error) {
@@ -68,14 +78,23 @@ async function thisPost(postId) {
   }
 }
 
-async function searchingPosts(locationId, keyword) {
+async function searchingPosts(locationId, keyword, lastPostId, size) {
   try {
     const location = await findLocationById(locationId);
     if (!location) {
-      throw new Error("Location not found");
+      throw new Error("지원하지 않는 지역입니다.");
     }
 
-    const posts = await findPostsWithKeywordByLocation(location, keyword);
+    if (!keyword) {
+      throw new Error("검색어를 입력해주세요.");
+    }
+
+    const posts = await findPostsWithKeywordByLocation(
+      location,
+      keyword,
+      lastPostId,
+      size
+    );
     return posts;
   } catch (error) {
     throw error;
