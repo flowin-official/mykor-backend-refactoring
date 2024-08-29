@@ -14,9 +14,7 @@ const reportSchema = new mongoose.Schema({
   created: { type: Date, default: Date.now },
 });
 
-// 한 계정당 한번씩만 신고 가능
-reportSchema.index({ post: 1, user: 1 }, { unique: true });
-reportSchema.index({ comment: 1, user: 1 }, { unique: true });
+// null값은 1:1 unique 설정을 안해야해서 뺌
 
 const Report = mongoose.model("Report", reportSchema);
 module.exports = Report;
