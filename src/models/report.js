@@ -13,7 +13,6 @@ const reportSchema = new mongoose.Schema({
 
   created: { type: Date, default: Date.now },
 });
-
 // null값은 1:1 unique 설정을 안해야해서 뺌
 
 const Report = mongoose.model("Report", reportSchema);
