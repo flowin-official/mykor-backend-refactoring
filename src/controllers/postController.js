@@ -544,7 +544,7 @@ async function deleteLikePost(req, res) {
 /**
  * @swagger
  * /post/{postId}/report:
- *   delete:
+ *   post:
  *     summary: 게시글 신고
  *     tags: [Posts]
  *     parameters:

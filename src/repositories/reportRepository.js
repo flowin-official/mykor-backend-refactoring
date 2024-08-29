@@ -28,7 +28,27 @@ const createPostReport = async (postId, userId, reason, content) => {
   }
 };
 
+const findReportByUserAndPost = async (userId, postId) => {
+  try {
+    const report = await Report.findOne({ user: userId, post: postId });
+    return report;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const findReportByUserAndComment = async (userId, commentId) => {
+  try {
+    const report = await Report.findOne({ user: userId, comment: commentId });
+    return report;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createCommentReport,
   createPostReport,
+  findReportByUserAndPost,
+  findReportByUserAndComment,
 };
