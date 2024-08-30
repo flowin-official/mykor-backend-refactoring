@@ -65,36 +65,6 @@ async function getMyNotifications(req, res) {
   }
 }
 
-/**
- * @swagger
- * /notification
- *   get:
- *     summary: 안읽은 알림있는지 여부
- *     tags: [Notifications]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *     responses:
- *       200:
- *         description: 안읽은 알림 있음
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 unreadNotifications:
- *                   type: object
- *       401:
- *         description: 액세스 토큰 만료
- *       500:
- *         description: 서버 에러
- */
 async function getNotification(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
