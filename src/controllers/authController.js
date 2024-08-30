@@ -66,7 +66,7 @@ async function postKakaoLogin(req, res) {
  * @swagger
  * /login/apple:
  *   post:
- *     summary: 카카오 로그인(회원가입)
+ *     summary: 애플 로그인(회원가입)
  *     tags: [Auth]
  *     requestBody:
  *       required: true

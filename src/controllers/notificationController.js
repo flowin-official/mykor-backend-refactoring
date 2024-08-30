@@ -56,8 +56,8 @@ async function getMyNotifications(req, res) {
 /**
  * @swagger
  * /notification/:notificationId:
- *   get:
- *     summary: 알림 선택
+ *   post:
+ *     summary: 알림 선택 - 읽음 처리(해당 게시물로 이동은 따로 처리해야 함)
  *     tags: [Notifications]
  *     parameters:
  *       - in: header
@@ -67,7 +67,7 @@ async function getMyNotifications(req, res) {
  *           type: string
  *         description: JWT token
  *       - in: path
- *         name: userId
+ *         name: notificationId
  *         required: true
  *         schema:
  *           type: string
