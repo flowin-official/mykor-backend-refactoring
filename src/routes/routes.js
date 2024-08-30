@@ -82,6 +82,12 @@ const setupRoutes = (app) => {
     });
   });
 
+  router.get("/healthcheck", (req, res) => {
+    res.status(200).json({
+      message: "Server is running",
+    });
+  });
+
   router.post("/dummy/post", postDummyPost); // 게시글 더미 데이터 생성
   router.delete("/dummy/post", deleteDummyPost); // 게시글 더미 데이터 삭제
   router.post("/dummy/comment", postDummyComment); // 댓글 더미 데이터 생성
