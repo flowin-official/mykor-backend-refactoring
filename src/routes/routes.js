@@ -109,8 +109,8 @@ const setupRoutes = (app) => {
   // protected routes
   router.get("/user", authenticateToken, getMyInfo); // 회원 정보
   router.get("/posts/user", authenticateToken, getMyPosts); // 내가 쓴 게시물 보기
-  router.get("/notifications", authenticateToken, getMyNotifications); // 내 알림 보기
-  router.get("/notification", authenticateToken, getNotification); // 알림 읽음 처리
+  router.get("/notifications", authenticateToken, getMyNotifications); // 알림 읽음 처리
+  router.get("/notification", authenticateToken, getNotification); // 알림 여부 확인
 
   router.put("/user", authenticateToken, putMyInfo); // 회원 정보 수정
   router.put("/post/:postId", authenticateToken, putMyPost); // 내 게시글 수정
