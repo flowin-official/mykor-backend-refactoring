@@ -20,7 +20,7 @@ const createAppleUser = async (appleUserCode) => {
   } catch (error) {
     throw error;
   }
-}
+};
 
 const findUserById = async (userId) => {
   try {
@@ -51,7 +51,7 @@ const findUserByAppleUserCode = async (appleUserCode) => {
   } catch (error) {
     throw error;
   }
-}
+};
 
 const updateUser = async (userId, nickname, locationId) => {
   try {

@@ -62,7 +62,6 @@ async function postKakaoLogin(req, res) {
   }
 }
 
-
 /**
  * @swagger
  * /login/apple:
@@ -155,11 +154,12 @@ async function postRefresh(req, res) {
   }
 
   try {
-    const { newAccessToken, newRefreshToken } = await refreshNewTokens(
+    const { user, newAccessToken, newRefreshToken } = await refreshNewTokens(
       refreshToken
     );
     res.status(200).json({
       message: "Tokens refreshed",
+      user,
       newAccessToken,
       newRefreshToken,
     });
