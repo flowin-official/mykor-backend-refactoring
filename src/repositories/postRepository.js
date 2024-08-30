@@ -8,30 +8,27 @@ const findPostsInRangeByLocationTag = async (
   hot
 ) => {
   try {
-    const query = {
-      location,
-    };
+    // 기본 쿼리 생성
+    const query = { location };
 
     // 태그가 있으면 태그 조건 추가
     if (tag) {
       query.tag = tag;
     }
 
-    // lastPostId가 있을 때만 _id 조건 추가
+    // lastPostId가 있을 때만 _id 조건 추가 (이전 게시물보다 더 최신의 게시물)
     if (lastPostId) {
       query._id = { $lt: lastPostId };
     }
 
-    const posts = await Post.find(query);
+    // 정렬 조건 설정
+    const sortOption = hot ? { likes: -1 } : { created: -1 };
 
-    if (hot) {
-      // hot이 true일 경우 인기순 정렬
-      posts.sort({ likes: -1 }); // 인기순 정렬
-    } else {
-      posts.sort({ created: -1 }); // 최신순 정렬 (created로 해도 되나?)
-    }
-
-    posts.limit(size).populate("author");
+    // 쿼리 실행: 정렬, 제한 및 author 필드 populate
+    const posts = await Post.find(query)
+      .sort(sortOption) // hot에 따라 정렬 옵션 적용
+      .limit(size) // size만큼 제한
+      .populate("author"); // author 필드를 populate하여 User 정보 가져옴
 
     return posts;
   } catch (error) {
