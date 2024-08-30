@@ -54,9 +54,14 @@ async function newPost(title, content, userId, locationId, tagId) {
     if (!tag) {
       throw new Error("Tag not found");
     }
+    // 해당 유저가 존재하는지 확인
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
 
     // 해당 지역 게시판에 글 작성
-    const post = await createPost(title, content, userId, location, tag);
+    const post = await createPost(title, content, user, location, tag);
     return post;
   } catch (error) {
     throw error;

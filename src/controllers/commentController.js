@@ -62,7 +62,6 @@ async function postMyComment(req, res) {
       comment: {
         ...comment.toObject(),
         post: comment.post._id,
-        author: comment.author._id,
       },
     });
   } catch (error) {
