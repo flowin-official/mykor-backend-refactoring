@@ -32,7 +32,7 @@ const findPostsInRangeByLocationTag = async (
     } else {
       // 최신순 정렬일 경우 created 필드로 정렬
       const posts = await Post.find(query)
-        .sort({ _id: -1 }) // 최신순 정렬(created로 해도 됨)
+        .sort({ created: -1 }) // 최신순 정렬(created로 해도 됨)
         .limit(size)
         .populate("author"); // author 필드를 populate하여 User 정보 가져옴; // size만큼 가져옴
       return posts; // author 필드를 populate하여 User 정보 가져옴
