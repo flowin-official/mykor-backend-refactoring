@@ -10,7 +10,11 @@ const postSchema = new mongoose.Schema({
     ref: "Location",
     required: true,
   },
-  tag: { type: String, required: true },
+  tag: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Tag",
+    required: true,
+  },
 
   views: { type: Number, default: 0 },
   likes: { type: Number, default: 0 },

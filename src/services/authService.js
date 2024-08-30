@@ -1,7 +1,5 @@
 const axios = require("axios");
 const {
-  // createUser,
-  // findUserByEmail,
   createKakaoUser,
   createAppleUser,
   findUserByKakaoUserCode,
@@ -141,7 +139,7 @@ async function loginAppleUser(authCode) {
 async function loginKakaoUser(authCode) {
   const clientId = process.env.KAKAO_CLIENT_ID;
   const clientSecret = process.env.KAKAO_CLIENT_SECRET;
-  const redirectUri = process.env.ANDROID_REDIRECT_URI;
+  const redirectUri = process.env.NATIVE_REDIRECT_URI;
 
   // 카카오 서버 측에 authCode를 통해 카카오 인증을 요청하고 토큰 받기
   try {
@@ -230,8 +228,6 @@ async function refreshNewTokens(refreshToken) {
 }
 
 module.exports = {
-  // registerUser,
-  // loginUser,
   loginAppleUser,
   loginKakaoUser,
   refreshNewTokens,
