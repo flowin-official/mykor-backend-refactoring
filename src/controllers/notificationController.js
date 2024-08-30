@@ -44,7 +44,9 @@ async function getMyNotifications(req, res) {
     const notifications = await notificationsByUser(userId);
     res.status(200).json({
       message: "Notifications received",
-      notifications,
+      notifications: notifications.map((notification) => ({
+        user: notification.user.nickname, // populate한 user 객체의 닉네임만 반환
+      })),
     });
   } catch (error) {
     res.status(500).json({

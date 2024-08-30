@@ -32,6 +32,7 @@ const { commentsOnThisPost } = require("../services/commentService");
  *     parameters:
  *       - in: query
  *         name: locationId
+ *         required: true
  *         schema:
  *           type: string
  *         description: 게시글을 가져올 국가코드
@@ -47,11 +48,13 @@ const { commentsOnThisPost } = require("../services/commentService");
  *         description: 이전 페이지의 마지막 게시글 ID
  *       - in: query
  *         name: size
+ *         required: true
  *         schema:
  *           type: integer
  *         description: 한 페이지에 가져올 게시글 수
  *       - in: query
  *         name: hot
+ *         required: true
  *         schema:
  *           type: bool
  *         description: 인기순 정렬 여부
@@ -69,6 +72,8 @@ const { commentsOnThisPost } = require("../services/commentService");
  *                   type: array
  *                   items:
  *                     type: object
+ *       400:
+ *         description: 잘못된 요청
  *       500:
  *         description: 서버 에러
  */
@@ -79,6 +84,10 @@ async function getPostsInRange(req, res) {
   const size = req.query.size;
   const hot = req.query.hot;
   try {
+    if (!hot || !locationId || !size) {
+      return res.status(400).json({ message: "Bad request" });
+    }
+
     const posts = await postsInRangeByLocationTag(
       locationId,
       tagId,
@@ -133,8 +142,10 @@ async function getPostsInRange(req, res) {
  *                       type: array
  *                       items:
  *                         type: object
+ *       400:
+ *         description: 잘못된 요청
  *       404:
- *         description: 게시글을 찾을 수 없습니다.
+ *         description: 게시글 없음
  *       500:
  *         description: 서버 에러
  */
@@ -143,6 +154,10 @@ async function getThisPost(req, res) {
   const postId = req.params.postId;
 
   try {
+    if (!postId) {
+      return res.status(400).json({ message: "Bad request" });
+    }
+
     const post = await thisPost(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });

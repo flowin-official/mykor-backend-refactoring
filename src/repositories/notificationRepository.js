@@ -18,7 +18,7 @@ const findNoticiationByUserId = async (userId) => {
   try {
     const notifications = await Notification.find({
       user: userId,
-    });
+    }).populate("user");
     return notifications;
   } catch (error) {
     throw error;
