@@ -24,7 +24,7 @@ const findCommentsByPostId = async (postId) => {
 
 const findCommentById = async (commentId) => {
   try {
-    const comment = await Comment.findById(commentId);
+    const comment = await Comment.findById(commentId).populate("author");
     return comment;
   } catch (error) {
     throw error;

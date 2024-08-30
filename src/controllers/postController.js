@@ -166,6 +166,7 @@ async function getThisPost(req, res) {
       message: "This post",
       post: {
         ...post.toObject(),
+        author: post.author,
         postLike,
         commentsList: comments.map((comment) => ({
           ...comment.toObject(),

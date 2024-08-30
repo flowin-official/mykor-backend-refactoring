@@ -59,7 +59,7 @@ const createPost = async (title, content, author, location, tag) => {
 
 const findPostById = async (postId) => {
   try {
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate("author");
     return post;
   } catch (error) {
     throw error;
@@ -68,7 +68,7 @@ const findPostById = async (postId) => {
 
 const findPostsByUserId = async (userId) => {
   try {
-    const posts = await Post.find({ author: userId });
+    const posts = await Post.find({ author: userId }).populate("author");
     return posts;
   } catch (error) {
     throw error;
@@ -163,7 +163,10 @@ const findPostsWithKeywordByLocation = async (
       ],
     }));
 
-    const posts = await Post.find(query).sort({ _id: -1 }).limit(size);
+    const posts = await Post.find(query)
+      .sort({ _id: -1 })
+      .limit(size)
+      .populate("author");
     return posts;
   } catch (error) {
     throw error;
