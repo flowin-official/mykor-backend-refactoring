@@ -81,21 +81,17 @@ async function getMyNotifications(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 notification:
- *                   type: object
  *       500:
  *         description: 서버 에러
  */
-async function getThisNotification(req, res) {
+async function postThisNotification(req, res) {
   // 알림 선택 -> 해당 게시물로 이동 -> 알림 읽음 처리
   const userId = req.userId;
   const notificationId = req.params.notificationId;
   try {
-    const notification = await readNotification(userId, notificationId);
-    // 여기서 게시글로 이동하는 로직까지 추가해야하나?
+    await readNotification(userId, notificationId);
     res.status(200).json({
       message: "Notification selected",
-      notification,
     });
   } catch (error) {
     res.status(500).json({
@@ -106,5 +102,5 @@ async function getThisNotification(req, res) {
 
 module.exports = {
   getMyNotifications,
-  getThisNotification,
+  postThisNotification,
 };

@@ -38,7 +38,7 @@ const { getLocations } = require("../controllers/locationController");
 const { getTags } = require("../controllers/tagController");
 const {
   getMyNotifications,
-  getThisNotification,
+  postThisNotification,
 } = require("../controllers/notificationController");
 
 const setupRoutes = (app) => {
@@ -94,11 +94,6 @@ const setupRoutes = (app) => {
   router.get("/user", authenticateToken, getMyInfo); // 회원 정보
   router.get("/posts/user", authenticateToken, getMyPosts); // 내가 쓴 게시물 보기
   router.get("/notifications", authenticateToken, getMyNotifications); // 내 알림 보기
-  router.get(
-    "/notification/:notificationId",
-    authenticateToken,
-    getThisNotification
-  ); // 알림 확인
 
   router.put("/user", authenticateToken, putMyInfo); // 회원 정보 수정
   router.put("/post/:postId", authenticateToken, putMyPost); // 내 게시글 수정
@@ -125,6 +120,11 @@ const setupRoutes = (app) => {
     authenticateToken,
     postReportComment
   ); // 댓글 신고
+  router.post(
+    "/notification/:notificationId",
+    authenticateToken,
+    postThisNotification
+  ); // 알림 확인
 
   // 기본 라우트 설정
   app.use("/mykor/api/v1", router);
