@@ -51,7 +51,7 @@ async function modifyMyComment(commentId, content, userId) {
     }
 
     // 댓글 작성자 확인
-    if (comment.author.toString() !== user._id.toString()) {
+    if (comment.author._id.toString() !== user._id.toString()) {
       throw new Error("댓글 작성자가 아닙니다");
     } else {
       comment = await updateComment(comment, content);
@@ -74,7 +74,7 @@ async function removeMyComment(commentId, userId) {
     }
 
     // 댓글 작성자 확인
-    if (comment.author.toString() !== user._id.toString()) {
+    if (comment.author._id.toString() !== user._id.toString()) {
       throw new Error("댓글 작성자가 아닙니다");
     } else {
       await decreasePostComment(comment.post); // 게시글의 댓글 카운트 감소

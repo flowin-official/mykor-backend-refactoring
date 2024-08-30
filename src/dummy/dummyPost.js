@@ -227,8 +227,8 @@ async function postDummyPost(req, res) {
   for (let i = 0; i < 50; i++) {
     const randomUser = users[Math.floor(Math.random() * users.length)];
     const randomTag = tags[Math.floor(Math.random() * tags.length)];
-    const randomLocation =
-      locations[Math.floor(Math.random() * locations.length)];
+    const randomLocation = locations[0]; // 미국에만 50개
+    // locations[Math.floor(Math.random() * locations.length)];
 
     const post = {
       title: `제목 ${i + 1}`,

@@ -145,7 +145,7 @@ async function modifyMyPost(postId, title, content, userId, tagId) {
     }
 
     // 작성자와 수정요청자가 같은지 확인
-    if (post.author.toString() !== user._id.toString()) {
+    if (post.author._id.toString() !== user._id.toString()) {
       throw new Error("글 작성자가 아닙니다.");
     } else {
       post = await updatePost(post, title, content, tag);
@@ -168,7 +168,7 @@ async function removeMyPost(userId, postId) {
     }
 
     // 작성자와 삭제요청자가 같은지 확인
-    if (post.author.toString() !== user._id.toString()) {
+    if (post.author._id.toString() !== user._id.toString()) {
       throw new Error("글 작성자가 아닙니다.");
     } else {
       await deletePost(post);

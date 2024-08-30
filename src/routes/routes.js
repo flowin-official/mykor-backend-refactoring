@@ -41,6 +41,10 @@ const {
   postThisNotification,
 } = require("../controllers/notificationController");
 const { postDummyPost, deleteDummyPost } = require("../dummy/dummyPost");
+const {
+  postDummyComment,
+  deleteDummyComment,
+} = require("../dummy/dummyComment");
 
 const setupRoutes = (app) => {
   const router = express.Router();
@@ -80,6 +84,8 @@ const setupRoutes = (app) => {
 
   router.post("/dummy/post", postDummyPost); // 게시글 더미 데이터 생성
   router.delete("/dummy/post", deleteDummyPost); // 게시글 더미 데이터 삭제
+  router.post("/dummy/comment", postDummyComment); // 댓글 더미 데이터 생성
+  router.delete("/dummy/comment", deleteDummyComment); // 댓글 더미 데이터 삭제
 
   // unprotected routes
   router.post("/login/kakao", postKakaoLogin); // 카카오 로그인(회원가입)
