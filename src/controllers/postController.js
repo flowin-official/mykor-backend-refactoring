@@ -56,7 +56,7 @@ const { commentsOnThisPost } = require("../services/commentService");
  *         name: hot
  *         required: true
  *         schema:
- *           type: bool
+ *           type: boolean
  *         description: 인기순 정렬 여부
  *     responses:
  *       200:
@@ -84,16 +84,25 @@ async function getPostsInRange(req, res) {
   const size = req.query.size;
   const hot = req.query.hot;
   try {
-    if (!locationId || !size || hot === undefined) {
+    if (
+      !locationId ||
+      !size ||
+      hot === undefined ||
+      hot === null ||
+      (hot !== "true" && hot !== "false")
+    ) {
       return res.status(400).json({ message: "잘못된 요청" });
     }
+
+    // hot 값을 boolean으로 변환
+    const isHot = hot === "true";
 
     const posts = await postsInRangeByLocationTag(
       locationId,
       tagId,
       lastPostId,
       size,
-      hot
+      isHot
     );
     res.status(200).json({
       message: "Get posts in range",
