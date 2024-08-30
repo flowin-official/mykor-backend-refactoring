@@ -69,7 +69,7 @@ async function getMyNotifications(req, res) {
  * @swagger
  * /notification:
  *   get:
- *     summary: 알림 존재여부
+ *     summary: 안읽은 알림 존재여부 확인
  *     tags: [Notifications]
  *     parameters:
  *       - in: header
@@ -80,7 +80,7 @@ async function getMyNotifications(req, res) {
  *         description: JWT token
  *     responses:
  *       200:
- *         description: 알림 존재여부 확인 성공
+ *         description: 안읽은 알림들 반환
  *         content:
  *           application/json:
  *             schema:
@@ -109,7 +109,10 @@ async function getNotification(req, res) {
 
     res.status(200).json({
       message: "Notifications exist",
-      notifications,
+      notifications: notifications.map((notification) => ({
+        ...notification.toObject(),
+        fromUser: notification.fromUser.nickname,
+      })),
     });
   } catch (error) {
     res.status(500).json({
