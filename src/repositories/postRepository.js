@@ -22,7 +22,7 @@ const findPostsInRangeByLocationTag = async (
     }
 
     // 정렬 조건 설정
-    const sortOption = hot ? { likes: -1 } : { created: -1 };
+    const sortOption = hot ? { likes: -1 } : { _id: -1 };
 
     // 쿼리 실행: 정렬, 제한 및 author 필드 populate
     const posts = await Post.find(query)
