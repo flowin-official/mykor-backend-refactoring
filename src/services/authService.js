@@ -16,6 +16,7 @@ const {
   findRefreshToken,
 } = require("../repositories/refreshTokenRepository");
 const jwt = require("jsonwebtoken");
+const fs = require('fs');
 
 // async function registerUser(email, password, name) {
 //   try {
@@ -62,8 +63,6 @@ async function loginAppleUser(authCode) {
   const appleBundleID = process.env.APPLE_BUNDLE_ID;
   const appleIssuer = process.env.APPLE_TEAM_ID;
   const appleKeyID = process.env.APPLE_KEY_ID;
-
-  console.log(appleAuthKey);
 
   try {
     // Apple Login에 필요한 Client Secret Token 생성
@@ -132,8 +131,8 @@ async function loginAppleUser(authCode) {
   } catch (error) {
     console.error("Failed to authenticate with Apple.", error);
     res.status(500).json({ error: "Failed to authenticate with Apple." });
+    throw error;
   }
-
 }
 
 async function loginKakaoUser(authCode) {
