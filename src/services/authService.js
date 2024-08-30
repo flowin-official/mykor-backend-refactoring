@@ -65,6 +65,7 @@ async function loginAppleUser(authCode) {
   const appleIssuer = process.env.APPLE_TEAM_ID;
   const appleKeyID = process.env.APPLE_KEY_ID;
 
+  console.log(appleAuthKey);
 
   try {
     // Apple Login에 필요한 Client Secret Token 생성
