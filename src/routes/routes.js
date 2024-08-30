@@ -130,11 +130,6 @@ const setupRoutes = (app) => {
     authenticateToken,
     postReportComment
   ); // 댓글 신고
-  router.post(
-    "/notification/:notificationId",
-    authenticateToken,
-    postThisNotification
-  ); // 알림 확인
 
   // 기본 라우트 설정
   app.use("/mykor/api/v1", router);

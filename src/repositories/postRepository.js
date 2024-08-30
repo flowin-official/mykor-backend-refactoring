@@ -22,20 +22,18 @@ const findPostsInRangeByLocationTag = async (
       query._id = { $lt: lastPostId };
     }
 
+    const posts = await Post.find(query);
+
     if (hot) {
       // hot이 true일 경우 인기순 정렬
-      const posts = await Post.find(query)
-        .sort({ likes: -1 }) // 인기순 정렬
-        .limit(size)
-        .populate("author"); // author 필드를 populate하여 User 정보 가져옴
-      return posts;
+      posts.sort({ likes: -1 }); // 인기순 정렬
     } else {
-      const posts = await Post.find(query)
-        .sort({ id: -1 }) // 최신순 정렬 (created로 해도 되나?)
-        .limit(size)
-        .populate("author"); // author 필드를 populate하여 User 정보 가져옴
-      return posts; // author 필드를 populate하여 User 정보 가져옴
+      posts.sort({ created: -1 }); // 최신순 정렬 (created로 해도 되나?)
     }
+
+    posts.limit(size).populate("author");
+
+    return posts;
   } catch (error) {
     throw error;
   }

@@ -1,8 +1,6 @@
 const {
-  createNotification,
   findNotificationsByUserId,
-  modifyNotificationToReadById,
-  findNotificationById,
+  modifyNotificationsToReadByUserId,
 } = require("../repositories/notificationRepository");
 const { findUserById } = require("../repositories/userRepository");
 
@@ -13,6 +11,7 @@ async function myNotifications(userId) {
       throw new Error("User not found");
     }
 
+    await modifyNotificationsToReadByUserId(userId); // 전부 읽음 처리
     const notifications = await findNotificationsByUserId(userId);
     return notifications;
   } catch (error) {
@@ -20,25 +19,6 @@ async function myNotifications(userId) {
   }
 }
 
-async function readNotification(userId, notificationId) {
-  try {
-    const user = await findUserById(userId);
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    const notification = await findNotificationById(notificationId);
-    if (!notification) {
-      throw new Error("Notification not found");
-    }
-
-    await modifyNotificationToReadById(notification);
-  } catch (error) {
-    throw error;
-  }
-}
-
 module.exports = {
   myNotifications,
-  readNotification,
 };

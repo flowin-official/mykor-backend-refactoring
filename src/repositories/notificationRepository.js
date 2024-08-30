@@ -26,20 +26,9 @@ const findNotificationsByUserId = async (userId) => {
   }
 };
 
-const modifyNotificationToReadById = async (notificationId) => {
+const modifyNotificationsToReadByUserId = async (userId) => {
   try {
-    const notification = await Notification.findById(notificationId);
-    notification.read = true;
-    await notification.save();
-  } catch (error) {
-    throw error;
-  }
-};
-
-const findNotificationById = async (notificationId) => {
-  try {
-    const notification = await Notification.findById(notificationId);
-    return notification;
+    await Notification.updateMany({ user: userId }, { read: true });
   } catch (error) {
     throw error;
   }
@@ -48,6 +37,5 @@ const findNotificationById = async (notificationId) => {
 module.exports = {
   createNotification,
   findNotificationsByUserId,
-  modifyNotificationToReadById,
-  findNotificationById,
+  modifyNotificationsToReadByUserId,
 };
