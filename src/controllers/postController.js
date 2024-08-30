@@ -90,7 +90,7 @@ async function getPostsInRange(req, res) {
       message: "Get posts in range",
       posts: posts.map((post) => ({
         ...post.toObject(),
-        author: post.author.toObject(),
+        author: post.author,
       })),
     });
   } catch (error) {
@@ -169,7 +169,7 @@ async function getThisPost(req, res) {
         postLike,
         commentsList: comments.map((comment) => ({
           ...comment.toObject(),
-          author: comment.author.toObject(),
+          author: comment.author,
           commentLike: commentsLikes[comment._id] || false,
         })),
       },
