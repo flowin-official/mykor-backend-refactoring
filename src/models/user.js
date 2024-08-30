@@ -5,7 +5,9 @@ const userSchema = new mongoose.Schema({
     type: String, 
     default: null, 
     required: false, 
-    unique: false,
+    unique: true,
+    // null은 unique 검사 대상에서 제외하기 위한 partialFilterExpression
+    partialFilterExpression: { kakaoUserCode: { $ne: null } },
     validate: [
       {
         // kakaoUserCode 또는 appleUserCode 둘 중 하나는 required로 하기 위한 validator
@@ -14,15 +16,6 @@ const userSchema = new mongoose.Schema({
         }, 
         message: 'Either "kakaoUserCode" or "appleUserCode" must be provided.',
       },
-      {
-        //null값만 중복을 허용하기 위한 validator
-        validator: async function (value) {
-          if (value === null || value === undefined) return true;
-          const count = await mongoose.models.User.countDocuments({ kakaoUserCode: value });
-          return count === 0;
-        },
-        message: 'Kakao User Code must be unique or null.',
-      }
     ],
   },
 
@@ -30,7 +23,9 @@ const userSchema = new mongoose.Schema({
     type: String, 
     default: null, 
     required: false, 
-    unique: false,
+    unique: true,
+    // null은 unique 검사 대상에서 제외하기 위한 partialFilterExpression
+    partialFilterExpression: { kakaoUserCode: { $ne: null } },
     validate: [
       {
         // kakaoUserCode 또는 appleUserCode 둘 중 하나는 required로 하기 위한 validator
@@ -39,15 +34,6 @@ const userSchema = new mongoose.Schema({
         }, 
         message: 'Either "kakaoUserCode" or "appleUserCode" must be provided.',
       },
-      {
-        //null값만 중복을 허용하기 위한 validator
-        validator: async function (value) {
-          if (value === null || value === undefined) return true;
-          const count = await mongoose.models.User.countDocuments({ appleUserCode: value });
-          return count === 0;
-        },
-        message: 'Apple User Code must be unique or null.',
-      }
     ],
   },
 
