@@ -11,8 +11,8 @@ async function myNotifications(userId) {
       throw new Error("User not found");
     }
 
-    await modifyNotificationsToReadByUserId(userId); // 전부 읽음 처리
-    const notifications = await findNotificationsByUserId(userId);
+    await modifyNotificationsToReadByUserId(user); // 전부 읽음 처리
+    const notifications = await findNotificationsByUserId(user);
     return notifications;
   } catch (error) {
     throw error;

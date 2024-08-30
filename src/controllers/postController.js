@@ -153,6 +153,8 @@ async function getPostsInRange(req, res) {
  *                         type: object
  *       400:
  *         description: 잘못된 요청
+ *       401:
+ *         description: 회원이지만 액세스 토큰 만료
  *       404:
  *         description: 게시글 없음
  *       500:
