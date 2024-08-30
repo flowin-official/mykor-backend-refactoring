@@ -35,17 +35,26 @@ const {
  *                   type: string
  *                 notifications:
  *                   type: object
+ *       401:
+ *         description: 액세스 토큰 만료
  *       500:
  *         description: 서버 에러
  */
 async function getMyNotifications(req, res) {
   const userId = req.userId;
   try {
+    if (req.isAuthenticated === false) {
+      return res.status(401).json({
+        message: "Access token expired",
+      });
+    }
+
     const notifications = await notificationsByUser(userId);
     res.status(200).json({
       message: "Notifications received",
       notifications: notifications.map((notification) => ({
-        user: notification.user.nickname, // populate한 user 객체의 닉네임만 반환
+        ...notification.toObject(),
+        user: notification.user.nickname,
       })),
     });
   } catch (error) {
