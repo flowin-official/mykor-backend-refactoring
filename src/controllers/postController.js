@@ -163,12 +163,11 @@ async function getPostsInRange(req, res) {
 async function getThisPost(req, res) {
   const userId = req.userId;
   const postId = req.params.postId;
+  if (!postId) {
+    return res.status(400).json({ message: "Bad request" });
+  }
 
   try {
-    if (!postId) {
-      return res.status(400).json({ message: "Bad request" });
-    }
-
     const post = await thisPost(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });

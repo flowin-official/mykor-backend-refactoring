@@ -38,7 +38,7 @@ const { getLocations } = require("../controllers/locationController");
 const { getTags } = require("../controllers/tagController");
 const {
   getMyNotifications,
-  postThisNotification,
+  postMyNotifications,
 } = require("../controllers/notificationController");
 const { postDummyPost, deleteDummyPost } = require("../dummy/dummyPost");
 const {
@@ -125,6 +125,7 @@ const setupRoutes = (app) => {
     deleteLikeComment
   ); // 댓글 좋아요 취소
 
+  router.post("/notifications/read", authenticateToken, postMyNotifications); // 알림 읽음 처리
   router.post("/user/block", authenticateToken, postBlockUser); // 유저 차단
   router.post("/post", authenticateToken, postMyPost); // 게시글 작성
   router.post("/post/:postId/like", authenticateToken, postLikePost); // 게시글 좋아요
