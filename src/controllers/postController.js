@@ -245,6 +245,8 @@ async function getThisPost(req, res) {
  *                   type: array
  *                   items:
  *                     type: object
+ *       400:
+ *         description: 잘못된 요청
  *       500:
  *         description: 서버 에러
  */
@@ -254,6 +256,10 @@ async function getPostsSearch(req, res) {
   const lastPostId = req.query.lastPostId;
   const size = req.query.size;
   try {
+    if (!locationId || !keyword || !size) {
+      return res.status(400).json({ message: "Bad request" });
+    }
+
     const posts = await searchingPosts(locationId, keyword, lastPostId, size);
     res.status(200).json({
       message: "Searched posts",

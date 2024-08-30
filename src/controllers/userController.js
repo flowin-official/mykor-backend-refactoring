@@ -33,14 +33,18 @@ const { newBlockUser } = require("../services/userBlockService");
  *           application/json:
  *             schema:
  *               type: object
+ *       401:
+ *         description: 액세스 토큰 만료
  *       500:
  *         description: 서버 에러
  */
 async function getMyInfo(req, res) {
-  // if (!req.isAuthenticated) {
-  //   res.status(401).json({ message: "Unauthorized" });
-  //   return;
-  // }
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
 
   const userId = req.userId;
   try {

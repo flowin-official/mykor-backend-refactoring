@@ -41,14 +41,15 @@ const {
  *         description: 서버 에러
  */
 async function getMyNotifications(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   try {
-    if (req.isAuthenticated === false) {
-      return res.status(401).json({
-        message: "Access token expired",
-      });
-    }
-
     const notifications = await myNotifications(userId);
     res.status(200).json({
       message: "Notifications received",

@@ -21,8 +21,13 @@ const findPostsInRangeByLocationTag = async (
       query._id = { $lt: lastPostId };
     }
 
-    // 정렬 조건 설정
-    const sortOption = hot ? { likes: -1 } : { _id: -1 };
+    // 기본 정렬 옵션 설정 (_id로 정렬)
+    let sortOption = { _id: -1 };
+
+    // hot이 true일 경우 likes 필드로 추가 정렬
+    if (hot) {
+      sortOption = { likes: -1, _id: -1 };
+    }
 
     // 쿼리 실행: 정렬, 제한 및 author 필드 populate
     const posts = await Post.find(query)
@@ -149,7 +154,7 @@ const findPostsWithKeywordByLocation = async (
       query._id = { $lt: lastPostId };
     }
 
-    // 검색 조건 추가(이미 Service에서 검색어 유무 검증 함)
+    // 검색 조건 추가
     query.$and = keywords.map((word) => ({
       $or: [
         { title: { $regex: word, $options: "i" } },
@@ -161,6 +166,7 @@ const findPostsWithKeywordByLocation = async (
       .sort({ _id: -1 })
       .limit(size)
       .populate("author");
+
     return posts;
   } catch (error) {
     throw error;

@@ -87,10 +87,6 @@ async function searchingPosts(locationId, keyword, lastPostId, size) {
       throw new Error("지원하지 않는 지역입니다.");
     }
 
-    if (!keyword) {
-      throw new Error("검색어를 입력해주세요.");
-    }
-
     const posts = await findPostsWithKeywordByLocation(
       location,
       keyword,
