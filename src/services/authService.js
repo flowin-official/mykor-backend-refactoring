@@ -58,7 +58,7 @@ const jwt = require("jsonwebtoken");
 
 async function loginAppleUser(authCode) {
   const appleAlgorithm = process.env.APPLE_ALG;
-  const appleAuthKey = process.env.APPLE_AUTHKEY;
+  const appleAuthKey = fs.readFileSync(process.env.APPLE_AUTH_KEY_FILE, 'utf8');
   const appleBundleID = process.env.APPLE_BUNDLE_ID;
   const appleIssuer = process.env.APPLE_TEAM_ID;
   const appleKeyID = process.env.APPLE_KEY_ID;
