@@ -34,8 +34,21 @@ const modifyNotificationsToReadByUserId = async (userId) => {
   }
 };
 
+const findUnreadNotificationsByUserId = async (userId) => {
+  try {
+    const notifications = await Notification.find({
+      user: userId,
+      read: false,
+    }).populate("fromUser");
+    return notifications;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createNotification,
   findNotificationsByUserId,
   modifyNotificationsToReadByUserId,
+  findUnreadNotificationsByUserId,
 };

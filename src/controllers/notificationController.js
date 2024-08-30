@@ -1,5 +1,5 @@
 const {
-  readMyNotifications,
+  unreadNotifications,
   myNotifications,
 } = require("../services/notificationService");
 
@@ -14,7 +14,7 @@ const {
  * @swagger
  * /notifications:
  *   get:
- *     summary: 내 알림 받기
+ *     summary: 내 알림들 읽기
  *     tags: [Notifications]
  *     parameters:
  *       - in: header
@@ -25,7 +25,7 @@ const {
  *         description: JWT token
  *     responses:
  *       200:
- *         description: 내 알림 받기 성공
+ *         description: 내 알림들 읽기 성공
  *         content:
  *           application/json:
  *             schema:
@@ -67,9 +67,9 @@ async function getMyNotifications(req, res) {
 
 /**
  * @swagger
- * /notifications/read:
- *   post:
- *     summary: 내 알림 전부 읽기
+ * /notification
+ *   get:
+ *     summary: 안읽은 알림있는지 여부
  *     tags: [Notifications]
  *     parameters:
  *       - in: header
@@ -80,7 +80,7 @@ async function getMyNotifications(req, res) {
  *         description: JWT token
  *     responses:
  *       200:
- *         description: 내 알림 전부 읽기 성공
+ *         description: 안읽은 알림 있음
  *         content:
  *           application/json:
  *             schema:
@@ -88,14 +88,14 @@ async function getMyNotifications(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 notifications:
+ *                 unreadNotifications:
  *                   type: object
  *       401:
  *         description: 액세스 토큰 만료
  *       500:
  *         description: 서버 에러
  */
-async function postMyNotifications(req, res) {
+async function getNotification(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
       message: "Unauthorized",
@@ -105,9 +105,11 @@ async function postMyNotifications(req, res) {
 
   const userId = req.userId;
   try {
-    await readMyNotifications(userId);
+    notifications = await unreadNotifications(userId);
+
     res.status(200).json({
-      message: "All notification read",
+      message: "Notifications exist",
+      notifications,
     });
   } catch (error) {
     res.status(500).json({
@@ -118,5 +120,5 @@ async function postMyNotifications(req, res) {
 
 module.exports = {
   getMyNotifications,
-  postMyNotifications,
+  getNotification,
 };
