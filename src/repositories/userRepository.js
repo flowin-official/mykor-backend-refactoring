@@ -4,6 +4,7 @@ const createKakaoUser = async (kakaoUserCode) => {
   try {
     const user = await User.create({
       kakaoUserCode,
+      nickname: "user" + `${Math.floor(Math.random() * 99999999)}`,
     });
     return user;
   } catch (error) {
@@ -15,6 +16,7 @@ const createAppleUser = async (appleUserCode) => {
   try {
     const user = await User.create({
       appleUserCode,
+      nickname: "user" + `${Math.floor(Math.random() * 99999999)}`,
     });
     return user;
   } catch (error) {
