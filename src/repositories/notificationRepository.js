@@ -1,8 +1,9 @@
 const Notification = require("../models/notification");
 
-const createNotification = async (user, post, comment, category) => {
+const createNotification = async (fromUser, user, post, comment, category) => {
   try {
     const notification = await Notification.create({
+      fromUser,
       user,
       post,
       comment,
@@ -14,11 +15,11 @@ const createNotification = async (user, post, comment, category) => {
   }
 };
 
-const findNoticiationByUserId = async (userId) => {
+const findNotificationsByUserId = async (userId) => {
   try {
     const notifications = await Notification.find({
       user: userId,
-    }).populate("user");
+    }).populate("fromUser");
     return notifications;
   } catch (error) {
     throw error;
@@ -46,7 +47,7 @@ const findNotificationById = async (notificationId) => {
 
 module.exports = {
   createNotification,
-  findNoticiationByUserId,
+  findNotificationsByUserId,
   modifyNotificationToReadById,
   findNotificationById,
 };

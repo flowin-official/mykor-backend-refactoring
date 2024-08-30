@@ -39,7 +39,7 @@ async function likePost(postId, userId) {
     if (postLike) {
       throw new Error("이미 좋아요한 게시글입니다.");
     } else {
-      await createNotification(user, post, null, "좋아요"); // 알림 생성
+      await createNotification(user, post.author, post, null, "좋아요"); // 알림 생성
       postLike = await createPostLike(post, user);
       await increasePostLike(post); // 게시글 좋아요 수 증가
     }
@@ -88,7 +88,13 @@ async function likeComment(commentId, userId) {
     if (commentLike) {
       throw new Error("이미 좋아요한 댓글입니다.");
     } else {
-      await createNotification(user, comment.post, comment, "좋아요"); // 알림 생성
+      await createNotification(
+        user,
+        comment.author,
+        comment.post,
+        comment,
+        "좋아요"
+      ); // 알림 생성
       commentLike = await createCommentLike(comment, user);
       await increaseCommentLike(comment); // 댓글 좋아요 수 증가
     }

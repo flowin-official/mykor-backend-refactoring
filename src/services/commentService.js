@@ -31,7 +31,7 @@ async function newComment(userId, postId, content) {
     await increasePostComment(post._id); // 게시글의 댓글 카운트 증가
 
     // notification 생성
-    await createNotification(user, post, comment, "댓글");
+    await createNotification(user, post.author, post, comment, "댓글");
 
     return comment;
   } catch (error) {

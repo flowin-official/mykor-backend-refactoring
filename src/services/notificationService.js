@@ -1,19 +1,19 @@
 const {
   createNotification,
-  findNoticiationByUserId,
+  findNotificationsByUserId,
   modifyNotificationToReadById,
   findNotificationById,
 } = require("../repositories/notificationRepository");
 const { findUserById } = require("../repositories/userRepository");
 
-async function notificationsByUser(userId) {
+async function myNotifications(userId) {
   try {
     const user = await findUserById(userId);
     if (!user) {
       throw new Error("User not found");
     }
 
-    const notifications = await findNoticiationByUserId(userId);
+    const notifications = await findNotificationsByUserId(userId);
     return notifications;
   } catch (error) {
     throw error;
@@ -39,6 +39,6 @@ async function readNotification(userId, notificationId) {
 }
 
 module.exports = {
-  notificationsByUser,
+  myNotifications,
   readNotification,
 };

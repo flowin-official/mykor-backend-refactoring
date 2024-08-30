@@ -1,6 +1,6 @@
 const {
-  notificationsByUser,
   readNotification,
+  myNotifications,
 } = require("../services/notificationService");
 
 /**
@@ -49,12 +49,12 @@ async function getMyNotifications(req, res) {
       });
     }
 
-    const notifications = await notificationsByUser(userId);
+    const notifications = await myNotifications(userId);
     res.status(200).json({
       message: "Notifications received",
       notifications: notifications.map((notification) => ({
         ...notification.toObject(),
-        user: notification.user.nickname,
+        fromUser: notification.fromUser.nickname,
       })),
     });
   } catch (error) {
