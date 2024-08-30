@@ -25,9 +25,6 @@ async function postsInRangeByLocationTag(
     if (!location) {
       throw new Error("지원하지 않는 지역입니다.");
     }
-    if (!hot) {
-      throw new Error("최신순 정렬/인기순 정렬을 선택해주세요.");
-    }
 
     const posts = await findPostsInRangeByLocationTag(
       location,

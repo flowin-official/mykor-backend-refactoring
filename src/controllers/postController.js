@@ -84,8 +84,8 @@ async function getPostsInRange(req, res) {
   const size = req.query.size;
   const hot = req.query.hot;
   try {
-    if (!hot || !locationId || !size) {
-      return res.status(400).json({ message: "Bad request" });
+    if (!locationId || !size || hot === undefined) {
+      return res.status(400).json({ message: "잘못된 요청" });
     }
 
     const posts = await postsInRangeByLocationTag(

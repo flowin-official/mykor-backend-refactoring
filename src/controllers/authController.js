@@ -141,7 +141,7 @@ async function postAppleLogin(req, res) {
  *                   type: string
  *                 newRefreshToken:
  *                   type: string
- *       403:
+ *       400:
  *         description: 리프레시 토큰이 필요합니다.
  *       500:
  *         description: 서버 에러
@@ -150,7 +150,7 @@ async function postRefresh(req, res) {
   const { refreshToken } = req.body;
 
   if (!refreshToken) {
-    return res.status(403).json({ message: "Refresh token is required" });
+    return res.status(400).json({ message: "Refresh token is required" });
   }
 
   try {
