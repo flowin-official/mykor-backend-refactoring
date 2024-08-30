@@ -15,7 +15,7 @@ const createComment = async (userId, postId, content) => {
 
 const findCommentsByPostId = async (postId) => {
   try {
-    const comments = await Comment.find({ post: postId });
+    const comments = await Comment.find({ post: postId }).populate("author");
     return comments;
   } catch (error) {
     throw error;

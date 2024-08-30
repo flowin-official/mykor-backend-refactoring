@@ -26,14 +26,16 @@ const findPostsInRangeByLocationTag = async (
       // 인기순 정렬일 경우 likes 필드로 정렬
       const posts = await Post.find(query)
         .sort({ likes: -1 }) // 인기순 정렬
-        .limit(size); // size만큼 가져옴
+        .limit(size)
+        .populate("author"); // author 필드를 populate하여 User 정보 가져옴; // size만큼 가져옴
       return posts;
     } else {
       // 최신순 정렬일 경우 created 필드로 정렬
       const posts = await Post.find(query)
         .sort({ _id: -1 }) // 최신순 정렬(created로 해도 됨)
-        .limit(size); // size만큼 가져옴
-      return posts;
+        .limit(size)
+        .populate("author"); // author 필드를 populate하여 User 정보 가져옴; // size만큼 가져옴
+      return posts; // author 필드를 populate하여 User 정보 가져옴
     }
   } catch (error) {
     throw error;
