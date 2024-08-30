@@ -1,17 +1,23 @@
 const axios = require("axios");
 const {
   createKakaoUser,
+  createAppleUser,
   findUserByKakaoUserCode,
+  findUserByAppleUserCode,
 } = require("../repositories/userRepository");
 const {
   createAccessToken,
   createRefreshToken,
   verifyRefreshToken,
+  parseJwt,
 } = require("../utils/jwt");
 const {
   saveRefreshToken,
   findRefreshToken,
 } = require("../repositories/refreshTokenRepository");
+const jwt = require("jsonwebtoken");
+const fs = require('fs');
+const qs = require('qs');
 
 // async function registerUser(email, password, name) {
 //   try {
@@ -33,6 +39,7 @@ const {
 //     const user = await findUserByEmail(email);
 //     if (!user) {
 //       throw new Error("User not found");
+
 //     }
 
 //     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -50,6 +57,84 @@ const {
 //     throw error;
 //   }
 // }
+
+async function loginAppleUser(authCode) {
+  const appleAlgorithm = process.env.APPLE_ALG;
+  const appleAuthKey = fs.readFileSync(process.env.APPLE_AUTH_KEY_FILE, 'utf8');
+  const appleBundleID = process.env.APPLE_BUNDLE_ID;
+  const appleIssuer = process.env.APPLE_TEAM_ID;
+  const appleKeyID = process.env.APPLE_KEY_ID;
+
+  try {
+    // Apple Login에 필요한 Client Secret Token 생성
+    const clientSecret = jwt.sign(
+      {
+        iss: appleIssuer,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1시간 유효
+        aud: 'https://appleid.apple.com',
+        sub: appleBundleID,
+      },
+      appleAuthKey,
+      {
+        algorithm: appleAlgorithm,
+        header: {
+          alg: appleAlgorithm,
+          kid: appleKeyID,
+        },
+      }
+    );
+
+    // Apple 서버로부터 access_token을 가져오기 위한 요청 데이터
+    const tokenRequestBody = {
+      grant_type: 'authorization_code',
+      code: authCode,
+      client_id: appleBundleID, // Apple Developer Console에 등록된 App ID
+      client_secret: clientSecret, // Apple에서 생성한 Client Secret
+      redirect_uri: '', // Apple 로그인 리디렉션 URI
+    };
+
+    const tokenResponse = await axios.post(
+      'https://appleid.apple.com/auth/token',
+      qs.stringify(tokenRequestBody),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
+
+    const { access_token, refresh_token, id_token } = tokenResponse.data;
+
+    // id_token에서 user_id를 추출
+    const userInfo = parseJwt(id_token);
+
+    // 여기서 userInfo.sub가 Apple의 user_id입니다.
+    const userId = userInfo.sub;
+
+    // 유저 코드를 기반으로 유저 찾기
+    let user = await findUserByAppleUserCode(userId);
+
+    // 유저가 없으면 새로 생성
+    if (!user) {
+      user = await createAppleUser(userId);
+    }
+
+    // user._id는 생성된 유저의 db상 id임
+    const accessToken = createAccessToken({ id: user._id });
+    const refreshToken = createRefreshToken({ id: user._id });
+
+    // redis에 리프레시 토큰 저장
+    await saveRefreshToken(user._id, refreshToken);
+
+    return { user, accessToken, refreshToken };
+    // TODO
+  } catch (error) {
+    console.error("Failed to authenticate with Apple.", error);
+    res.status(500).json({ error: "Failed to authenticate with Apple." });
+    throw error;
+  }
+}
 
 async function loginKakaoUser(authCode) {
   const clientId = process.env.KAKAO_CLIENT_ID;
@@ -72,7 +157,8 @@ async function loginKakaoUser(authCode) {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-      }
+      },
+
     );
 
     // 카카오 서버로부터 받은 액세스 토큰
@@ -142,6 +228,7 @@ async function refreshNewTokens(refreshToken) {
 }
 
 module.exports = {
+  loginAppleUser,
   loginKakaoUser,
   refreshNewTokens,
 };

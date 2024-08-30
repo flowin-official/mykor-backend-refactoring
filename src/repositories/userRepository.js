@@ -11,6 +11,17 @@ const createKakaoUser = async (kakaoUserCode) => {
   }
 };
 
+const createAppleUser = async (appleUserCode) => {
+  try {
+    const user = await User.create({
+      appleUserCode,
+    });
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
 const findUserById = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -30,6 +41,17 @@ const findUserByKakaoUserCode = async (kakaoUserCode) => {
     throw error;
   }
 };
+
+const findUserByAppleUserCode = async (appleUserCode) => {
+  try {
+    const user = await User.findOne({
+      appleUserCode,
+    });
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
 
 const updateUser = async (userId, nickname, locationId) => {
   try {
@@ -58,7 +80,9 @@ const deleteUser = async (userId) => {
 
 module.exports = {
   createKakaoUser,
+  createAppleUser,
   findUserByKakaoUserCode,
+  findUserByAppleUserCode,
   findUserById,
   updateUser,
   deleteUser,
