@@ -113,7 +113,7 @@ async function loginAppleUser(authCode) {
     const userId = userInfo.sub;
 
     // 유저 코드를 기반으로 유저 찾기
-    let user = await findUserByKakaoUserCode(userId);
+    let user = await findUserByAppleUserCode(userId);
 
     // 유저가 없으면 새로 생성
     if (!user) {
