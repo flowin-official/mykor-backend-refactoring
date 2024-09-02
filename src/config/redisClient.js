@@ -8,11 +8,11 @@ const setupRedis = redis.createClient({
 });
 
 setupRedis.on("connect", () => {
-  console.log("Connected to Redis");
+  console.log("Redis client 연결성공");
 });
 
 setupRedis.on("ready", () => {
-  console.log("Redis client ready");
+  console.log("Redis client 준비완료");
 });
 
 setupRedis.on("end", () => {

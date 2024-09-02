@@ -8,6 +8,8 @@ const cors = require("cors");
 const setupMongo = require("./src/config/mongoDB");
 const setupSwagger = require("./src/config/swagger");
 const setupRoutes = require("./src/routes/routes");
+const logger = require("./src/config/winston"); // Winston 로거 가져오기
+const morganMiddleware = require("./src/middlewares/morgan"); // Morgan 미들웨어 가져오기
 
 const app = express();
 
@@ -19,5 +21,5 @@ setupSwagger(app);
 setupRoutes(app);
 
 app.listen(process.env.SERVER_PORT, () => {
-  console.log(`Server is running on port ${process.env.SERVER_PORT}`);
+  logger.info(`Server is running on port ${process.env.SERVER_PORT}`);
 });
