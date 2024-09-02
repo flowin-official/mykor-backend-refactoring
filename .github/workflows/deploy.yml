@@ -23,7 +23,7 @@ jobs:
             git pull https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/flowin-official/mykor-backend-refactoring.git
 
             # 의존성 설치 및 애플리케이션 시작
-            npm install
-            npm install -g pm2
+            sudo npm install
+            sudo npm install -g pm2
             pm2 stop all || true
             pm2 start app.js

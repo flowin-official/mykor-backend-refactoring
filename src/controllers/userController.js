@@ -33,6 +33,11 @@ const { newBlockUser } = require("../services/userBlockService");
  *           application/json:
  *             schema:
  *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
  *       401:
  *         description: 액세스 토큰 만료
  *       500:

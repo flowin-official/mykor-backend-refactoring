@@ -147,14 +147,21 @@ async function getPostsInRange(req, res) {
  *                 post:
  *                   type: object
  *                   properties:
- *                     comments_list:
+ *                     author:
+ *                       type: object
+ *                     postLike:
+ *                       type: boolean
+ *                     commentsList:
  *                       type: array
  *                       items:
  *                         type: object
+ *                         properties:
+ *                           author:
+ *                             type: object
+ *                           commentLike:
+ *                             type: boolean
  *       400:
  *         description: 잘못된 요청
- *       401:
- *         description: 회원이지만 액세스 토큰 만료
  *       404:
  *         description: 게시글 없음
  *       500:
@@ -359,10 +366,19 @@ async function postMyPost(req, res) {
  *                   type: array
  *                   items:
  *                     type: object
+ *       401:
+ *         description: 토큰 만료
  *       500:
  *         description: 서버 에러
  */
 async function getMyPosts(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   try {
     const posts = await myPosts(userId);
