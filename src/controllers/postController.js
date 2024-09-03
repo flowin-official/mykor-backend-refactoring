@@ -318,10 +318,19 @@ async function getPostsSearch(req, res) {
  *                   type: string
  *                 post:
  *                   type: object
+ *       401:
+ *         description: 토큰 만료
  *       500:
  *         description: 서버 에러
  */
 async function postMyPost(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const { title, content, locationId, tagId } = req.body;
   try {
@@ -434,10 +443,19 @@ async function getMyPosts(req, res) {
  *                   type: string
  *                 post:
  *                   type: object
+ *       401:
+ *         description: 토큰 만료
  *       500:
  *         description: 서버 에러
  */
 async function putMyPost(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const postId = req.params.postId;
   const { title, content, tagId } = req.body;
@@ -482,10 +500,19 @@ async function putMyPost(req, res) {
  *                   type: string
  *                 post:
  *                   type: object
+ *       401:
+ *         description: 토큰 만료
  *       500:
  *         description: 서버 에러
  */
 async function deleteMyPost(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const postId = req.params.postId;
   try {
@@ -528,10 +555,19 @@ async function deleteMyPost(req, res) {
  *                   type: string
  *                 post:
  *                   type: object
+ *       401:
+ *         description: 토큰 만료
  *       500:
  *         description: 서버 에러
  */
 async function postLikePost(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const postId = req.params.postId;
   try {
@@ -577,10 +613,19 @@ async function postLikePost(req, res) {
  *               properties:
  *                 message:
  *                   type: string
+ *       401:
+ *         description: 토큰 만료
  *       500:
  *         description: 서버 에러
  */
 async function deleteLikePost(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const postId = req.params.postId;
   try {
@@ -634,10 +679,19 @@ async function deleteLikePost(req, res) {
  *                   type: string
  *                 post:
  *                   type: object
+ *       401:
+ *         description: 토큰 만료
  *       500:
  *         description: 서버 에러
  */
 async function postReportPost(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const postId = req.params.postId;
   const { reason, content } = req.body;

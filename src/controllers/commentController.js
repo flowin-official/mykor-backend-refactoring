@@ -49,10 +49,19 @@ const { likeComment, dislikeComment } = require("../services/likeService");
  *                   type: string
  *                 comment:
  *                   type: object
+ *       401:
+ *         description: 권한 없음
  *       500:
  *         description: 서버 에러
  */
 async function postMyComment(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const { postId, content } = req.body;
   try {
@@ -108,10 +117,19 @@ async function postMyComment(req, res) {
  *                   type: string
  *                 comment:
  *                   type: object
+ *       401:
+ *         description: 권한 없음
  *       500:
  *         description: 서버 에러
  */
 async function putMyComment(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const commentId = req.params.commentId;
   const content = req.body.content;
@@ -154,10 +172,19 @@ async function putMyComment(req, res) {
  *               properties:
  *                 message:
  *                   type: string
+ *       401:
+ *         description: 권한 없음
  *       500:
  *         description: 서버 에러
  */
 async function deleteMyComment(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const commentId = req.params.commentId;
   try {
@@ -200,10 +227,19 @@ async function deleteMyComment(req, res) {
  *                   type: string
  *                 commentLike:
  *                   type: object
+ *       401:
+ *         description: 권한 없음
  *       500:
  *         description: 서버 에러
  */
 async function postLikeComment(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const commentId = req.params.commentId;
   try {
@@ -245,10 +281,19 @@ async function postLikeComment(req, res) {
  *               properties:
  *                 message:
  *                   type: string
+ *       401:
+ *         description: 권한 없음
  *       500:
  *         description: 서버 에러
  */
 async function deleteLikeComment(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const commentId = req.params.commentId;
   try {
@@ -302,10 +347,19 @@ async function deleteLikeComment(req, res) {
  *                   type: string
  *                 post:
  *                   type: object
+ *       401:
+ *         description: 권한 없음
  *       500:
  *         description: 서버 에러
  */
 async function postReportComment(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const commentId = req.params.commentId;
   const { reason, content } = req.body;

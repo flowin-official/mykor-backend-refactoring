@@ -94,10 +94,19 @@ async function getMyInfo(req, res) {
  *           application/json:
  *             schema:
  *               type: object
+ *       401:
+ *         description: 액세스 토큰 만료
  *       500:
  *         description: 서버 에러
  */
 async function putMyInfo(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const { nickname, locationId } = req.body;
   try {
@@ -127,10 +136,19 @@ async function putMyInfo(req, res) {
  *     responses:
  *       200:
  *         description: 회원 탈퇴 성공
+ *       401:
+ *         description: 액세스 토큰 만료
  *       500:
  *         description: 서버 에러
  */
 async function deleteMyInfo(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   try {
     await removeMyInfo(userId);
@@ -213,10 +231,19 @@ async function getUserInfo(req, res) {
  *     responses:
  *       200:
  *         description: 유저 차단 성공
+ *       401:
+ *         description: 권한 없음
  *       500:
  *         description: 서버 에러
  */
 async function postBlockUser(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.userId;
   const { blockedUserId } = req.params.blockedUserId;
   try {
