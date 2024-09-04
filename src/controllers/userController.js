@@ -160,7 +160,7 @@ async function deleteMyInfo(req, res) {
 
 /**
  * @swagger
- * /user/:userId:
+ * /user/{userId}:
  *   get:
  *     summary: 유저 정보 조회 (현재 사용안함)
  *     tags: [Users]
@@ -187,18 +187,29 @@ async function deleteMyInfo(req, res) {
  *                       type: string
  *                     userLocation:
  *                       type: object
+ *       401:
+ *         description: 권한 없음
  *       500:
  *         description: 서버 에러
  */
 async function getUserInfo(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
   const userId = req.params.userId;
   try {
     const user = await userInfo(userId);
     res.status(200).json({
       message: "User found",
       user: {
-        userName: user.userName,
-        userLocation: user.userLocation,
+        _id: user._id,
+        nickname: user.nickname,
+        location: user.location,
+        deleted: user.deleted,
       },
     });
   } catch (error) {

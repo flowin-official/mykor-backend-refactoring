@@ -28,6 +28,7 @@ const {
   getThisPostWithLogin,
   getPostsInRangeWithLogin,
   getPostsSearchWithLogin,
+  getUserPosts,
 } = require("../controllers/postController");
 const {
   postMyComment,
@@ -107,10 +108,9 @@ const setupRoutes = (app) => {
 
   router.get("/tags", getTags); // 태그 정보 가져오기
 
-  // router.get("/user/:userId", authenticateToken, getUserInfo); // 상대 유저 정보 가져오기
+  router.get("/user/:userId", authenticateToken, getUserInfo); // 유저 정보 가져오기
   router.get("/user", authenticateToken, getMyInfo); // 내 정보
   router.put("/user", authenticateToken, putMyInfo); // 내 정보 수정
-  // router.get("/user/:userId/posts", authenticateToken, getMyPosts); // 내가 쓴 게시물 보기
   router.delete("/user", authenticateToken, deleteMyInfo); // 회원 탈퇴
   router.post("/user/:blockedUserId/block", authenticateToken, postBlockUser); // 유저 차단
 
@@ -150,6 +150,8 @@ const setupRoutes = (app) => {
     authenticateToken,
     postReportComment
   ); // 댓글 신고
+
+  // router.post("/comment/:commentId/comment", authenticateToken, postMyNestedComment); // 대댓글 작성
 
   // 기본 라우트 설정
   app.use("/mykor/api/v1", router);
