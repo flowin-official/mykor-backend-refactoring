@@ -1,7 +1,8 @@
 const {
   findUserById,
   updateUser,
-  deleteUser,
+  withdrawUser,
+  addBlockUser,
 } = require("../repositories/userRepository");
 const { findLocationById } = require("../repositories/locationRepository");
 
@@ -37,14 +38,14 @@ async function modifyMyInfo(userId, nickname, locationId) {
   }
 }
 
+// 카카오, 애플 로그인 사용자 정보 삭제 추가해야함.
 async function removeMyInfo(userId) {
   try {
     const user = await findUserById(userId);
     if (!user) {
       throw new Error("User not found");
     }
-
-    await deleteUser(user);
+    await withdrawUser(userId);
   } catch (error) {
     throw error;
   }
@@ -63,9 +64,27 @@ async function userInfo(userId) {
   }
 }
 
+async function newBlockUser(userId, blockUserId) {
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const blockUser = await findUserById(blockUserId);
+    if (!blockUser) {
+      throw new Error("Block user not found");
+    }
+
+    await addBlockUser(user, blockUser);
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   myInfo,
   modifyMyInfo,
   removeMyInfo,
   userInfo,
+  newBlockUser,
 };

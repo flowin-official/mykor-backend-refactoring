@@ -3,8 +3,8 @@ const {
   modifyMyInfo,
   removeMyInfo,
   userInfo,
+  newBlockUser,
 } = require("../services/userService");
-const { newBlockUser } = require("../services/userBlockService");
 
 /**
  * @swagger
@@ -124,7 +124,7 @@ async function putMyInfo(req, res) {
  * @swagger
  * /user:
  *   delete:
- *     summary: 회원 탈퇴?
+ *     summary: 회원 탈퇴
  *     tags: [Users]
  *     parameters:
  *       - in: header
@@ -160,7 +160,7 @@ async function deleteMyInfo(req, res) {
 
 /**
  * @swagger
- * /user/:userId:
+ * /user/{userId}
  *   get:
  *     summary: 유저 정보 조회
  *     tags: [Users]

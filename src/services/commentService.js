@@ -92,7 +92,25 @@ async function commentsOnThisPost(postId) {
       throw new Error("Post not found");
     }
 
-    const comments = await findCommentsByPostId(post);
+    const comments = await findCommentsByPostId(post, []); // 차단없이
+    return comments;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function commentsOnThisPostWithBlock(postId, userId) {
+  try {
+    const post = await findPostById(postId);
+    if (!post) {
+      throw new Error("Post not found");
+    }
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const comments = await findCommentsByPostId(post, user.blockedUsers);
     return comments;
   } catch (error) {
     throw error;
@@ -104,4 +122,5 @@ module.exports = {
   modifyMyComment,
   removeMyComment,
   commentsOnThisPost,
+  commentsOnThisPostWithBlock,
 };

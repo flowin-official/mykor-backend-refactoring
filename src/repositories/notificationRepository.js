@@ -19,7 +19,9 @@ const findNotificationsByUserId = async (userId) => {
   try {
     const notifications = await Notification.find({
       user: userId,
-    }).populate("fromUser");
+    })
+      .sort({ _id: -1 })
+      .populate("fromUser");
     return notifications;
   } catch (error) {
     throw error;

@@ -5,11 +5,15 @@ const findPostsInRangeByLocationTag = async (
   tag,
   lastPostId,
   size,
-  hot
+  hot,
+  blockedUsers
 ) => {
   try {
     // 기본 쿼리 생성
-    const query = { location };
+    const query = {
+      location,
+      author: { $nin: blockedUsers }, // blockedUsers에 포함되지 않은 사용자만 조회
+    };
 
     // 태그가 있으면 태그 조건 추가
     if (tag) {
@@ -139,7 +143,8 @@ const findPostsWithKeywordByLocation = async (
   location,
   keyword,
   lastPostId,
-  size
+  size,
+  blockedUsers
 ) => {
   try {
     // 검색어를 공백으로 나누어 배열로 만들고, 빈 문자열을 제거
@@ -147,6 +152,7 @@ const findPostsWithKeywordByLocation = async (
 
     const query = {
       location,
+      author: { $nin: blockedUsers }, // blockedUsers에 포함되지 않은 사용자만 조회
     };
 
     // lastPostId가 있을 때만 _id 조건 추가
@@ -201,15 +207,21 @@ const decreasePostComment = async (postId) => {
 
 module.exports = {
   createPost,
+
   findPostById,
   findPostsByUserId,
+
   updatePost,
   deletePost,
+
   increasePostView,
+
   increasePostLike,
   decreasePostLike,
+
   findPostsInRangeByLocationTag,
   findPostsWithKeywordByLocation,
+
   increasePostComment,
   decreasePostComment,
 };

@@ -4,8 +4,12 @@ const {
   myPosts,
   modifyMyPost,
   removeMyPost,
+
   postsInRangeByLocationTag,
+  postsInRangeByLocationTagWithBlock,
+
   searchingPosts,
+  searchingPostsWithBlock,
 } = require("../services/postService");
 const {
   isLikedPost,
@@ -14,7 +18,10 @@ const {
   dislikePost,
 } = require("../services/likeService");
 const { reportPost } = require("../services/reportService");
-const { commentsOnThisPost } = require("../services/commentService");
+const {
+  commentsOnThisPost,
+  commentsOnThisPostWithBlock,
+} = require("../services/commentService");
 
 /**
  * @swagger
@@ -27,7 +34,7 @@ const { commentsOnThisPost } = require("../services/commentService");
  * @swagger
  * /posts:
  *   get:
- *     summary: 범위 내 게시글 가져오기
+ *     summary: 범위 내 게시글 가져오기(비회원)
  *     tags: [Posts]
  *     parameters:
  *       - in: query
@@ -118,6 +125,113 @@ async function getPostsInRange(req, res) {
 
 /**
  * @swagger
+ * /posts/user:
+ *   get:
+ *     summary: 범위 내 게시글 가져오기(회원/게시글차단반영)
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: JWT token
+ *       - in: query
+ *         name: locationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 게시글을 가져올 국가코드
+ *       - in: query
+ *         name: tagId
+ *         schema:
+ *           type: string
+ *         description: 게시글의 태그
+ *       - in: query
+ *         name: lastPostId
+ *         schema:
+ *           type: string
+ *         description: 이전 페이지의 마지막 게시글 ID
+ *       - in: query
+ *         name: size
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 한 페이지에 가져올 게시글 수
+ *       - in: query
+ *         name: hot
+ *         required: true
+ *         schema:
+ *           type: boolean
+ *         description: 인기순 정렬 여부
+ *     responses:
+ *       200:
+ *         description: 범위 내 게시글 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 posts:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       400:
+ *         description: 잘못된 요청
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: 서버 에러
+ */
+async function getPostsInRangeWithLogin(req, res) {
+  if (!req.isAuthenticated) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const userId = req.userId;
+
+  const locationId = req.query.locationId;
+  const tagId = req.query.tagId;
+  const lastPostId = req.query.lastPostId;
+  const size = req.query.size;
+  const hot = req.query.hot;
+  try {
+    if (
+      !locationId ||
+      !size ||
+      hot === undefined ||
+      hot === null ||
+      (hot !== "true" && hot !== "false")
+    ) {
+      return res.status(400).json({ message: "잘못된 요청" });
+    }
+
+    // hot 값을 boolean으로 변환
+    const isHot = hot === "true";
+
+    const posts = await postsInRangeByLocationTagWithBlock(
+      locationId,
+      tagId,
+      lastPostId,
+      size,
+      isHot,
+      userId
+    );
+    res.status(200).json({
+      message: "Get posts in range",
+      posts: posts.map((post) => ({
+        ...post.toObject(),
+        author: post.author,
+      })),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+/**
+ * @swagger
  * /post/{postId}:
  *   get:
  *     summary: 게시글 조회(비회원)
@@ -175,19 +289,16 @@ async function getThisPost(req, res) {
 
     const comments = await commentsOnThisPost(postId);
 
-    let postLike = false;
-    let commentsLikes = {};
-
     res.status(200).json({
       message: "This post",
       post: {
         ...post.toObject(),
         author: post.author,
-        postLike,
+        postLike: false,
         commentsList: comments.map((comment) => ({
           ...comment.toObject(),
           author: comment.author,
-          commentLike: commentsLikes[comment._id] || false,
+          commentLike: false,
         })),
       },
     });
@@ -200,7 +311,7 @@ async function getThisPost(req, res) {
  * @swagger
  * /post/{postId}/user:
  *   get:
- *     summary: 게시글 조회(회원)
+ *     summary: 게시글 조회(회원/댓글차단반영) 미지원
  *     tags: [Posts]
  *     parameters:
  *       - in: header
@@ -266,7 +377,7 @@ async function getThisPostWithLogin(req, res) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    const comments = await commentsOnThisPost(postId);
+    const comments = await commentsOnThisPostWithBlock(postId, userId);
 
     let postLike = false;
     let commentsLikes = {};
@@ -300,7 +411,7 @@ async function getThisPostWithLogin(req, res) {
  * @swagger
  * /posts/search:
  *   get:
- *     summary: 게시글 검색
+ *     summary: 게시글 검색(비회원)
  *     tags: [Posts]
  *     parameters:
  *       - in: query
@@ -343,6 +454,72 @@ async function getThisPostWithLogin(req, res) {
  *         description: 서버 에러
  */
 async function getPostsSearch(req, res) {
+  const locationId = req.query.locationId;
+  const keyword = req.query.keyword;
+  const lastPostId = req.query.lastPostId;
+  const size = req.query.size;
+  try {
+    if (!locationId || !keyword || !size) {
+      return res.status(400).json({ message: "Bad request" });
+    }
+
+    const posts = await searchingPosts(locationId, keyword, lastPostId, size);
+    res.status(200).json({
+      message: "Searched posts",
+      posts,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+/**
+ * @swagger
+ * /posts/search/user:
+ *   get:
+ *     summary: 게시글 검색(회원전용/게시글차단반영) 미지원
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: query
+ *         name: locationId
+ *         schema:
+ *           type: string
+ *         description: 게시글을 검색할 국가
+ *       - in: query
+ *         name: keyword
+ *         schema:
+ *           type: string
+ *         description: 검색할 키워드
+ *       - in: query
+ *         name: lastPostId
+ *         schema:
+ *           type: string
+ *         description: 이전 페이지의 마지막 게시글 ID
+ *       - in: query
+ *         name: size
+ *         schema:
+ *           type: string
+ *         description: 한 페이지에 가져올 게시글 수
+ *     responses:
+ *       200:
+ *         description: 게시글 검색 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 posts:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       400:
+ *         description: 잘못된 요청
+ *       500:
+ *         description: 서버 에러
+ */
+async function getPostsSearchWithLogin(req, res) {
   const locationId = req.query.locationId;
   const keyword = req.query.keyword;
   const lastPostId = req.query.lastPostId;
@@ -434,9 +611,9 @@ async function postMyPost(req, res) {
 
 /**
  * @swagger
- * /posts/user:
+ * /user/:userId/posts:
  *   get:
- *     summary: 내가 쓴 게시글 가져오기
+ *     summary: 해당 유저의 게시글 가져오기 (현재 작동안됨)
  *     tags: [Posts]
  *     parameters:
  *       - in: header
@@ -802,4 +979,6 @@ module.exports = {
   getPostsSearch,
   postReportPost,
   getThisPostWithLogin,
+  getPostsInRangeWithLogin,
+  getPostsSearchWithLogin,
 };

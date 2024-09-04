@@ -20,11 +20,6 @@ async function reportComment(commentId, userId, reason, content) {
       throw new Error("Comment not found");
     }
 
-    const existingReport = await findReportByUserAndComment(userId, commentId);
-    if (existingReport) {
-      throw new Error("이미 접수된 댓글 신고입니다.");
-    }
-
     const report = await createCommentReport(comment, user, reason, content);
     return report;
   } catch (error) {
@@ -42,11 +37,6 @@ async function reportPost(postId, userId, reason, content) {
     const post = await findPostById(postId);
     if (!post) {
       throw new Error("Post not found");
-    }
-
-    const existingReport = await findReportByUserAndPost(userId, postId);
-    if (existingReport) {
-      throw new Error("이미 접수된 게시글 신고입니다.");
     }
 
     const report = await createPostReport(post, user, reason, content);

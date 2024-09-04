@@ -13,9 +13,12 @@ const createComment = async (userId, postId, content) => {
   }
 };
 
-const findCommentsByPostId = async (postId) => {
+const findCommentsByPostId = async (postId, blockedUsers) => {
   try {
-    const comments = await Comment.find({ post: postId }).populate("author");
+    const comments = await Comment.find({
+      post: postId,
+      author: { $nin: blockedUsers },
+    }).populate("author");
     return comments;
   } catch (error) {
     throw error;
@@ -80,10 +83,13 @@ const decreaseCommentLike = async (commentId) => {
 
 module.exports = {
   createComment,
+
   findCommentsByPostId,
   findCommentById,
+
   updateComment,
   deleteComment,
+
   increaseCommentLike,
   decreaseCommentLike,
 };

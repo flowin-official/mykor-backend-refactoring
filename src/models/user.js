@@ -49,6 +49,14 @@ const userSchema = new mongoose.Schema({
 
   created: { type: Date, default: Date.now },
   updated: { type: Date, default: Date.now },
+
+  deleted: { type: Date, default: null },
+
+  blockedUsers: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "User",
+    default: [],
+  },
 });
 
 const User = mongoose.model("User", userSchema);

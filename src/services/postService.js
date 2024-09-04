@@ -7,10 +7,48 @@ const {
   findPostsInRangeByLocationTag,
   increasePostView,
   findPostsWithKeywordByLocation,
+  findPostsInRangeByLocationTagWithBlock,
 } = require("../repositories/postRepository");
 const { findLocationById } = require("../repositories/locationRepository");
 const { findTagById } = require("../repositories/tagRepository");
 const { findUserById } = require("../repositories/userRepository");
+
+async function postsInRangeByLocationTagWithBlock(
+  locationId,
+  tagId,
+  lastPostId,
+  size,
+  hot,
+  userId
+) {
+  try {
+    // 지원하는 지역인지 확인
+    const location = await findLocationById(locationId);
+    if (!location) {
+      throw new Error("지원하지 않는 지역입니다.");
+    }
+
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // 차단된 유저 목록 조회
+    const blockedUsers = await findBlockedUsersByUserId(user);
+
+    const posts = await findPostsInRangeByLocationTagWithBlock(
+      location,
+      tagId,
+      lastPostId,
+      size,
+      hot,
+      blockedUsers
+    );
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+}
 
 async function postsInRangeByLocationTag(
   locationId,
@@ -81,6 +119,25 @@ async function thisPost(postId) {
 }
 
 async function searchingPosts(locationId, keyword, lastPostId, size) {
+  try {
+    const location = await findLocationById(locationId);
+    if (!location) {
+      throw new Error("지원하지 않는 지역입니다.");
+    }
+
+    const posts = await findPostsWithKeywordByLocation(
+      location,
+      keyword,
+      lastPostId,
+      size
+    );
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function searchingPostsWithBlock(locationId, keyword, lastPostId, size) {
   try {
     const location = await findLocationById(locationId);
     if (!location) {
@@ -178,6 +235,10 @@ module.exports = {
   myPosts,
   modifyMyPost,
   removeMyPost,
+
   postsInRangeByLocationTag,
+  postsInRangeByLocationTagWithBlock,
+
   searchingPosts,
+  searchingPostsWithBlock,
 };

@@ -90,9 +90,29 @@ const updateUser = async (userId, nickname, locationId) => {
   }
 };
 
-const deleteUser = async (userId) => {
+const withdrawUser = async (userId) => {
   try {
-    await User.findByIdAndDelete(userId);
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        deleted: Date.now(),
+      },
+      { new: true }
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
+const addBlockUser = async (userId, blockUserId) => {
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $addToSet: { blockedUsers: blockUserId },
+      },
+      { new: true }
+    );
   } catch (error) {
     throw error;
   }
@@ -101,9 +121,15 @@ const deleteUser = async (userId) => {
 module.exports = {
   createKakaoUser,
   createAppleUser,
+
   findUserByKakaoUserCode,
   findUserByAppleUserCode,
+
   findUserById,
+
   updateUser,
-  deleteUser,
+
+  withdrawUser,
+
+  addBlockUser,
 };
