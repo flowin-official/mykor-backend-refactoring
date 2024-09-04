@@ -160,7 +160,7 @@ async function deleteMyInfo(req, res) {
 
 /**
  * @swagger
- * /user/{userId}
+ * /user/:userId:
  *   get:
  *     summary: 유저 정보 조회
  *     tags: [Users]
