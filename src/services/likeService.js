@@ -21,7 +21,7 @@ const {
 const { findUserById } = require("../repositories/userRepository");
 const {
   createNotification,
-  modifyNotificationToReadById,
+  modifyNotificationsToReadByUserId,
 } = require("../repositories/notificationRepository");
 
 async function likePost(postId, userId) {
@@ -39,7 +39,10 @@ async function likePost(postId, userId) {
     if (postLike) {
       throw new Error("이미 좋아요한 게시글입니다.");
     } else {
-      await createNotification(user, post.author, post, null, "좋아요"); // 알림 생성
+      if (post.author !== null) {
+        // 탈퇴한 사용자의 게시물이 아닐 경우
+        await createNotification(user, post.author, post, null, "좋아요"); // 알림 생성
+      }
       postLike = await createPostLike(post, user);
       await increasePostLike(post); // 게시글 좋아요 수 증가
     }
@@ -88,13 +91,16 @@ async function likeComment(commentId, userId) {
     if (commentLike) {
       throw new Error("이미 좋아요한 댓글입니다.");
     } else {
-      await createNotification(
-        user,
-        comment.author,
-        comment.post,
-        comment,
-        "좋아요"
-      ); // 알림 생성
+      if (comment.author !== null) {
+        // 탈퇴한 사용자의 댓글이 아닐 경우
+        await createNotification(
+          user,
+          comment.author,
+          comment.post,
+          comment,
+          "좋아요"
+        );
+      } // 알림 생성
       commentLike = await createCommentLike(comment, user);
       await increaseCommentLike(comment); // 댓글 좋아요 수 증가
     }
