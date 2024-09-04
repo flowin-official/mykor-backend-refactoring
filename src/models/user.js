@@ -5,7 +5,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
     required: false,
-    unique: true,
     // null은 unique 검사 대상에서 제외하기 위한 partialFilterExpression
     partialFilterExpression: { kakaoUserCode: { $ne: null } },
     validate: [
@@ -23,7 +22,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
     required: false,
-    unique: true,
     // null은 unique 검사 대상에서 제외하기 위한 partialFilterExpression
     partialFilterExpression: { appleUserCode: { $ne: null } },
     validate: [
