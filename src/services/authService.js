@@ -129,10 +129,8 @@ async function loginAppleUser(authCode) {
     await saveRefreshToken(user._id, refreshToken);
 
     return { user, accessToken, refreshToken };
-    // TODO
   } catch (error) {
     console.error("Failed to authenticate with Apple.", error);
-    res.status(500).json({ error: "Failed to authenticate with Apple." });
     throw error;
   }
 }
