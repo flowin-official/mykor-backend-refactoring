@@ -208,7 +208,7 @@ async function getUserInfo(req, res) {
 
 /**
  * @swagger
- * /user/block:
+ * /user/{blockedUserId}/block:
  *   post:
  *     summary: 유저 차단
  *     tags: [Users]
@@ -245,7 +245,7 @@ async function postBlockUser(req, res) {
   }
 
   const userId = req.userId;
-  const { blockedUserId } = req.body.blockedUserId;
+  const { blockedUserId } = req.params.blockedUserId;
   try {
     await newBlockUser(userId, blockedUserId);
     res.status(200).json({ message: "User blocked" });

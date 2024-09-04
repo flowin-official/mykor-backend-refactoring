@@ -64,18 +64,18 @@ async function userInfo(userId) {
   }
 }
 
-async function newBlockUser(userId, blockUserId) {
+async function newBlockUser(userId, blockedUserId) {
   try {
     const user = await findUserById(userId);
     if (!user) {
       throw new Error("User not found");
     }
-    const blockUser = await findUserById(blockUserId);
-    if (!blockUser) {
+    const blockedUser = await findUserById(blockedUserId);
+    if (!blockedUser) {
       throw new Error("Block user not found");
     }
 
-    await addBlockUser(user, blockUser);
+    await addBlockUser(user, blockedUser);
   } catch (error) {
     throw error;
   }

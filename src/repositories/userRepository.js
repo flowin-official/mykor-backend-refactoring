@@ -104,12 +104,12 @@ const withdrawUser = async (userId) => {
   }
 };
 
-const addBlockUser = async (userId, blockUserId) => {
+const addBlockUser = async (userId, blockedUserId) => {
   try {
     await User.findByIdAndUpdate(
       userId,
       {
-        $addToSet: { blockedUsers: blockUserId },
+        $addToSet: { blockedUsers: blockedUserId },
       },
       { new: true }
     );

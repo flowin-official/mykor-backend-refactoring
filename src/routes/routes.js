@@ -112,7 +112,7 @@ const setupRoutes = (app) => {
   router.put("/user", authenticateToken, putMyInfo); // 내 정보 수정
   // router.get("/user/:userId/posts", authenticateToken, getMyPosts); // 내가 쓴 게시물 보기
   router.delete("/user", authenticateToken, deleteMyInfo); // 회원 탈퇴
-  router.post("/user/block", authenticateToken, postBlockUser); // 유저 차단
+  router.post("/user/:blockedUserId/block", authenticateToken, postBlockUser); // 유저 차단
 
   router.get("/post/:postId", getThisPost); // 게시글 조회(비회원)
   router.get("/post/:postId/user", authenticateToken, getThisPostWithLogin); // 게시글 조회(회원, 댓글 차단 반영)
