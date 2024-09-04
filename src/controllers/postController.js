@@ -120,7 +120,87 @@ async function getPostsInRange(req, res) {
  * @swagger
  * /post/{postId}:
  *   get:
- *     summary: 게시글 조회(로그인/비로그인 구분)
+ *     summary: 게시글 조회(비회원)
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: 특정 게시글 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 post:
+ *                   type: object
+ *                   properties:
+ *                     author:
+ *                       type: object
+ *                     postLike:
+ *                       type: boolean
+ *                     commentsList:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           author:
+ *                             type: object
+ *                           commentLike:
+ *                             type: boolean
+ *       400:
+ *         description: 잘못된 요청
+ *       404:
+ *         description: 게시글 없음
+ *       500:
+ *         description: 서버 에러
+ */
+async function getThisPost(req, res) {
+  const postId = req.params.postId;
+  if (!postId) {
+    return res.status(400).json({ message: "Bad request" });
+  }
+
+  try {
+    const post = await thisPost(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const comments = await commentsOnThisPost(postId);
+
+    let postLike = false;
+    let commentsLikes = {};
+
+    res.status(200).json({
+      message: "This post",
+      post: {
+        ...post.toObject(),
+        author: post.author,
+        postLike,
+        commentsList: comments.map((comment) => ({
+          ...comment.toObject(),
+          author: comment.author,
+          commentLike: commentsLikes[comment._id] || false,
+        })),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+/**
+ * @swagger
+ * /post/{postId}/user:
+ *   get:
+ *     summary: 게시글 조회(회원)
  *     tags: [Posts]
  *     parameters:
  *       - in: header
@@ -162,12 +242,18 @@ async function getPostsInRange(req, res) {
  *                             type: boolean
  *       400:
  *         description: 잘못된 요청
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: 게시글 없음
  *       500:
  *         description: 서버 에러
  */
-async function getThisPost(req, res) {
+async function getThisPostWithLogin(req, res) {
+  if (!req.isAuthenticated) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
   const userId = req.userId;
   const postId = req.params.postId;
   if (!postId) {
@@ -185,13 +271,11 @@ async function getThisPost(req, res) {
     let postLike = false;
     let commentsLikes = {};
 
-    if (req.isAuthenticated) {
-      postLike = await isLikedPost(postId, userId); // 로그인한 사용자일 때만 좋아요 여부 확인
+    postLike = await isLikedPost(postId, userId); // 로그인한 사용자일 때만 좋아요 여부 확인
 
-      // 댓글 좋아요 여부 확인
-      for (let comment of comments) {
-        commentsLikes[comment._id] = await isLikedComment(comment._id, userId);
-      }
+    // 댓글 좋아요 여부 확인
+    for (let comment of comments) {
+      commentsLikes[comment._id] = await isLikedComment(comment._id, userId);
     }
 
     res.status(200).json({
@@ -717,4 +801,5 @@ module.exports = {
   getPostsInRange,
   getPostsSearch,
   postReportPost,
+  getThisPostWithLogin,
 };

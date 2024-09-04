@@ -25,6 +25,7 @@ const {
   deleteLikePost,
   getPostsSearch,
   postReportPost,
+  getThisPostWithLogin,
 } = require("../controllers/postController");
 const {
   postMyComment,
@@ -104,9 +105,10 @@ const setupRoutes = (app) => {
   router.get("/user/:userId", getUserInfo); // 유저 정보 가져오기(비로그인으로 접근가능한 정보)
   router.get("/locations", getLocations); // 지역 정보 가져오기
   router.get("/tags", getTags); // 태그 정보 가져오기
-  router.get("/post/:postId", authenticateToken, getThisPost); // 게시글 조회(로그인/비로그인 구분)
+  router.get("/post/:postId", getThisPost); // 게시글 조회(비회원)
 
   // protected routes
+  router.get("/post/:postId/user", authenticateToken, getThisPostWithLogin); // 게시글 조회(회원)
   router.get("/user", authenticateToken, getMyInfo); // 회원 정보
   router.get("/posts/user", authenticateToken, getMyPosts); // 내가 쓴 게시물 보기
   router.get("/notifications", authenticateToken, getMyNotifications); // 알림 읽음 처리
