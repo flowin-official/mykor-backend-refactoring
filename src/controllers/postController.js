@@ -14,6 +14,7 @@ const {
 const {
   isLikedPost,
   isLikedComment,
+
   likePost,
   dislikePost,
 } = require("../services/likeService");
@@ -613,7 +614,7 @@ async function postMyPost(req, res) {
  * @swagger
  * /user/:userId/posts:
  *   get:
- *     summary: 해당 유저의 게시글 가져오기 (현재 작동안됨)
+ *     summary: 해당 유저의 게시글 가져오기 (현재 사용안함)
  *     tags: [Posts]
  *     parameters:
  *       - in: header

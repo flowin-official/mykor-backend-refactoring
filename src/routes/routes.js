@@ -107,7 +107,7 @@ const setupRoutes = (app) => {
 
   router.get("/tags", getTags); // 태그 정보 가져오기
 
-  router.get("/user/:userId", authenticateToken, getUserInfo); // 상대 유저 정보 가져오기
+  // router.get("/user/:userId", authenticateToken, getUserInfo); // 상대 유저 정보 가져오기
   router.get("/user", authenticateToken, getMyInfo); // 내 정보
   router.put("/user", authenticateToken, putMyInfo); // 내 정보 수정
   // router.get("/user/:userId/posts", authenticateToken, getMyPosts); // 내가 쓴 게시물 보기

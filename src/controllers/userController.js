@@ -162,7 +162,7 @@ async function deleteMyInfo(req, res) {
  * @swagger
  * /user/:userId:
  *   get:
- *     summary: 유저 정보 조회
+ *     summary: 유저 정보 조회 (현재 사용안함)
  *     tags: [Users]
  *     parameters:
  *       - in: path
@@ -245,7 +245,7 @@ async function postBlockUser(req, res) {
   }
 
   const userId = req.userId;
-  const { blockedUserId } = req.params.blockedUserId;
+  const { blockedUserId } = req.body.blockedUserId;
   try {
     await newBlockUser(userId, blockedUserId);
     res.status(200).json({ message: "User blocked" });
