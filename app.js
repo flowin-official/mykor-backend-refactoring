@@ -8,20 +8,19 @@ const cors = require("cors");
 const setupMongo = require("./src/config/mongoDB");
 const setupSwagger = require("./src/config/swagger");
 const setupRoutes = require("./src/routes/routes");
-const logger = require("./src/utils/logger"); // Winston 로거 가져오기
-const morganMiddleware = require("./src/middlewares/morgan"); // Morgan 미들웨어 가져오기
+const requestLogger = require("./src/middlewares/loggerMiddleware");
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
 
-app.use(morganMiddleware); // Morgan 미들웨어 추가
+app.use(requestLogger); // Morgan 미들웨어 추가
 
 setupMongo();
 setupSwagger(app);
 setupRoutes(app);
 
 app.listen(process.env.SERVER_PORT, () => {
-  logger.info(`Server is running on port ${process.env.SERVER_PORT}`);
+  console.log(`Server is running on port ${process.env.SERVER_PORT}`);
 });

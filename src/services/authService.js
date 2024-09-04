@@ -131,7 +131,6 @@ async function loginAppleUser(authCode) {
 
     return { user, accessToken, refreshToken };
   } catch (error) {
-    console.error("Failed to authenticate with Apple.", error);
     throw error;
   }
 }
@@ -195,18 +194,13 @@ async function loginKakaoUser(authCode) {
 
         return { user, accessToken, refreshToken };
       } catch (error) {
-        logger.error(
-          "카카오 유저코드를 통해 유저를 찾거나 생성하는데 실패했습니다.",
-          error
-        );
+        logger.error(error);
         throw error;
       }
     } catch (error) {
-      logger.error("카카오에서 유저정보를 가져오는데 실패했습니다.", error);
       throw error;
     }
   } catch (error) {
-    logger.error("카카오에서 인증하는데 실패했습니다.", error);
     res.status(500).json({ error: "카카오에서 인증하는데 실패했습니다." });
   }
 }
@@ -230,7 +224,6 @@ async function refreshNewTokens(refreshToken) {
 
     return { user, newAccessToken, newRefreshToken };
   } catch (error) {
-    logger.error("토큰 refresh에 실패했습니다.", error);
     throw error;
   }
 }

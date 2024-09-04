@@ -22,11 +22,11 @@ async function newComment(userId, postId, content) {
     // 유저 및 게시글 검증
     const user = await findUserById(userId);
     if (!user) {
-      throw new Error("User not found");
+      throw new Error("유저를 찾을 수 없습니다");
     }
     const post = await findPostById(postId);
     if (!post) {
-      throw new Error("Post not found");
+      throw new Error("게시물을 찾을 수 없습니다");
     }
 
     const comment = await createComment(user, post, content); // 댓글 생성
