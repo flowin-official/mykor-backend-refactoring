@@ -1,10 +1,19 @@
 const User = require("../models/user");
 
 const createKakaoUser = async (kakaoUserCode) => {
+  const characters =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let code = "";
+
+  for (let i = 0; i < 4; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    code += characters[randomIndex];
+  }
+
   try {
     const user = await User.create({
       kakaoUserCode,
-      nickname: "user" + `${Math.floor(Math.random() * 99999999)}`,
+      nickname: "익명" + `${code}`,
     });
     return user;
   } catch (error) {
@@ -13,10 +22,19 @@ const createKakaoUser = async (kakaoUserCode) => {
 };
 
 const createAppleUser = async (appleUserCode) => {
+  const characters =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let code = "";
+
+  for (let i = 0; i < 4; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    code += characters[randomIndex];
+  }
+
   try {
     const user = await User.create({
       appleUserCode,
-      nickname: "user" + `${Math.floor(Math.random() * 99999999)}`,
+      nickname: "익명" + `${code}`,
     });
     return user;
   } catch (error) {
