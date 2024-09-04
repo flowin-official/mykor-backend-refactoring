@@ -133,7 +133,7 @@ async function getPostsInRange(req, res) {
  *     parameters:
  *       - in: header
  *         name: x-access-token
- *         required: false
+ *         required: true
  *         schema:
  *           type: string
  *         description: JWT token
@@ -312,12 +312,12 @@ async function getThisPost(req, res) {
  * @swagger
  * /post/{postId}/user:
  *   get:
- *     summary: 게시글 조회(회원/댓글차단반영) 미지원
+ *     summary: 게시글 조회(회원/댓글차단반영)
  *     tags: [Posts]
  *     parameters:
  *       - in: header
  *         name: x-access-token
- *         required: false
+ *         required: true
  *         schema:
  *           type: string
  *         description: JWT token
@@ -365,8 +365,8 @@ async function getThisPostWithLogin(req, res) {
   if (!req.isAuthenticated) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-
   const userId = req.userId;
+
   const postId = req.params.postId;
   if (!postId) {
     return res.status(400).json({ message: "Bad request" });
@@ -383,7 +383,7 @@ async function getThisPostWithLogin(req, res) {
     let postLike = false;
     let commentsLikes = {};
 
-    postLike = await isLikedPost(postId, userId); // 로그인한 사용자일 때만 좋아요 여부 확인
+    postLike = await isLikedPost(postId, userId); // 로그인한 사용자일 때만 게시글 좋아요 여부 확인
 
     // 댓글 좋아요 여부 확인
     for (let comment of comments) {
@@ -478,9 +478,15 @@ async function getPostsSearch(req, res) {
  * @swagger
  * /posts/search/user:
  *   get:
- *     summary: 게시글 검색(회원전용/게시글차단반영) 미지원
+ *     summary: 게시글 검색(회원전용/게시글차단반영)
  *     tags: [Posts]
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: query
  *         name: locationId
  *         schema:
@@ -521,6 +527,11 @@ async function getPostsSearch(req, res) {
  *         description: 서버 에러
  */
 async function getPostsSearchWithLogin(req, res) {
+  if (!req.isAuthenticated) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const userId = req.userId;
+
   const locationId = req.query.locationId;
   const keyword = req.query.keyword;
   const lastPostId = req.query.lastPostId;
@@ -530,7 +541,13 @@ async function getPostsSearchWithLogin(req, res) {
       return res.status(400).json({ message: "Bad request" });
     }
 
-    const posts = await searchingPosts(locationId, keyword, lastPostId, size);
+    const posts = await searchingPostsWithLogin(
+      locationId,
+      keyword,
+      lastPostId,
+      size,
+      userId
+    );
     res.status(200).json({
       message: "Searched posts",
       posts,

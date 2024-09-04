@@ -1,13 +1,16 @@
 const {
   createPost,
+
   findPostById,
   findPostsByUserId,
+
   updatePost,
   deletePost,
-  findPostsInRangeByLocationTag,
+
   increasePostView,
+
+  findPostsInRangeByLocationTag,
   findPostsWithKeywordByLocation,
-  findPostsInRangeByLocationTagWithBlock,
 } = require("../repositories/postRepository");
 const { findLocationById } = require("../repositories/locationRepository");
 const { findTagById } = require("../repositories/tagRepository");
@@ -33,16 +36,13 @@ async function postsInRangeByLocationTagWithBlock(
       throw new Error("User not found");
     }
 
-    // 차단된 유저 목록 조회
-    const blockedUsers = await findBlockedUsersByUserId(user);
-
     const posts = await findPostsInRangeByLocationTagWithBlock(
       location,
       tagId,
       lastPostId,
       size,
       hot,
-      blockedUsers
+      user.blockedUsers // 사용자가 차단한 사용자 목록 전달
     );
     return posts;
   } catch (error) {
@@ -69,7 +69,8 @@ async function postsInRangeByLocationTag(
       tagId,
       lastPostId,
       size,
-      hot
+      hot,
+      [] // 비회원은 블록된 사용자가 없으므로 빈 배열 전달
     );
     return posts;
   } catch (error) {
@@ -129,7 +130,8 @@ async function searchingPosts(locationId, keyword, lastPostId, size) {
       location,
       keyword,
       lastPostId,
-      size
+      size,
+      [] // 비회원은 블록된 사용자가 없으므로 빈 배열
     );
     return posts;
   } catch (error) {
@@ -137,18 +139,29 @@ async function searchingPosts(locationId, keyword, lastPostId, size) {
   }
 }
 
-async function searchingPostsWithBlock(locationId, keyword, lastPostId, size) {
+async function searchingPostsWithBlock(
+  locationId,
+  keyword,
+  lastPostId,
+  size,
+  userId
+) {
   try {
     const location = await findLocationById(locationId);
     if (!location) {
       throw new Error("지원하지 않는 지역입니다.");
+    }
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
     }
 
     const posts = await findPostsWithKeywordByLocation(
       location,
       keyword,
       lastPostId,
-      size
+      size,
+      user.blockedUsers // 사용자가 차단한 사용자 목록 전달
     );
     return posts;
   } catch (error) {

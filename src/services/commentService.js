@@ -2,12 +2,14 @@ const {
   createComment,
   updateComment,
   deleteComment,
+
   findCommentsByPostId,
   findCommentById,
 } = require("../repositories/commentRepository");
 const {
   increasePostComment,
   decreasePostComment,
+
   findPostById,
 } = require("../repositories/postRepository");
 const { findUserById } = require("../repositories/userRepository");
@@ -110,7 +112,7 @@ async function commentsOnThisPostWithBlock(postId, userId) {
       throw new Error("User not found");
     }
 
-    const comments = await findCommentsByPostId(post, user.blockedUsers);
+    const comments = await findCommentsByPostId(post, user.blockedUsers); // 차단 적용
     return comments;
   } catch (error) {
     throw error;
@@ -121,6 +123,7 @@ module.exports = {
   newComment,
   modifyMyComment,
   removeMyComment,
+
   commentsOnThisPost,
   commentsOnThisPostWithBlock,
 };

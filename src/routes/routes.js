@@ -108,18 +108,17 @@ const setupRoutes = (app) => {
 
   router.get("/tags", getTags); // 태그 정보 가져오기
 
-  router.get("/user/:userId", authenticateToken, getUserInfo); // 유저 정보 가져오기
   router.get("/user", authenticateToken, getMyInfo); // 내 정보
   router.put("/user", authenticateToken, putMyInfo); // 내 정보 수정
   router.delete("/user", authenticateToken, deleteMyInfo); // 회원 탈퇴
+  router.get("/user/:userId", authenticateToken, getUserInfo); // 다른 유저 정보 가져오기
   router.post("/user/:blockedUserId/block", authenticateToken, postBlockUser); // 유저 차단
 
   router.get("/post/:postId", getThisPost); // 게시글 조회(비회원)
   router.get("/post/:postId/user", authenticateToken, getThisPostWithLogin); // 게시글 조회(회원, 댓글 차단 반영)
-
+  router.post("/post", authenticateToken, postMyPost); // 게시글 작성
   router.put("/post/:postId", authenticateToken, putMyPost); // 내 게시글 수정
   router.delete("/post/:postId", authenticateToken, deleteMyPost); // 내 게시글 삭제
-  router.post("/post", authenticateToken, postMyPost); // 게시글 작성
 
   router.post("/post/:postId/like", authenticateToken, postLikePost); // 게시글 좋아요
   router.delete("/post/:postId/like", authenticateToken, deleteLikePost); // 게시글 좋아요 취소
