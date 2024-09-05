@@ -6,6 +6,10 @@ const {
   newBlockUser,
 } = require("../services/userService");
 
+const {
+  deleteAppleUser,
+} = require("../services/authService");
+
 /**
  * @swagger
  * tags:
@@ -133,6 +137,11 @@ async function putMyInfo(req, res) {
  *         schema:
  *           type: string
  *         description: JWT token
+ *       - in: path
+ *         name: appleAuthCode
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: 회원 탈퇴 성공
@@ -150,7 +159,12 @@ async function deleteMyInfo(req, res) {
   }
 
   const userId = req.userId;
+  const appleAuthCode = req.params.appleAuthCode;
   try {
+    if (appleAuthCode) {
+      const apple_res = await deleteAppleUser(appleAuthCode);
+      if (apple_res.status != 200) throw new Error("apple revoke failed" + apple_res.body);
+    }
     await removeMyInfo(userId);
     res.status(200).json({ message: "User deleted" });
   } catch (error) {

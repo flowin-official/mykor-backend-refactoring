@@ -61,6 +61,37 @@ const logger = require("../utils/logger");
 // }
 
 async function loginAppleUser(authCode) {
+  try{
+    const { access_token, refresh_token, id_token } = await acquireAppleAuthTokenResponse(authCode).data;
+
+    // id_token에서 user_id를 추출
+    const userInfo = parseJwt(id_token);
+
+    // 여기서 userInfo.sub가 Apple의 user_id입니다.
+    const userId = userInfo.sub;
+
+    // 유저 코드를 기반으로 유저 찾기
+    let user = await findUserByAppleUserCode(userId);
+
+    // 유저가 없으면 새로 생성
+    if (!user) {
+      user = await createAppleUser(userId);
+    }
+
+    // user._id는 생성된 유저의 db상 id임
+    const accessToken = createAccessToken({ id: user._id });
+    const refreshToken = createRefreshToken({ id: user._id });
+
+    // redis에 리프레시 토큰 저장
+    await saveRefreshToken(user._id, refreshToken);
+
+    return { user, accessToken, refreshToken };
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function acquireAppleAuthTokenResponse(authCode) {
   const appleAlgorithm = process.env.APPLE_ALG;
   const appleAuthKey = fs.readFileSync(process.env.APPLE_AUTH_KEY_FILE, "utf8");
   const appleBundleID = process.env.APPLE_BUNDLE_ID;
@@ -105,8 +136,64 @@ async function loginAppleUser(authCode) {
         },
       }
     );
+    return tokenResponse;
 
-    const { access_token, refresh_token, id_token } = tokenResponse.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function revokeAppleAuthTokenResponse(access_token) {
+  const appleAlgorithm = process.env.APPLE_ALG;
+  const appleAuthKey = fs.readFileSync(process.env.APPLE_AUTH_KEY_FILE, "utf8");
+  const appleBundleID = process.env.APPLE_BUNDLE_ID;
+  const appleIssuer = process.env.APPLE_TEAM_ID;
+  const appleKeyID = process.env.APPLE_KEY_ID;
+
+  try {
+    // Apple Login에 필요한 Client Secret Token 생성
+    const clientSecret = jwt.sign(
+      {
+        iss: appleIssuer,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1시간 유효
+        aud: "https://appleid.apple.com",
+        sub: appleBundleID,
+      },
+      appleAuthKey,
+      {
+        algorithm: appleAlgorithm,
+        header: {
+          alg: appleAlgorithm,
+          kid: appleKeyID,
+        },
+      }
+    );
+    
+    const url = 'https://appleid.apple.com/auth/revoke';
+
+    const params = new URLSearchParams();
+    params.append('client_id', appleBundleID);
+    params.append('client_secret', clientSecret);
+    params.append('token', access_token);
+    params.append('token_type_hint', 'access_token');
+
+    const response = await axios.post(url, params.toString(), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+async function deleteAppleUser(authCode) {
+  try {
+    const { access_token, refresh_token, id_token } = await acquireAppleAuthTokenResponse(authCode).data;
 
     // id_token에서 user_id를 추출
     const userInfo = parseJwt(id_token);
@@ -117,19 +204,13 @@ async function loginAppleUser(authCode) {
     // 유저 코드를 기반으로 유저 찾기
     let user = await findUserByAppleUserCode(userId);
 
-    // 유저가 없으면 새로 생성
+    // 유저가 없으면 에러
     if (!user) {
-      user = await createAppleUser(userId);
+      throw new Error("user not exists!");
     }
 
-    // user._id는 생성된 유저의 db상 id임
-    const accessToken = createAccessToken({ id: user._id });
-    const refreshToken = createRefreshToken({ id: user._id });
+    return revokeAppleAuthTokenResponse(access_token);
 
-    // redis에 리프레시 토큰 저장
-    await saveRefreshToken(user._id, refreshToken);
-
-    return { user, accessToken, refreshToken };
   } catch (error) {
     throw error;
   }
@@ -231,4 +312,5 @@ module.exports = {
   loginAppleUser,
   loginKakaoUser,
   refreshNewTokens,
+  deleteAppleUser,
 };
