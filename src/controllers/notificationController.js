@@ -111,7 +111,12 @@ async function getNotification(req, res) {
       message: "Notifications exist",
       notifications: notifications.map((notification) => ({
         ...notification.toObject(),
-        fromUser: notification.fromUser,
+        fromUser: {
+          _id: notification.fromUser._id,
+          nickname: notification.fromUser.nickname,
+          location: notification.fromUser.location,
+          deleted: notification.fromUser.deleted,
+        },
       })),
     });
   } catch (error) {

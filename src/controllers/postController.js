@@ -116,7 +116,12 @@ async function getPostsInRange(req, res) {
       message: "Get posts in range",
       posts: posts.map((post) => ({
         ...post.toObject(),
-        author: post.author,
+        author: {
+          _id: post.author._id,
+          nickname: post.author.nickname,
+          location: post.author.location,
+          deleted: post.author.deleted,
+        },
       })),
     });
   } catch (error) {
@@ -223,7 +228,12 @@ async function getPostsInRangeWithLogin(req, res) {
       message: "Get posts in range",
       posts: posts.map((post) => ({
         ...post.toObject(),
-        author: post.author,
+        author: {
+          _id: post.author._id,
+          nickname: post.author.nickname,
+          location: post.author.location,
+          deleted: post.author.deleted,
+        },
       })),
     });
   } catch (error) {
@@ -294,11 +304,21 @@ async function getThisPost(req, res) {
       message: "This post",
       post: {
         ...post.toObject(),
-        author: post.author,
+        author: {
+          _id: post.author._id,
+          nickname: post.author.nickname,
+          location: post.author.location,
+          deleted: post.author.deleted,
+        },
         postLike: false,
         commentsList: comments.map((comment) => ({
           ...comment.toObject(),
-          author: comment.author,
+          author: {
+            _id: comment.author._id,
+            nickname: comment.author.nickname,
+            location: comment.author.location,
+            deleted: comment.author.deleted,
+          },
           commentLike: false,
         })),
       },
@@ -394,11 +414,21 @@ async function getThisPostWithLogin(req, res) {
       message: "This post",
       post: {
         ...post.toObject(),
-        author: post.author,
+        author: {
+          _id: post.author._id,
+          nickname: post.author.nickname,
+          location: post.author.location,
+          deleted: post.author.deleted,
+        },
         postLike,
         commentsList: comments.map((comment) => ({
           ...comment.toObject(),
-          author: comment.author,
+          author: {
+            _id: comment.author._id,
+            nickname: comment.author.nickname,
+            location: comment.author.location,
+            deleted: comment.author.deleted,
+          },
           commentLike: commentsLikes[comment._id] || false,
         })),
       },
@@ -541,7 +571,7 @@ async function getPostsSearchWithLogin(req, res) {
       return res.status(400).json({ message: "Bad request" });
     }
 
-    const posts = await searchingPostsWithLogin(
+    const posts = await searchingPostsWithBlock(
       locationId,
       keyword,
       lastPostId,
