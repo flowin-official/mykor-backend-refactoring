@@ -40,13 +40,4 @@ logger.add(
   })
 );
 
-// 콘솔에도 로그를 출력 (개발 환경에서 유용)
-if (process.env.NODE_ENV !== "production") {
-  logger.add(
-    new transports.Console({
-      format: combine(timestamp(), logFormat),
-    })
-  );
-}
-
 module.exports = logger;
