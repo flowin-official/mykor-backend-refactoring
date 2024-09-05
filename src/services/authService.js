@@ -194,7 +194,6 @@ async function loginKakaoUser(authCode) {
 
         return { user, accessToken, refreshToken };
       } catch (error) {
-        logger.error(error);
         throw error;
       }
     } catch (error) {

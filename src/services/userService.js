@@ -66,7 +66,6 @@ async function userInfo(userId) {
 
 async function newBlockUser(userId, blockedUserId) {
   try {
-    console.log("userService에서 : " + userId, blockedUserId);
     const user = await findUserById(userId);
     if (!user) {
       throw new Error("User not found");

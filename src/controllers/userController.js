@@ -257,7 +257,6 @@ async function postBlockUser(req, res) {
 
   const userId = req.userId;
   const blockedUserId = req.params.blockedUserId;
-  console.log("userController에서 : " + userId, blockedUserId);
   try {
     await newBlockUser(userId, blockedUserId);
     res.status(200).json({ message: "User blocked" });
