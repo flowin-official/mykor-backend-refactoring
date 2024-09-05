@@ -62,7 +62,7 @@ const logger = require("../utils/logger");
 
 async function loginAppleUser(authCode) {
   try{
-    const { access_token, refresh_token, id_token } = await acquireAppleAuthTokenResponse(authCode).data;
+    const { access_token, refresh_token, id_token } = await acquireAppleAuthTokenResponse(authCode);
 
     // id_token에서 user_id를 추출
     const userInfo = parseJwt(id_token);
@@ -136,7 +136,7 @@ async function acquireAppleAuthTokenResponse(authCode) {
         },
       }
     );
-    return tokenResponse;
+    return tokenResponse.data;
 
   } catch (error) {
     throw error;
@@ -193,7 +193,7 @@ async function revokeAppleAuthTokenResponse(access_token) {
 
 async function deleteAppleUser(authCode) {
   try {
-    const { access_token, refresh_token, id_token } = await acquireAppleAuthTokenResponse(authCode).data;
+    const { access_token, refresh_token, id_token } = await acquireAppleAuthTokenResponse(authCode);
 
     // id_token에서 user_id를 추출
     const userInfo = parseJwt(id_token);
