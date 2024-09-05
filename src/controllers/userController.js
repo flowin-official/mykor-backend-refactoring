@@ -164,6 +164,7 @@ async function deleteMyInfo(req, res) {
       const apple_res = await deleteAppleUser(appleAuthCode);
       if (apple_res.status != 200)
         throw new Error("apple revoke failed" + apple_res.body);
+      console.log("apple revoke success!");
     }
     await removeMyInfo(userId);
     res.status(200).json({ message: "User deleted" });

@@ -60,37 +60,6 @@ const logger = require("../utils/logger");
 //   }
 // }
 
-async function loginAppleUser(authCode) {
-  try{
-    const { access_token, refresh_token, id_token } = await acquireAppleAuthTokenResponse(authCode);
-
-    // id_token에서 user_id를 추출
-    const userInfo = parseJwt(id_token);
-
-    // 여기서 userInfo.sub가 Apple의 user_id입니다.
-    const userId = userInfo.sub;
-
-    // 유저 코드를 기반으로 유저 찾기
-    let user = await findUserByAppleUserCode(userId);
-
-    // 유저가 없으면 새로 생성
-    if (!user) {
-      user = await createAppleUser(userId);
-    }
-
-    // user._id는 생성된 유저의 db상 id임
-    const accessToken = createAccessToken({ id: user._id });
-    const refreshToken = createRefreshToken({ id: user._id });
-
-    // redis에 리프레시 토큰 저장
-    await saveRefreshToken(user._id, refreshToken);
-
-    return { user, accessToken, refreshToken };
-  } catch (error) {
-    throw error;
-  }
-}
-
 async function acquireAppleAuthTokenResponse(authCode) {
   const appleAlgorithm = process.env.APPLE_ALG;
   const appleAuthKey = fs.readFileSync(process.env.APPLE_AUTH_KEY_FILE, "utf8");
@@ -190,6 +159,36 @@ async function revokeAppleAuthTokenResponse(access_token) {
   }
 }
 
+async function loginAppleUser(authCode) {
+  try{
+    const { access_token, refresh_token, id_token } = await acquireAppleAuthTokenResponse(authCode);
+
+    // id_token에서 user_id를 추출
+    const userInfo = parseJwt(id_token);
+
+    // 여기서 userInfo.sub가 Apple의 user_id입니다.
+    const userId = userInfo.sub;
+
+    // 유저 코드를 기반으로 유저 찾기
+    let user = await findUserByAppleUserCode(userId);
+
+    // 유저가 없으면 새로 생성
+    if (!user) {
+      user = await createAppleUser(userId);
+    }
+
+    // user._id는 생성된 유저의 db상 id임
+    const accessToken = createAccessToken({ id: user._id });
+    const refreshToken = createRefreshToken({ id: user._id });
+
+    // redis에 리프레시 토큰 저장
+    await saveRefreshToken(user._id, refreshToken);
+
+    return { user, accessToken, refreshToken };
+  } catch (error) {
+    throw error;
+  }
+}
 
 async function deleteAppleUser(authCode) {
   try {
