@@ -36,7 +36,7 @@ async function postsInRangeByLocationTagWithBlock(
       throw new Error("User not found");
     }
 
-    const posts = await findPostsInRangeByLocationTagWithBlock(
+    const posts = await findPostsInRangeByLocationTag(
       location,
       tagId,
       lastPostId,
