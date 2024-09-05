@@ -92,7 +92,7 @@ const updateUser = async (userId, nickname, locationId) => {
 
 const withdrawUser = async (userId) => {
   try {
-    const user = await User.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
       userId,
       {
         deleted: Date.now(),

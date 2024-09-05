@@ -6,9 +6,7 @@ const {
   newBlockUser,
 } = require("../services/userService");
 
-const {
-  deleteAppleUser,
-} = require("../services/authService");
+const { deleteAppleUser } = require("../services/authService");
 
 /**
  * @swagger
@@ -159,11 +157,12 @@ async function deleteMyInfo(req, res) {
   }
 
   const userId = req.userId;
-  const appleAuthCode = req.params.appleAuthCode;
+  const appleAuthCode = req.query.appleAuthCode;
   try {
     if (appleAuthCode) {
       const apple_res = await deleteAppleUser(appleAuthCode);
-      if (apple_res.status != 200) throw new Error("apple revoke failed" + apple_res.body);
+      if (apple_res.status != 200)
+        throw new Error("apple revoke failed" + apple_res.body);
     }
     await removeMyInfo(userId);
     res.status(200).json({ message: "User deleted" });
