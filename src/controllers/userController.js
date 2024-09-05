@@ -135,11 +135,12 @@ async function putMyInfo(req, res) {
  *         schema:
  *           type: string
  *         description: JWT token
- *       - in: path
+ *       - in: query
  *         name: appleAuthCode
  *         required: false
  *         schema:
  *           type: string
+ *         description: 애플 auth dode
  *     responses:
  *       200:
  *         description: 회원 탈퇴 성공
