@@ -2,7 +2,7 @@ name: Deploy Node.js app to EC2
 on:
   push:
     branches:
-      - develop
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
