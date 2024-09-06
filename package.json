@@ -1,0 +1,32 @@
+{
+  "name": "mykor-backend-refactoring",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "2.1653.0",
+    "axios": "^1.7.2",
+    "body-parser": "1.20.2",
+    "cors": "2.8.5",
+    "dotenv": "16.4.5",
+    "express": "4.19.2",
+    "express-winston": "^4.2.0",
+    "jsonwebtoken": "9.0.2",
+    "moment-timezone": "0.5.45",
+    "mongoose": "8.4.4",
+    "morgan": "^1.10.0",
+    "multer": "1.4.5-lts.1",
+    "multer-s3": "3.0.1",
+    "redis": "^4.7.0",
+    "swagger-jsdoc": "5.0.0",
+    "swagger-ui-express": "5.0.1",
+    "winston": "^3.14.2",
+    "winston-daily-rotate-file": "^5.0.0"
+  }
+}
