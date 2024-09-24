@@ -3,8 +3,10 @@ on:
   push:
     branches:
       - main
+      - develop
 jobs:
-  deploy:
+  deploy-main:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -20,6 +22,30 @@ jobs:
             cd ~/mykor-backend-refactoring
 
             # 리포지토리 pull
+            git pull https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/flowin-official/mykor-backend-refactoring.git
+
+            # 의존성 설치 및 애플리케이션 시작
+            sudo npm install
+            sudo npm install -g pm2
+            pm2 stop all || true
+            pm2 start app.js
+  deploy-develop:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Set up SSH for develop branch
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST_DEVELOP }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY_DEVELOP }}
+          script: |
+            # 리포지토리 디렉토리로 이동
+            cd ~/mykor-backend-refactoring
+
+            # develop 브랜치에 대한 리포지토리 pull
             git pull https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/flowin-official/mykor-backend-refactoring.git
 
             # 의존성 설치 및 애플리케이션 시작

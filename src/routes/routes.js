@@ -54,36 +54,36 @@ const setupRoutes = (app) => {
   const router = express.Router();
 
   // 테스트용 액세스토큰 발급 라우트
-  // router.post("/test", (req, res) => {
-  //   const userId = "66c2f9ac6cbec92da7aa3182";
-  //   const accessToken = createAccessToken({ id: userId });
-  //   const user = {
-  //     _id: userId,
-  //     location: "66c010709cab1badf1eade78",
-  //     nickname: "test",
-  //     kakaoUserCode: "1",
-  //   };
-  //   res.json({
-  //     message: "test user",
-  //     user,
-  //     accessToken,
-  //   });
-  // });
-  // router.post("/test2", (req, res) => {
-  //   const userId = "66c2f9df6cbec92da7aa3183";
-  //   const accessToken = createAccessToken({ id: userId });
-  //   const user = {
-  //     _id: userId,
-  //     location: "66c010709cab1badf1eade7a",
-  //     nickname: "test2",
-  //     kakaoUserCode: "2",
-  //   };
-  //   res.json({
-  //     message: "test user2",
-  //     user,
-  //     accessToken,
-  //   });
-  // });
+  router.post("/test", (req, res) => {
+    const userId = "66c2f9ac6cbec92da7aa3182";
+    const accessToken = createAccessToken({ id: userId });
+    const user = {
+      _id: userId,
+      location: "66c010709cab1badf1eade78",
+      nickname: "test",
+      kakaoUserCode: "1",
+    };
+    res.json({
+      message: "test user",
+      user,
+      accessToken,
+    });
+  });
+  router.post("/test2", (req, res) => {
+    const userId = "66c2f9df6cbec92da7aa3183";
+    const accessToken = createAccessToken({ id: userId });
+    const user = {
+      _id: userId,
+      location: "66c010709cab1badf1eade7a",
+      nickname: "test2",
+      kakaoUserCode: "2",
+    };
+    res.json({
+      message: "test user2",
+      user,
+      accessToken,
+    });
+  });
 
   // 헬스체크 라우트
   router.get("/healthcheck", (req, res) => {
@@ -92,11 +92,11 @@ const setupRoutes = (app) => {
     });
   });
 
-  // router.post("/dummy/post", postDummyPost); // 게시글 더미 데이터 생성
-  // router.delete("/dummy/post", deleteDummyPost); // 게시글 더미 데이터 삭제
+  router.post("/dummy/post", postDummyPost); // 게시글 더미 데이터 생성
+  router.delete("/dummy/post", deleteDummyPost); // 게시글 더미 데이터 삭제
 
-  // router.post("/dummy/comment", postDummyComment); // 댓글 더미 데이터 생성
-  // router.delete("/dummy/comment", deleteDummyComment); // 댓글 더미 데이터 삭제
+  router.post("/dummy/comment", postDummyComment); // 댓글 더미 데이터 생성
+  router.delete("/dummy/comment", deleteDummyComment); // 댓글 더미 데이터 삭제
 
   router.post("/login/kakao", postKakaoLogin); // 카카오 로그인(회원가입)
   router.post("/login/apple", postAppleLogin); // 애플 로그인(회원가입)
