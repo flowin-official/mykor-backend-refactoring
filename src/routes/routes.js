@@ -4,6 +4,7 @@ const { createAccessToken } = require("../utils/jwt");
 const {
   postKakaoLogin,
   postAppleLogin,
+  postGoogleLogin,
   postRefresh,
 } = require("../controllers/authController");
 const { postContact } = require("../controllers/contactController");
@@ -100,6 +101,8 @@ const setupRoutes = (app) => {
 
   router.post("/login/kakao", postKakaoLogin); // 카카오 로그인(회원가입)
   router.post("/login/apple", postAppleLogin); // 애플 로그인(회원가입)
+  router.post("/login/google", postGoogleLogin); // 구글 로그인(회원가입)
+
   router.post("/refresh", postRefresh); // 토큰 재발급
 
   router.post("/contact", postContact); // 지역 문의하기

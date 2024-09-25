@@ -42,6 +42,26 @@ const createAppleUser = async (appleUserCode) => {
   }
 };
 
+const createGoogleUser = async (googleUserCode) => {
+  const characters =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let code = "";
+  for (let i = 0; i < 4; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    code += characters[randomIndex];
+  }
+
+  try {
+    const user = await User.create({
+      googleUserCode,
+      nickname: "익명" + `${code}`,
+    });
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const findUserById = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -66,6 +86,17 @@ const findUserByAppleUserCode = async (appleUserCode) => {
   try {
     const user = await User.findOne({
       appleUserCode,
+    });
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const findUserByGoogleUserCode = async (googleUserCode) => {
+  try {
+    const user = await User.findOne({
+      googleUserCode,
     });
     return user;
   } catch (error) {
@@ -123,9 +154,11 @@ const addBlockUser = async (userId, blockedUserId) => {
 module.exports = {
   createKakaoUser,
   createAppleUser,
+  createGoogleUser,
 
   findUserByKakaoUserCode,
   findUserByAppleUserCode,
+  findUserByGoogleUserCode,
 
   findUserById,
 

@@ -2,8 +2,10 @@ const axios = require("axios");
 const {
   createKakaoUser,
   createAppleUser,
+  createGoogleUser,
   findUserByKakaoUserCode,
   findUserByAppleUserCode,
+  findUserByGoogleUserCode,
   findUserById,
 } = require("../repositories/userRepository");
 const {
@@ -106,7 +108,6 @@ async function acquireAppleAuthTokenResponse(authCode) {
       }
     );
     return tokenResponse.data;
-
   } catch (error) {
     throw error;
   }
@@ -138,30 +139,30 @@ async function revokeAppleAuthTokenResponse(access_token) {
         },
       }
     );
-    
-    const url = 'https://appleid.apple.com/auth/revoke';
+
+    const url = "https://appleid.apple.com/auth/revoke";
 
     const params = new URLSearchParams();
-    params.append('client_id', appleBundleID);
-    params.append('client_secret', clientSecret);
-    params.append('token', access_token);
-    params.append('token_type_hint', 'access_token');
+    params.append("client_id", appleBundleID);
+    params.append("client_secret", clientSecret);
+    params.append("token", access_token);
+    params.append("token_type_hint", "access_token");
 
     const response = await axios.post(url, params.toString(), {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        "Content-Type": "application/x-www-form-urlencoded",
       },
     });
     return response;
-
   } catch (error) {
     throw error;
   }
 }
 
 async function loginAppleUser(authCode) {
-  try{
-    const { access_token, refresh_token, id_token } = await acquireAppleAuthTokenResponse(authCode);
+  try {
+    const { access_token, refresh_token, id_token } =
+      await acquireAppleAuthTokenResponse(authCode);
 
     // id_token에서 user_id를 추출
     const userInfo = parseJwt(id_token);
@@ -192,7 +193,8 @@ async function loginAppleUser(authCode) {
 
 async function deleteAppleUser(authCode) {
   try {
-    const { access_token, refresh_token, id_token } = await acquireAppleAuthTokenResponse(authCode);
+    const { access_token, refresh_token, id_token } =
+      await acquireAppleAuthTokenResponse(authCode);
 
     // id_token에서 user_id를 추출
     const userInfo = parseJwt(id_token);
@@ -209,7 +211,6 @@ async function deleteAppleUser(authCode) {
     }
 
     return revokeAppleAuthTokenResponse(access_token);
-
   } catch (error) {
     throw error;
   }
@@ -284,6 +285,71 @@ async function loginKakaoUser(authCode) {
   }
 }
 
+async function loginGoogleUser(authCode) {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
+  try {
+    const tokenResponse = await axios.post(
+      "https://oauth2.googleapis.com/token",
+      null,
+      {
+        params: {
+          client_id: clientId,
+          client_secret: clientSecret,
+          code: authCode,
+          grant_type: "authorization_code",
+        },
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    // 구글 서버로부터 받은 액세스 토큰
+    const { access_token } = tokenResponse.data;
+
+    // 구글 서버로부터 받은 액세스 토큰을 기반으로 유저 정보 요청
+    try {
+      const userResponse = await axios.get(
+        "https://www.googleapis.com/oauth2/v1/userinfo",
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+      // 유저 코드
+      const { id } = userResponse.data;
+
+      try {
+        // 유저 코드를 기반으로 유저 찾기
+        let user = await findUserByGoogleUserCode(id);
+
+        // 유저가 없으면 새로 생성
+        if (!user) {
+          user = await createGoogleUser(id);
+        }
+
+        // user._id는 생성된 유저의 db상 id임
+        const accessToken = createAccessToken({ id: user._id });
+        const refreshToken = createRefreshToken({ id: user._id });
+
+        // redis에 리프레시 토큰 저장
+        await saveRefreshToken(user._id, refreshToken);
+
+        return { user, accessToken, refreshToken };
+      } catch (error) {
+        throw error;
+      }
+    } catch (error) {
+      throw error;
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function refreshNewTokens(refreshToken) {
   try {
     const decoded = verifyRefreshToken(refreshToken);
@@ -310,6 +376,7 @@ async function refreshNewTokens(refreshToken) {
 module.exports = {
   loginAppleUser,
   loginKakaoUser,
+  loginGoogleUser,
   refreshNewTokens,
   deleteAppleUser,
 };
