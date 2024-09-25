@@ -12,6 +12,9 @@ const requestLogger = require("./src/middlewares/loggerMiddleware");
 
 const app = express();
 
+// 프록시 서버를 신뢰하여 실제 클라이언트 IP 확인
+app.set("trust proxy", true);
+
 app.use(bodyParser.json());
 app.use(cors());
 
