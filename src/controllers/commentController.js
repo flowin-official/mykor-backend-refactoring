@@ -3,6 +3,7 @@ const {
   modifyMyComment,
   removeMyComment,
   myComments,
+  userComments,
 } = require("../services/commentService");
 const { reportComment } = require("../services/reportService");
 const { likeComment, dislikeComment } = require("../services/likeService");
@@ -449,8 +450,84 @@ async function getMyComments(req, res) {
   }
 }
 
+/**
+ * @swagger
+ * /user/{userId}/comments:
+ *   get:
+ *     summary: 유저 댓글 가져오기
+ *     tags: [Users]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
+ *       - in: query
+ *         name: lastCommentId
+ *         schema:
+ *           type: string
+ *         description: 이전 페이지의 마지막 댓글 ID
+ *       - in: query
+ *         name: size
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 한 페이지에 가져올 댓글 수
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               reason:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: 내 댓글 가져오기 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 post:
+ *                   type: object
+ *       401:
+ *         description: 권한 없음
+ *       500:
+ *         description: 서버 에러
+ */
+async function getUserComments(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
+  const userId = req.params.userId; // 헤더 토큰의 userId가 아니라 URL의 userId
+  const lastCommentId = req.query.lastCommentId;
+  const size = req.query.size;
+  try {
+    const comments = await userComments(userId, lastCommentId, size);
+    res.status(200).json({
+      message: "Comments found",
+      comments,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   getMyComments,
+  getUserComments,
+
   postMyComment,
   putMyComment,
   deleteMyComment,

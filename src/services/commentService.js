@@ -134,11 +134,26 @@ async function myComments(userId, lastCommentId, size) {
   }
 }
 
+async function userComments(userId, lastCommentId, size) {
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const comments = await findCommentsByUserId(user, lastCommentId, size);
+    return comments;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   newComment,
   modifyMyComment,
   removeMyComment,
   myComments,
+  userComments,
 
   commentsOnThisPost,
   commentsOnThisPostWithBlock,

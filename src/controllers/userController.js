@@ -177,9 +177,15 @@ async function deleteMyInfo(req, res) {
  * @swagger
  * /user/{userId}:
  *   get:
- *     summary: 유저 정보 조회 (현재 사용안함)
+ *     summary: 유저 정보 조회
  *     tags: [Users]
  *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
  *       - in: path
  *         name: userId
  *         required: true
@@ -215,7 +221,7 @@ async function getUserInfo(req, res) {
     return;
   }
 
-  const userId = req.params.userId;
+  const userId = req.params.userId; // 헤더의 유저가 아니라 params의 유저 정보를 가져옴
   try {
     const user = await userInfo(userId);
     res.status(200).json({
