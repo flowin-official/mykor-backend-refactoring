@@ -967,7 +967,7 @@ async function postReportPost(req, res) {
 
 /**
  * @swagger
- * /user/my/posts:
+ * /my/posts:
  *   get:
  *     summary: 내 게시글 가져오기
  *     tags: [Users]
@@ -1010,7 +1010,7 @@ async function postReportPost(req, res) {
  *       500:
  *         description: 서버 에러
  */
-async function getMyPosts(res, req) {
+async function getMyPosts(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
       message: "Unauthorized",
@@ -1077,7 +1077,7 @@ async function getMyPosts(res, req) {
  *       500:
  *         description: 서버 에러
  */
-async function getUserPosts(res, req) {
+async function getUserPosts(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
       message: "Unauthorized",
@@ -1101,7 +1101,7 @@ async function getUserPosts(res, req) {
 
 /**
  * @swagger
- * /user/my/postlikes:
+ * /my/postlikes:
  *   get:
  *     summary: 내가 좋아요한 게시글 가져오기
  *     tags: [Users]
@@ -1144,7 +1144,7 @@ async function getUserPosts(res, req) {
  *       500:
  *         description: 서버 에러
  */
-async function getMyPostLikes(res, req) {
+async function getMyPostLikes(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
       message: "Unauthorized",

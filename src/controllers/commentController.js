@@ -378,7 +378,7 @@ async function postReportComment(req, res) {
 
 /**
  * @swagger
- * /user/my/comments:
+ * /my/comments:
  *   get:
  *     summary: 내 댓글 가져오기
  *     tags: [Users]
