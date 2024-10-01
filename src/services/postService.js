@@ -11,10 +11,13 @@ const {
 
   findPostsInRangeByLocationTag,
   findPostsWithKeywordByLocation,
+
+  findPostsByPostLikes,
 } = require("../repositories/postRepository");
 const { findLocationById } = require("../repositories/locationRepository");
 const { findTagById } = require("../repositories/tagRepository");
 const { findUserById } = require("../repositories/userRepository");
+const { findPostLikesByUserId } = require("../repositories/postLikeRepository");
 
 async function postsInRangeByLocationTagWithBlock(
   locationId,
@@ -178,14 +181,29 @@ async function allPosts() {
   }
 }
 
-async function myPosts(userId) {
+async function myPosts(userId, lastPostId, size) {
   try {
     const user = await findUserById(userId);
     if (!user) {
       throw new Error("User not found");
     }
 
-    const posts = await findPostsByUserId(user);
+    const posts = await findPostsByUserId(user, lastPostId, size);
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function myPostLikes(userId, lastPostId, size) {
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const postlikes = await findPostLikesByUserId(user);
+    const posts = await findPostsByPostLikes(postlikes, lastPostId, size);
+
     return posts;
   } catch (error) {
     throw error;
@@ -246,6 +264,7 @@ module.exports = {
   thisPost,
   newPost,
   myPosts,
+  myPostLikes,
   modifyMyPost,
   removeMyPost,
 

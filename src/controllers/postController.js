@@ -2,6 +2,7 @@ const {
   thisPost,
   newPost,
   myPosts,
+  myPostLikes,
   modifyMyPost,
   removeMyPost,
 
@@ -659,58 +660,6 @@ async function postMyPost(req, res) {
 
 /**
  * @swagger
- * /user/:userId/posts:
- *   get:
- *     summary: 해당 유저의 게시글 가져오기 (현재 사용안함)
- *     tags: [Posts]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *     responses:
- *       200:
- *         description: 내가 쓴 게시글 조회 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 posts:
- *                   type: array
- *                   items:
- *                     type: object
- *       401:
- *         description: 토큰 만료
- *       500:
- *         description: 서버 에러
- */
-async function getMyPosts(req, res) {
-  if (!req.isAuthenticated) {
-    res.status(401).json({
-      message: "Unauthorized",
-    });
-    return;
-  }
-
-  const userId = req.userId;
-  try {
-    const posts = await myPosts(userId);
-    res.status(200).json({
-      message: "User posts found",
-      posts,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-/**
- * @swagger
  * /post/{postId}:
  *   put:
  *     summary: 게시글 수정
@@ -1015,8 +964,143 @@ async function postReportPost(req, res) {
   }
 }
 
+/**
+ * @swagger
+ * /user/my/posts:
+ *   get:
+ *     summary: 내 게시글 가져오기
+ *     tags: [Users]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
+ *       - in: query
+ *         name: lastPostId
+ *         schema:
+ *           type: string
+ *         description: 이전 페이지의 마지막 게시글 ID
+ *       - in: query
+ *         name: size
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 한 페이지에 가져올 게시글 수
+ *     responses:
+ *       200:
+ *         description: 범위 내 게시글 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 posts:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       400:
+ *         description: 잘못된 요청
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: 서버 에러
+ */
+async function getMyPosts(res, req) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
+  const userId = req.userId;
+  const lastPostId = req.query.lastPostId;
+  const size = req.query.size;
+  try {
+    const posts = await myPosts(userId, lastPostId, size);
+    res.status(200).json({
+      message: "My posts",
+      posts,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+/**
+ * @swagger
+ * /user/my/postlikes:
+ *   get:
+ *     summary: 내가 좋아요한 게시글 가져오기
+ *     tags: [Users]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
+ *       - in: query
+ *         name: lastPostId
+ *         schema:
+ *           type: string
+ *         description: 이전 페이지의 마지막 게시글 ID
+ *       - in: query
+ *         name: size
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 한 페이지에 가져올 게시글 수
+ *     responses:
+ *       200:
+ *         description: 범위 내 게시글 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 posts:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       400:
+ *         description: 잘못된 요청
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: 서버 에러
+ */
+async function getMyPostLikes(res, req) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
+  const userId = req.userId;
+  const lastPostId = req.query.lastPostId;
+  const size = req.query.size;
+  try {
+    const posts = await myPostLikes(userId, lastPostId, size);
+    res.status(200).json({
+      message: "My posts",
+      posts,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   getMyPosts,
+  getMyPostLikes,
   postMyPost,
   getThisPost,
   putMyPost,

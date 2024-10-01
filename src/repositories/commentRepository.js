@@ -81,11 +81,32 @@ const decreaseCommentLike = async (commentId) => {
   }
 };
 
+const findCommentsByUserId = async (userId, lastCommentId, size) => {
+  try {
+    const query = {
+      author: userId,
+    };
+
+    if (lastCommentId) {
+      query._id = { $lt: lastCommentId };
+    }
+
+    const comments = await Comment.find(query)
+      .sort({ _id: -1 })
+      .limit(size)
+      .populate("post");
+    return comments;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createComment,
 
   findCommentsByPostId,
   findCommentById,
+  findCommentsByUserId,
 
   updateComment,
   deleteComment,
