@@ -178,14 +178,14 @@ async function allPosts() {
   }
 }
 
-async function myPosts(userId) {
+async function myPosts(userId, lastPostId, size) {
   try {
     const user = await findUserById(userId);
     if (!user) {
       throw new Error("User not found");
     }
 
-    const posts = await findPostsByUserId(user);
+    const posts = await findPostsByUserId(user, lastPostId, size);
     return posts;
   } catch (error) {
     throw error;
