@@ -5,6 +5,7 @@ const {
 
   findCommentsByPostId,
   findCommentById,
+  findCommentsByUserId,
 } = require("../repositories/commentRepository");
 const {
   increasePostComment,
@@ -119,10 +120,25 @@ async function commentsOnThisPostWithBlock(postId, userId) {
   }
 }
 
+async function myComments(userId, lastCommentId, size) {
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const comments = await findCommentsByUserId(user, lastCommentId, size);
+    return comments;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   newComment,
   modifyMyComment,
   removeMyComment,
+  myComments,
 
   commentsOnThisPost,
   commentsOnThisPostWithBlock,

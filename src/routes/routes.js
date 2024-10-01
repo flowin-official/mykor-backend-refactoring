@@ -116,8 +116,8 @@ const setupRoutes = (app) => {
   router.put("/user", authenticateToken, putMyInfo); // 내 정보 수정
   router.delete("/user", authenticateToken, deleteMyInfo); // 회원 탈퇴
   router.get("/user/my/posts", authenticateToken, getMyPosts);
-  // router.get("/user/my/postlikes", authenticateToken, getMyPostLikes);
-  // router.get("/user/my/comments", authenticateToken, getMyComments);
+  router.get("/user/my/postlikes", authenticateToken, getMyPostLikes);
+  router.get("/user/my/comments", authenticateToken, getMyComments);
 
   router.get("/user/:userId", authenticateToken, getUserInfo); // 다른 유저 정보 가져오기
   // router.get("/user/:userId/posts", authenticateToken, getUserPosts); // 다른 유저 게시글 가져오기

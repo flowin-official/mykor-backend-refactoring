@@ -93,6 +93,33 @@ const findPostsByUserId = async (userId, lastPostId, size) => {
   }
 };
 
+const findPostsByPostLikes = async (postLikes, lastPostId, size) => {
+  try {
+    // postLikes 배열에서 post 필드만 추출
+    const postIds = postLikes.map((postLike) => postLike.post);
+
+    // 기본 쿼리 생성
+    const query = {
+      _id: { $in: postIds },
+    };
+
+    // lastPostId가 있을 때만 _id 조건 추가
+    if (lastPostId) {
+      query._id = { $lt: lastPostId };
+    }
+
+    // 쿼리 실행: 정렬, 제한 및 author 필드 populate
+    const posts = await Post.find(query)
+      .sort({ _id: -1 })
+      .limit(size)
+      .populate("author");
+
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const updatePost = async (postId, title, content, tag) => {
   try {
     const post = await Post.findByIdAndUpdate(
@@ -225,6 +252,7 @@ module.exports = {
 
   findPostById,
   findPostsByUserId,
+  findPostsByPostLikes,
 
   updatePost,
   deletePost,
