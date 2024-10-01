@@ -259,6 +259,19 @@ async function removeMyPost(userId, postId) {
   }
 }
 
+async function userPosts(userId, lastPostId, size) {
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const posts = await findPostsByUserId(user, lastPostId, size);
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   allPosts,
   thisPost,
@@ -267,6 +280,7 @@ module.exports = {
   myPostLikes,
   modifyMyPost,
   removeMyPost,
+  userPosts,
 
   postsInRangeByLocationTag,
   postsInRangeByLocationTagWithBlock,

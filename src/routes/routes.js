@@ -30,6 +30,7 @@ const {
   getPostsSearchWithLogin,
   getMyPosts,
   getMyPostLikes,
+  getUserPosts,
 } = require("../controllers/postController");
 const {
   postMyComment,
@@ -39,6 +40,7 @@ const {
   deleteLikeComment,
   postReportComment,
   getMyComments,
+  getUserComments,
 } = require("../controllers/commentController");
 const { getLocations } = require("../controllers/locationController");
 const { getTags } = require("../controllers/tagController");
@@ -120,8 +122,9 @@ const setupRoutes = (app) => {
   router.get("/user/my/comments", authenticateToken, getMyComments);
 
   router.get("/user/:userId", authenticateToken, getUserInfo); // 다른 유저 정보 가져오기
-  // router.get("/user/:userId/posts", authenticateToken, getUserPosts); // 다른 유저 게시글 가져오기
-  // router.get("/user/:userId/comments", authenticateToken, getUserComments); // 다른 유저 댓글 가져오기
+  router.get("/user/:userId/posts", authenticateToken, getUserPosts); // 다른 유저 게시글 가져오기
+  router.get("/user/:userId/comments", authenticateToken, getUserComments); // 다른 유저 댓글 가져오기
+
   router.post("/user/:blockedUserId/block", authenticateToken, postBlockUser); // 유저 차단
 
   router.get("/post/:postId", getThisPost); // 게시글 조회(비회원)
