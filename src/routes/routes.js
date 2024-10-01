@@ -53,6 +53,10 @@ const {
   postDummyComment,
   deleteDummyComment,
 } = require("../dummy/dummyComment");
+const {
+  postChatMessage,
+  getChatMessages,
+} = require("../controllers/chatController");
 
 const setupRoutes = (app) => {
   const router = express.Router();
@@ -163,7 +167,8 @@ const setupRoutes = (app) => {
     postReportComment
   ); // 댓글 신고
 
-  // router.post("/comment/:commentId/comment", authenticateToken, postMyNestedComment); // 대댓글 작성
+  router.post("/message", authenticateToken, postChatMessage);
+  router.get("/messages/:roomId", authenticateToken, getChatMessages);
 
   // 기본 라우트 설정
   app.use("/mykor/api/v1", router);
