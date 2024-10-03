@@ -94,7 +94,7 @@ const findCommentsByUserId = async (userId, lastCommentId, size) => {
     const comments = await Comment.find(query)
       .sort({ _id: -1 })
       .limit(size)
-      .populate("post");
+      .populate("author");
     return comments;
   } catch (error) {
     throw error;

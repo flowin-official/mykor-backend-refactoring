@@ -121,6 +121,7 @@ const setupRoutes = (app) => {
   router.get("/user", authenticateToken, getMyInfo); // 내 정보
   router.put("/user", authenticateToken, putMyInfo); // 내 정보 수정
   router.delete("/user", authenticateToken, deleteMyInfo); // 회원 탈퇴
+
   router.get("/my/posts", authenticateToken, getMyPosts);
   router.get("/my/postlikes", authenticateToken, getMyPostLikes);
   router.get("/my/comments", authenticateToken, getMyComments);
