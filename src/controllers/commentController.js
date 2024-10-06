@@ -421,7 +421,9 @@ async function postReportComment(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 post:
+ *                 countAllComments:
+ *                   type: integer
+ *                 comments:
  *                   type: object
  *       401:
  *         description: 권한 없음
@@ -500,7 +502,9 @@ async function getMyComments(req, res) {
  *               properties:
  *                 message:
  *                   type: string
- *                 post:
+ *                 countAllComments:
+ *                   type: integer
+ *                 comments:
  *                   type: object
  *       401:
  *         description: 권한 없음

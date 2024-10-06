@@ -999,6 +999,8 @@ async function postReportPost(req, res) {
  *               properties:
  *                 message:
  *                   type: string
+ *                 countAllPosts:
+ *                   type: integer
  *                 posts:
  *                   type: array
  *                   items:
@@ -1067,6 +1069,8 @@ async function getMyPosts(req, res) {
  *               properties:
  *                 message:
  *                   type: string
+ *                 countAllPosts:
+ *                   type: integer
  *                 posts:
  *                   type: array
  *                   items:
@@ -1135,6 +1139,8 @@ async function getUserPosts(req, res) {
  *               properties:
  *                 message:
  *                   type: string
+ *                 countAllPosts:
+ *                   type: integer
  *                 posts:
  *                   type: array
  *                   items:
