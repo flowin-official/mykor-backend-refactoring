@@ -1,11 +1,11 @@
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3({ region: process.env.AWS_REGION });
 
-const generatePresignedUrl = (key, operation, expiresIn) => {
+const generatePresignedUrl = (key, operation) => {
   const params = {
     Bucket: process.env.AWS_S3_BUCKET, // S3 버킷 이름
     Key: key, // 파일의 S3 키
-    Expires: expiresIn || 60, // Presigned URL의 유효 기간 (기본: 60초)
+    Expires: 60, // Presigned URL의 유효 기간 (기본: 60초)
   };
 
   if (operation === "getObject") {

@@ -18,7 +18,14 @@ const findCommentsByPostId = async (postId, blockedUsers) => {
     const comments = await Comment.find({
       post: postId,
       author: { $nin: blockedUsers },
-    }).populate("author");
+    })
+      .populate("author")
+      .populate({
+        path: "post",
+        populate: {
+          path: "author", // post 객체 안의 author도 populate
+        },
+      });
     return comments;
   } catch (error) {
     throw error;
@@ -27,7 +34,14 @@ const findCommentsByPostId = async (postId, blockedUsers) => {
 
 const findCommentById = async (commentId) => {
   try {
-    const comment = await Comment.findById(commentId).populate("author");
+    const comment = await Comment.findById(commentId)
+      .populate("author")
+      .populate({
+        path: "post",
+        populate: {
+          path: "author", // post 객체 안의 author도 populate
+        },
+      });
     return comment;
   } catch (error) {
     throw error;
@@ -94,13 +108,13 @@ const findCommentsByUserId = async (userId, lastCommentId, size) => {
     const comments = await Comment.find(query)
       .sort({ _id: -1 })
       .limit(size)
+      .populate("author")
       .populate({
         path: "post",
         populate: {
           path: "author", // post 객체 안의 author도 populate
         },
-      })
-      .populate("author");
+      });
     return comments;
   } catch (error) {
     throw error;

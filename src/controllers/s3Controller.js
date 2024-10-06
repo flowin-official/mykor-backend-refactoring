@@ -10,14 +10,13 @@ async function getPresignedUrl(req, res) {
   const userId = req.userId;
 
   try {
-    const { key, operation, expiresIn } = req.body;
+    const { key, operation } = req.body;
 
     // presigned URL 생성
     const url = await generatePresignedUrl(key, operation, expiresIn);
 
     return res.status(200).json({ url });
   } catch (error) {
-    console.error("Error generating presigned URL:", error);
     return res.status(500).json({ error: "Failed to generate presigned URL" });
   }
 }

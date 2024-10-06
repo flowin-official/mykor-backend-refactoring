@@ -15,6 +15,11 @@ const postSchema = new mongoose.Schema({
     ref: "Tag",
     required: true,
   },
+  images: [
+    {
+      type: String,
+    },
+  ],
 
   views: { type: Number, default: 0 },
   likes: { type: Number, default: 0 },
