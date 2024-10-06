@@ -440,10 +440,21 @@ async function getMyComments(req, res) {
   const lastCommentId = req.query.lastCommentId;
   const size = req.query.size;
   try {
-    const comments = await myComments(userId, lastCommentId, size);
+    const { countAllComments, comments } = await myComments(
+      userId,
+      lastCommentId,
+      size
+    );
     res.status(200).json({
       message: "Comments found",
-      comments,
+      countAllComments,
+      comments: comments.map((comment) => ({
+        ...comment.toObject(),
+        post: {
+          id: comment.post._id,
+          title: comment.post.title,
+        },
+      })),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -514,10 +525,21 @@ async function getUserComments(req, res) {
   const lastCommentId = req.query.lastCommentId;
   const size = req.query.size;
   try {
-    const comments = await userComments(userId, lastCommentId, size);
+    const { countAllComments, comments } = await userComments(
+      userId,
+      lastCommentId,
+      size
+    );
     res.status(200).json({
       message: "Comments found",
-      comments,
+      countAllComments,
+      comments: comments.map((comment) => ({
+        ...comment.toObject(),
+        post: {
+          id: comment.post._id,
+          title: comment.post.title,
+        },
+      })),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

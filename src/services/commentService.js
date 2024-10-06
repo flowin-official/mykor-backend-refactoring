@@ -127,8 +127,10 @@ async function myComments(userId, lastCommentId, size) {
       throw new Error("User not found");
     }
 
+    const allComments = await findCommentsByUserId(user, null, null);
+    const countAllComments = allComments.length;
     const comments = await findCommentsByUserId(user, lastCommentId, size);
-    return comments;
+    return { countAllComments, comments };
   } catch (error) {
     throw error;
   }
@@ -141,8 +143,10 @@ async function userComments(userId, lastCommentId, size) {
       throw new Error("User not found");
     }
 
+    const allComments = await findCommentsByUserId(user, null, null);
+    const countAllComments = allComments.length;
     const comments = await findCommentsByUserId(user, lastCommentId, size);
-    return comments;
+    return { countAllComments, comments };
   } catch (error) {
     throw error;
   }
