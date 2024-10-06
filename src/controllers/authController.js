@@ -49,9 +49,12 @@ const {
  *         description: 서버 에러
  */
 async function postKakaoLogin(req, res) {
-  const { authCode } = req.body;
+  const { authCode, fcmToken } = req.body;
   try {
-    const { user, accessToken, refreshToken } = await loginKakaoUser(authCode);
+    const { user, accessToken, refreshToken } = await loginKakaoUser(
+      authCode,
+      fcmToken
+    );
     res.status(200).json({
       message: "User logged in successfully",
       user,
@@ -98,9 +101,12 @@ async function postKakaoLogin(req, res) {
  *         description: 서버 에러
  */
 async function postAppleLogin(req, res) {
-  const { authCode } = req.body;
+  const { authCode, fcmToken } = req.body;
   try {
-    const { user, accessToken, refreshToken } = await loginAppleUser(authCode);
+    const { user, accessToken, refreshToken } = await loginAppleUser(
+      authCode,
+      fcmToken
+    );
     res.status(200).json({
       message: "User logged in successfully",
       user,
@@ -147,9 +153,12 @@ async function postAppleLogin(req, res) {
  *         description: 서버 에러
  */
 async function postGoogleLogin(req, res) {
-  const { authCode } = req.body;
+  const { authCode, fcmToken } = req.body;
   try {
-    const { user, accessToken, refreshToken } = await loginGoogleUser(authCode);
+    const { user, accessToken, refreshToken } = await loginGoogleUser(
+      authCode,
+      fcmToken
+    );
     res.status(200).json({
       message: "User logged in successfully",
       user,

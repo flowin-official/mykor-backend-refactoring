@@ -57,6 +57,7 @@ const {
   postChatMessage,
   getChatMessages,
 } = require("../controllers/chatController");
+const { getPresignedUrl } = require("../controllers/s3Controller");
 
 const setupRoutes = (app) => {
   const router = express.Router();
@@ -170,6 +171,8 @@ const setupRoutes = (app) => {
 
   router.post("/message", authenticateToken, postChatMessage);
   router.get("/messages/:roomId", authenticateToken, getChatMessages);
+
+  router.post("/presigned-url", authenticateToken, getPresignedUrl);
 
   // 기본 라우트 설정
   app.use("/mykor/api/v1", router);

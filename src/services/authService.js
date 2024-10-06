@@ -159,7 +159,7 @@ async function revokeAppleAuthTokenResponse(access_token) {
   }
 }
 
-async function loginAppleUser(authCode) {
+async function loginAppleUser(authCode, fcmToken) {
   try {
     const { access_token, refresh_token, id_token } =
       await acquireAppleAuthTokenResponse(authCode);
@@ -175,7 +175,7 @@ async function loginAppleUser(authCode) {
 
     // 유저가 없으면 새로 생성
     if (!user) {
-      user = await createAppleUser(userId);
+      user = await createAppleUser(userId, fcmToken);
     }
 
     // user._id는 생성된 유저의 db상 id임
@@ -216,7 +216,7 @@ async function deleteAppleUser(authCode) {
   }
 }
 
-async function loginKakaoUser(authCode) {
+async function loginKakaoUser(authCode, fcmToken) {
   const clientId = process.env.KAKAO_CLIENT_ID;
   const clientSecret = process.env.KAKAO_CLIENT_SECRET;
   const redirectUri = process.env.NATIVE_REDIRECT_URI;
@@ -263,7 +263,7 @@ async function loginKakaoUser(authCode) {
 
         // 유저가 없으면 새로 생성
         if (!user) {
-          user = await createKakaoUser(id);
+          user = await createKakaoUser(id, fcmToken);
         }
 
         // user._id는 생성된 유저의 db상 id임
@@ -285,7 +285,7 @@ async function loginKakaoUser(authCode) {
   }
 }
 
-async function loginGoogleUser(authCode) {
+async function loginGoogleUser(authCode, fcmToken) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
@@ -328,7 +328,7 @@ async function loginGoogleUser(authCode) {
 
         // 유저가 없으면 새로 생성
         if (!user) {
-          user = await createGoogleUser(id);
+          user = await createGoogleUser(id, fcmToken);
         }
 
         // user._id는 생성된 유저의 db상 id임

@@ -1,6 +1,6 @@
 const User = require("../models/user");
 
-const createKakaoUser = async (kakaoUserCode) => {
+const createKakaoUser = async (kakaoUserCode, fcmToken) => {
   const characters =
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let code = "";
@@ -14,6 +14,7 @@ const createKakaoUser = async (kakaoUserCode) => {
     const user = await User.create({
       kakaoUserCode,
       nickname: "익명" + `${code}`,
+      fcmToken,
     });
     return user;
   } catch (error) {
@@ -21,7 +22,7 @@ const createKakaoUser = async (kakaoUserCode) => {
   }
 };
 
-const createAppleUser = async (appleUserCode) => {
+const createAppleUser = async (appleUserCode, fcmToken) => {
   const characters =
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let code = "";
@@ -35,6 +36,7 @@ const createAppleUser = async (appleUserCode) => {
     const user = await User.create({
       appleUserCode,
       nickname: "익명" + `${code}`,
+      fcmToken,
     });
     return user;
   } catch (error) {
@@ -42,7 +44,7 @@ const createAppleUser = async (appleUserCode) => {
   }
 };
 
-const createGoogleUser = async (googleUserCode) => {
+const createGoogleUser = async (googleUserCode, fcmToken) => {
   const characters =
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let code = "";
@@ -55,6 +57,7 @@ const createGoogleUser = async (googleUserCode) => {
     const user = await User.create({
       googleUserCode,
       nickname: "익명" + `${code}`,
+      fcmToken,
     });
     return user;
   } catch (error) {
