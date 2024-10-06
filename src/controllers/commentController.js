@@ -448,13 +448,7 @@ async function getMyComments(req, res) {
     res.status(200).json({
       message: "Comments found",
       countAllComments,
-      comments: comments.map((comment) => ({
-        ...comment.toObject(),
-        post: {
-          id: comment.post._id,
-          title: comment.post.title,
-        },
-      })),
+      comments,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -533,13 +527,7 @@ async function getUserComments(req, res) {
     res.status(200).json({
       message: "Comments found",
       countAllComments,
-      comments: comments.map((comment) => ({
-        ...comment.toObject(),
-        post: {
-          id: comment.post._id,
-          title: comment.post.title,
-        },
-      })),
+      comments,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

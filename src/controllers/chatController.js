@@ -61,9 +61,9 @@ async function postChatMessage(req, res) {
   }
   const userId = req.userId;
 
-  const { roomId, message } = req.body;
+  const { opponentUserId, message } = req.body;
   try {
-    await sendMessage(roomId, userId, message);
+    await sendMessage(opponentUserId, userId, message);
     res.status(200).json({
       message: "Message sent",
     });

@@ -21,6 +21,21 @@ const findMessagesByRoomId = async (roomId) => {
   }
 };
 
+const findRoomIdsByUserId = async (userId) => {
+  const ref = db.ref("rooms");
+  try {
+    const snapshot = await ref.once("value");
+    const rooms = snapshot.val();
+    const roomIds = Object.keys(rooms).filter((roomId) => {
+      const room = rooms[roomId];
+      return room.members.includes(userId);
+    });
+    return roomIds;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   saveMessage,
   findMessagesByRoomId,

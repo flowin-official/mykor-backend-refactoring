@@ -1022,9 +1022,10 @@ async function getMyPosts(req, res) {
   const lastPostId = req.query.lastPostId;
   const size = req.query.size;
   try {
-    const posts = await myPosts(userId, lastPostId, size);
+    const { countAllPosts, posts } = await myPosts(userId, lastPostId, size);
     res.status(200).json({
       message: "My posts",
+      countAllPosts,
       posts,
     });
   } catch (error) {
@@ -1089,9 +1090,10 @@ async function getUserPosts(req, res) {
   const lastPostId = req.query.lastPostId;
   const size = req.query.size;
   try {
-    const posts = await userPosts(userId, lastPostId, size);
+    const { countAllPosts, posts } = await userPosts(userId, lastPostId, size);
     res.status(200).json({
       message: "User's posts",
+      countAllPosts,
       posts,
     });
   } catch (error) {
@@ -1156,9 +1158,14 @@ async function getMyPostLikes(req, res) {
   const lastPostId = req.query.lastPostId;
   const size = req.query.size;
   try {
-    const posts = await myPostLikes(userId, lastPostId, size);
+    const { countAllPosts, posts } = await myPostLikes(
+      userId,
+      lastPostId,
+      size
+    );
     res.status(200).json({
       message: "My posts",
+      countAllPosts,
       posts,
     });
   } catch (error) {

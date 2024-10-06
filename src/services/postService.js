@@ -188,8 +188,10 @@ async function myPosts(userId, lastPostId, size) {
       throw new Error("User not found");
     }
 
+    const allPosts = await findPostsByUserId(user, null, null);
+    const countAllPosts = allPosts.length;
     const posts = await findPostsByUserId(user, lastPostId, size);
-    return posts;
+    return { countAllPosts, posts };
   } catch (error) {
     throw error;
   }
@@ -202,9 +204,12 @@ async function myPostLikes(userId, lastPostId, size) {
       throw new Error("User not found");
     }
     const postlikes = await findPostLikesByUserId(user);
+
+    const allPosts = await findPostsByPostLikes(postlikes, null, null);
+    const countAllPosts = allPosts.length;
     const posts = await findPostsByPostLikes(postlikes, lastPostId, size);
 
-    return posts;
+    return { countAllPosts, posts };
   } catch (error) {
     throw error;
   }
@@ -265,8 +270,10 @@ async function userPosts(userId, lastPostId, size) {
     if (!user) {
       throw new Error("User not found");
     }
+    const allPosts = await findPostsByUserId(user, null, null);
+    const countAllPosts = allPosts.length;
     const posts = await findPostsByUserId(user, lastPostId, size);
-    return posts;
+    return { countAllPosts, posts };
   } catch (error) {
     throw error;
   }
