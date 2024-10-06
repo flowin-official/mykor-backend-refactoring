@@ -617,6 +617,8 @@ async function getPostsSearchWithLogin(req, res) {
  *                 type: string
  *               tagId:
  *                 type: string
+ *               images:
+ *                 type: array
  *     responses:
  *       201:
  *         description: 게시글 작성 성공
@@ -643,9 +645,16 @@ async function postMyPost(req, res) {
   }
 
   const userId = req.userId;
-  const { title, content, locationId, tagId } = req.body;
+  const { title, content, locationId, tagId, images } = req.body;
   try {
-    const post = await newPost(title, content, userId, locationId, tagId);
+    const post = await newPost(
+      title,
+      content,
+      userId,
+      locationId,
+      tagId,
+      images
+    );
     res.status(201).json({
       message: "Post created",
       post: {

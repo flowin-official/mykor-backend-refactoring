@@ -81,7 +81,7 @@ async function postsInRangeByLocationTag(
   }
 }
 
-async function newPost(title, content, userId, locationId, tagId) {
+async function newPost(title, content, userId, locationId, tagId, images) {
   try {
     // 해당 지역이 존재하는지 확인
     const location = await findLocationById(locationId);
@@ -100,7 +100,7 @@ async function newPost(title, content, userId, locationId, tagId) {
     }
 
     // 해당 지역 게시판에 글 작성
-    const post = await createPost(title, content, user, location, tag);
+    const post = await createPost(title, content, user, location, tag, images);
     return post;
   } catch (error) {
     throw error;
