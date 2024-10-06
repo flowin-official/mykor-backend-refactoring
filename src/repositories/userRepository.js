@@ -132,6 +132,7 @@ const withdrawUser = async (userId) => {
         deleted: Date.now(),
         kakaoUserCode: "deleted user",
         appleUserCode: "deleted user",
+        googleUserCode: "deleted user",
       },
       { new: true }
     );
