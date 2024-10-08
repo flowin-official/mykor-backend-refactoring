@@ -1,11 +1,19 @@
-const AWS = require("aws-sdk");
-const s3 = new AWS.S3({ region: process.env.AWS_REGION });
+// 필요한 모듈 임포트
+const {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
-const generatePresignedUrl = (userId, purpose, count) => {
+// S3 클라이언트 생성
+const s3 = new S3Client({ region: process.env.AWS_REGION });
+
+const generatePutPresignedUrl = async (userId, purpose, count) => {
   let urls = [];
 
   for (let i = 0; i < count; i++) {
-    key = "";
+    let key = "";
     if (purpose === "profile") {
       key = `profile/${userId}`;
     } else if (purpose === "post") {
@@ -17,13 +25,25 @@ const generatePresignedUrl = (userId, purpose, count) => {
     const params = {
       Bucket: process.env.AWS_S3_BUCKET, // S3 버킷 이름
       Key: key, // 파일의 S3 키
-      Expires: 60, // Presigned URL의 유효 기간 (기본: 60초)
     };
 
-    const url = s3.getSignedUrl("putObject", params); // 쓰기용 presigned URL
+    // PutObjectCommand와 getSignedUrl을 사용하여 presigned URL 생성
+    const command = new PutObjectCommand(params);
+    const url = await getSignedUrl(s3, command, { expiresIn: 60 }); // 유효기간 60초
     urls.push({ url, key });
   }
   return urls;
 };
 
-module.exports = { generatePresignedUrl };
+const generateGetPresignedUrl = async (key) => {
+  const params = {
+    Bucket: process.env.AWS_S3_BUCKET, // S3 버킷 이름
+    Key: key, // 파일의 S3 키
+  };
+
+  // GetObjectCommand와 getSignedUrl을 사용하여 presigned URL 생성
+  const command = new GetObjectCommand(params);
+  return await getSignedUrl(s3, command, { expiresIn: 60 }); // 유효기간 60초
+};
+
+module.exports = { generatePutPresignedUrl, generateGetPresignedUrl };

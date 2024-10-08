@@ -25,6 +25,7 @@ const {
   commentsOnThisPost,
   commentsOnThisPostWithBlock,
 } = require("../services/commentService");
+const { generateGetPresignedUrl } = require("../services/s3Service");
 
 /**
  * @swagger
@@ -114,6 +115,14 @@ async function getPostsInRange(req, res) {
       size,
       isHot
     );
+
+    previewImageUrls = {};
+    for (let post of posts) {
+      previewImageUrls[post.images[0]._id] = await generateGetPresignedUrl(
+        post.images[0].key
+      );
+    }
+
     res.status(200).json({
       message: "Get posts in range",
       posts: posts.map((post) => ({
@@ -124,6 +133,16 @@ async function getPostsInRange(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
+        images: [
+          {
+            _id: post.images[0]._id,
+            url: previewImageUrls[post.images[0]._id],
+          },
+        ],
+        // previewImage: {
+        //   _id: post.images[0]._id,
+        //   url: previewImageUrls[post.images[0]._id],
+        // },
       })),
     });
   } catch (error) {
@@ -226,6 +245,14 @@ async function getPostsInRangeWithLogin(req, res) {
       isHot,
       userId
     );
+
+    previewImageUrls = {};
+    for (let post of posts) {
+      previewImageUrls[post.images[0]._id] = await generateGetPresignedUrl(
+        post.images[0].key
+      );
+    }
+
     res.status(200).json({
       message: "Get posts in range",
       posts: posts.map((post) => ({
@@ -236,6 +263,16 @@ async function getPostsInRangeWithLogin(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
+        images: [
+          {
+            _id: post.images[0]._id,
+            url: previewImageUrls[post.images[0]._id],
+          },
+        ],
+        // previewImage: {
+        //   _id: post.images[0]._id,
+        //   url: previewImageUrls[post.images[0]._id],
+        // },
       })),
     });
   } catch (error) {
@@ -302,6 +339,12 @@ async function getThisPost(req, res) {
 
     const comments = await commentsOnThisPost(postId);
 
+    // 이미지 Key로부터 presigned URL 생성
+    let imageUrls = {};
+    for (let image of post.images) {
+      imageUrls[image._id] = await generateGetPresignedUrl(image.key);
+    }
+
     res.status(200).json({
       message: "This post",
       post: {
@@ -312,6 +355,11 @@ async function getThisPost(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
+        images: post.images.map((image) => ({
+          _id: image._id,
+          url: imageUrls[image._id],
+          position: image.position,
+        })),
         postLike: false,
         commentsList: comments.map((comment) => ({
           ...comment.toObject(),
@@ -412,6 +460,12 @@ async function getThisPostWithLogin(req, res) {
       commentsLikes[comment._id] = await isLikedComment(comment._id, userId);
     }
 
+    // 이미지 Key로부터 presigned URL 생성
+    let imageUrls = {};
+    for (let image of post.images) {
+      imageUrls[image._id] = await generateGetPresignedUrl(image.key);
+    }
+
     res.status(200).json({
       message: "This post",
       post: {
@@ -422,6 +476,11 @@ async function getThisPostWithLogin(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
+        images: post.images.map((image) => ({
+          _id: image._id,
+          url: imageUrls[image._id],
+          position: image.position,
+        })),
         postLike,
         commentsList: comments.map((comment) => ({
           ...comment.toObject(),
