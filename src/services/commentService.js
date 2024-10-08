@@ -18,7 +18,7 @@ const {
   createNotification,
 } = require("../repositories/notificationRepository");
 
-async function newComment(userId, postId, content) {
+async function newComment(userId, postId, commentId, content) {
   try {
     // 유저 및 게시글 검증
     const user = await findUserById(userId);
@@ -29,8 +29,12 @@ async function newComment(userId, postId, content) {
     if (!post) {
       throw new Error("게시물을 찾을 수 없습니다");
     }
+    const parentComment = await findCommentById(commentId);
+    if (!parentComment) {
+      throw new Error("댓글을 찾을 수 없습니다");
+    }
 
-    const comment = await createComment(user, post, content); // 댓글 생성
+    const comment = await createComment(user, post, parentComment, content); // 댓글 생성
     await increasePostComment(post._id); // 게시글의 댓글 카운트 증가
 
     // notification 생성

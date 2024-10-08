@@ -68,9 +68,9 @@ async function postMyComment(req, res) {
   }
 
   const userId = req.userId;
-  const { postId, content } = req.body;
+  const { postId, commentId, content } = req.body;
   try {
-    const comment = await newComment(userId, postId, content);
+    const comment = await newComment(userId, postId, commentId, content);
     res.status(200).json({
       message: "Comment created",
       comment: {

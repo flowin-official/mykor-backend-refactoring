@@ -1,10 +1,11 @@
 const Comment = require("../models/comment");
 
-const createComment = async (userId, postId, content) => {
+const createComment = async (userId, postId, parentCommentId, content) => {
   try {
     const comment = await Comment.create({
       author: userId,
       post: postId,
+      parentComment: parentCommentId,
       content,
     });
     return comment;
