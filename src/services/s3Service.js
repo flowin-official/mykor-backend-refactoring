@@ -2,10 +2,13 @@ const AWS = require("aws-sdk");
 const s3 = new AWS.S3({ region: process.env.AWS_REGION });
 
 const generatePresignedUrl = (userId, purpose, count) => {
-  let key = "";
+  let keys = [];
   if (purpose === "profile") {
-    key = `profile/${userId}`;
+    keys.push(`profile/${userId}`);
   } else if (purpose === "post") {
+    for (let i = 0; i < count; i++) {
+      keys.push(`post/${userId}/${Date.now()}_${i}`);
+    }
   } else {
     throw new Error("Invalid purpose");
   }
@@ -16,7 +19,8 @@ const generatePresignedUrl = (userId, purpose, count) => {
     Expires: 60, // Presigned URL의 유효 기간 (기본: 60초)
   };
 
-  return s3.getSignedUrl("putObject", params); // 쓰기용 presigned URL
+  const url = s3.getSignedUrl("putObject", params); // 쓰기용 presigned URL
+  return { url, keys };
 };
 
 module.exports = { generatePresignedUrl };
