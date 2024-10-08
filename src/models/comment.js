@@ -14,6 +14,13 @@ const commentSchema = new mongoose.Schema({
   content: { type: String, required: true },
   likes: { type: Number, default: 0 },
 
+  // 대댓글 추가
+  parentComment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Comment",
+    default: null, // null이면 그냥 댓글, 값이 있으면 대댓글
+  },
+
   created: { type: Date, default: Date.now },
   updated: { type: Date, default: Date.now },
 });

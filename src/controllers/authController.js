@@ -28,6 +28,9 @@ const {
  *               authCode:
  *                 type: string
  *                 description: 카카오 인증 코드
+ *               fcmToken:
+ *                 type: string
+ *                 description: FCM 토큰
  *     responses:
  *       200:
  *         description: 로그인 성공
@@ -81,6 +84,9 @@ async function postKakaoLogin(req, res) {
  *             properties:
  *               authCode:
  *                type: string
+ *               fcmToken:
+ *                 type: string
+ *                 description: FCM 토큰
  *     responses:
  *       200:
  *         description: 로그인 성공
@@ -133,6 +139,9 @@ async function postAppleLogin(req, res) {
  *             properties:
  *               authCode:
  *                type: string
+ *               fcmToken:
+ *                 type: string
+ *                 description: FCM 토큰
  *     responses:
  *       200:
  *         description: 로그인 성공
