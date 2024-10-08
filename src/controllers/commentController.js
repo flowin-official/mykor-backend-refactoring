@@ -39,7 +39,6 @@ const { likeComment, dislikeComment } = require("../services/likeService");
  *                 type: string
  *               commentId:
  *                 type: string
- *                 description: 대댓글일 경우 필요
  *               content:
  *                 type: string
  *     responses:
