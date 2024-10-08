@@ -16,7 +16,7 @@ const generatePresignedUrl = (userId, purpose, count) => {
     Expires: 60, // Presigned URL의 유효 기간 (기본: 60초)
   };
 
-  return s3.getSignedUrlPromise("putObject", params); // 쓰기용 presigned URL
+  return s3.getSignedUrl("putObject", params); // 쓰기용 presigned URL
 };
 
 module.exports = { generatePresignedUrl };
