@@ -18,7 +18,7 @@ app.use(cors());
 app.use(requestLogger); // Morgan 미들웨어 추가
 
 setupMongo();
-setupSwagger(app);
+// setupSwagger(app);
 setupRoutes(app);
 
 app.listen(process.env.SERVER_PORT, () => {

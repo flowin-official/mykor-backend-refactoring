@@ -131,3 +131,5 @@ dist
 
 # apple
 .auth
+
+/src/*.json
