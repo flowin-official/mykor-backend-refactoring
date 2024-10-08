@@ -61,9 +61,9 @@ async function postPresignedUrl(req, res) {
     const { purpose, count } = req.body;
 
     // presigned URL 생성
-    const { url, key } = await generatePresignedUrl(userId, purpose, count);
+    const url = await generatePresignedUrl(userId, purpose, count);
 
-    return res.status(200).json({ url, key });
+    return res.status(200).json({ url });
   } catch (error) {
     return res.status(500).json({ error: "Failed to generate presigned URL" });
   }
