@@ -617,9 +617,6 @@ async function getPostsSearchWithLogin(req, res) {
  *                 type: string
  *               tagId:
  *                 type: string
- *               images:
- *                 type: array
- *                 items: string
  *     responses:
  *       201:
  *         description: 게시글 작성 성공
