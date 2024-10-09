@@ -29,29 +29,40 @@ async function newComment(userId, postId, commentId, content) {
     if (!post) {
       throw new Error("게시물을 찾을 수 없습니다");
     }
-    const parentComment = await findCommentById(commentId);
-    if (!parentComment) {
-      throw new Error("댓글을 찾을 수 없습니다");
+
+    // commentId가 있을 경우 부모 댓글 검증
+    if (commentId) {
+      const parentComment = await findCommentById(commentId);
+      if (!parentComment) {
+        throw new Error("부모 댓글을 찾을 수 없습니다");
+      }
+
+      await createNotification(
+        user,
+        parentComment.author,
+        post,
+        parentComment,
+        "대댓글"
+      ); // 댓글 주인에게 notification 생성
     }
 
-    const comment = await createComment(user, post, parentComment, content); // 댓글 생성
+    const comment = await createComment(user, post, commentId, content); // 댓글 생성
     await increasePostComment(post._id); // 게시글의 댓글 카운트 증가
 
-    // notification 생성
-    await createNotification(user, post.author, post, comment, "댓글");
+    await createNotification(user, post.author, post, comment, "댓글"); // 게시물 주인에게도 notification 생성
 
     // fcm 알림
-    const fcmMessage = {
-      notification: {
-        title: "댓글이 달렸어요",
-        body: `${user.nickname}님이 ${post.title} 게시물에 댓글을 달았어요`,
-      },
-      data: {
-        screen: "PostDetail",
-        params: { postId: post._id },
-      },
-      token: post.author.fcmToken,
-    };
+    // const fcmMessage = {
+    //   notification: {
+    //     title: "댓글이 달렸어요",
+    //     body: `${user.nickname}님이 ${post.title} 게시물에 댓글을 달았어요`,
+    //   },
+    //   data: {
+    //     screen: "PostDetail",
+    //     params: { postId: post._id },
+    //   },
+    //   token: post.author.fcmToken,
+    // };
 
     return comment;
   } catch (error) {
