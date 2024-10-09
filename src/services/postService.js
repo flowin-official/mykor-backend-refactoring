@@ -18,6 +18,7 @@ const { findLocationById } = require("../repositories/locationRepository");
 const { findTagById } = require("../repositories/tagRepository");
 const { findUserById } = require("../repositories/userRepository");
 const { findPostLikesByUserId } = require("../repositories/postLikeRepository");
+const { deleteCommentsByPostId } = require("../repositories/commentRepository");
 
 async function postsInRangeByLocationTagWithBlock(
   locationId,
@@ -258,6 +259,7 @@ async function removeMyPost(userId, postId) {
       throw new Error("글 작성자가 아닙니다.");
     } else {
       await deletePost(post);
+      await deleteCommentsByPostId(post); // 게시글에 포함된 댓글도 삭제
     }
   } catch (error) {
     throw error;

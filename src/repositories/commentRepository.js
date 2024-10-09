@@ -70,6 +70,14 @@ const deleteComment = async (commentId) => {
   }
 };
 
+const deleteCommentsByPostId = async (postId) => {
+  try {
+    await Comment.deleteMany({ post: postId });
+  } catch (error) {
+    throw error;
+  }
+};
+
 const increaseCommentLike = async (commentId) => {
   try {
     const comment = await Comment.findByIdAndUpdate(
@@ -131,6 +139,7 @@ module.exports = {
 
   updateComment,
   deleteComment,
+  deleteCommentsByPostId,
 
   increaseCommentLike,
   decreaseCommentLike,
