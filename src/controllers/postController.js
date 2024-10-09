@@ -118,9 +118,11 @@ async function getPostsInRange(req, res) {
 
     previewImageUrls = {};
     for (let post of posts) {
-      previewImageUrls[post.images[0]._id] = await generateGetPresignedUrl(
-        post.images[0].key
-      );
+      if (post.images.length > 0) {
+        previewImageUrls[post.images[0]._id] = await generateGetPresignedUrl(
+          post.images[0].key
+        );
+      }
     }
 
     res.status(200).json({
@@ -133,12 +135,15 @@ async function getPostsInRange(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
-        images: [
-          {
-            _id: post.images[0]._id,
-            url: previewImageUrls[post.images[0]._id],
-          },
-        ],
+        images:
+          post.images.length > 0
+            ? [
+                {
+                  _id: post.images[0]._id,
+                  url: previewImageUrls[post.images[0]._id],
+                },
+              ]
+            : [], // 이미지가 없는 경우 빈 배열 반환
         // previewImage: {
         //   _id: post.images[0]._id,
         //   url: previewImageUrls[post.images[0]._id],
@@ -248,9 +253,11 @@ async function getPostsInRangeWithLogin(req, res) {
 
     previewImageUrls = {};
     for (let post of posts) {
-      previewImageUrls[post.images[0]._id] = await generateGetPresignedUrl(
-        post.images[0].key
-      );
+      if (post.images.length > 0) {
+        previewImageUrls[post.images[0]._id] = await generateGetPresignedUrl(
+          post.images[0].key
+        );
+      }
     }
 
     res.status(200).json({
@@ -263,12 +270,15 @@ async function getPostsInRangeWithLogin(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
-        images: [
-          {
-            _id: post.images[0]._id,
-            url: previewImageUrls[post.images[0]._id],
-          },
-        ],
+        images:
+          post.images.length > 0
+            ? [
+                {
+                  _id: post.images[0]._id,
+                  url: previewImageUrls[post.images[0]._id],
+                },
+              ]
+            : [], // 이미지가 없는 경우 빈 배열 반환
         // previewImage: {
         //   _id: post.images[0]._id,
         //   url: previewImageUrls[post.images[0]._id],
