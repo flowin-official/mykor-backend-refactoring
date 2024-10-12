@@ -123,9 +123,9 @@ const setupRoutes = (app) => {
   router.put("/user", authenticateToken, putMyInfo); // 내 정보 수정
   router.delete("/user", authenticateToken, deleteMyInfo); // 회원 탈퇴
 
-  router.get("/my/posts", authenticateToken, getMyPosts);
-  router.get("/my/postlikes", authenticateToken, getMyPostLikes);
-  router.get("/my/comments", authenticateToken, getMyComments);
+  router.get("/my/posts", authenticateToken, getMyPosts); // 내가 작성한 게시물
+  router.get("/my/postlikes", authenticateToken, getMyPostLikes); // 내가 좋아요한 게시물
+  router.get("/my/comments", authenticateToken, getMyComments); // 내가 작성한 댓글
 
   router.get("/user/:userId", authenticateToken, getUserInfo); // 다른 유저 정보 가져오기
   router.get("/user/:userId/posts", authenticateToken, getUserPosts); // 다른 유저 게시글 가져오기
@@ -172,7 +172,7 @@ const setupRoutes = (app) => {
   router.post("/message", authenticateToken, postChatMessage);
   router.get("/messages/:roomId", authenticateToken, getChatMessages);
 
-  router.post("/presigned-url", authenticateToken, postPresignedUrl);
+  router.post("/presigned-url", authenticateToken, postPresignedUrl); // S3 업로드용 사전 서명 URL 생성
 
   // 기본 라우트 설정
   app.use("/mykor/api/v1", router);
