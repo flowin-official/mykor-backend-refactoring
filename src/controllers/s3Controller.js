@@ -1,4 +1,4 @@
-const { generatePresignedUrl } = require("../services/s3Service");
+const { generatePutPresignedUrl } = require("../services/s3Service");
 
 /**
  * @swagger
