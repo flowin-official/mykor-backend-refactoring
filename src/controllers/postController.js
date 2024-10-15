@@ -754,6 +754,12 @@ async function postMyPost(req, res) {
 
   const userId = req.userId;
   const { title, contents, locationId, tagId, images } = req.body;
+
+  if (!title || !contents || !locationId || !tagId) {
+    res.status(400).json({ message: "Bad request" });
+    return;
+  }
+
   try {
     const post = await newPost(
       title,
