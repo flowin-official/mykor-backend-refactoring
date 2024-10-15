@@ -45,11 +45,11 @@ const findPostsInRangeByLocationTag = async (
   }
 };
 
-const createPost = async (title, content, author, location, tag, images) => {
+const createPost = async (title, contents, author, location, tag, images) => {
   try {
     const post = await Post.create({
       title,
-      content,
+      contents,
       author,
       location,
       tag,

@@ -119,8 +119,8 @@ async function getPostsInRange(req, res) {
     previewImageUrls = {};
     for (let post of posts) {
       if (post.images.length > 0) {
-        previewImageUrls[post.images[0]._id] = await generateGetPresignedUrl(
-          post.images[0].key
+        previewImageUrls[post._id] = await generateGetPresignedUrl(
+          post.images[0]
         );
       }
     }
@@ -135,19 +135,8 @@ async function getPostsInRange(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
-        images:
-          post.images.length > 0
-            ? [
-                {
-                  _id: post.images[0]._id,
-                  url: previewImageUrls[post.images[0]._id],
-                },
-              ]
-            : [], // 이미지가 없는 경우 빈 배열 반환
-        // previewImage: {
-        //   _id: post.images[0]._id,
-        //   url: previewImageUrls[post.images[0]._id],
-        // },
+        images: post.images.length > 0 ? previewImageUrls[post._id] : [], // 이미지가 없는 경우 빈 배열 반환
+        // previewImage: post.images.length > 0 ? previewImageUrls[post._id] : [], // 이미지가 없는 경우 빈 배열 반환
       })),
     });
   } catch (error) {
@@ -254,8 +243,8 @@ async function getPostsInRangeWithLogin(req, res) {
     previewImageUrls = {};
     for (let post of posts) {
       if (post.images.length > 0) {
-        previewImageUrls[post.images[0]._id] = await generateGetPresignedUrl(
-          post.images[0].key
+        previewImageUrls[post._id] = await generateGetPresignedUrl(
+          post.images[0]
         );
       }
     }
@@ -270,19 +259,8 @@ async function getPostsInRangeWithLogin(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
-        images:
-          post.images.length > 0
-            ? [
-                {
-                  _id: post.images[0]._id,
-                  url: previewImageUrls[post.images[0]._id],
-                },
-              ]
-            : [], // 이미지가 없는 경우 빈 배열 반환
-        // previewImage: {
-        //   _id: post.images[0]._id,
-        //   url: previewImageUrls[post.images[0]._id],
-        // },
+        images: post.images.length > 0 ? previewImageUrls[post._id] : [], // 이미지가 없는 경우 빈 배열 반환
+        // previewImage: post.images.length > 0 ? previewImageUrls[post._id] : [], // 이미지가 없는 경우 빈 배열 반환
       })),
     });
   } catch (error) {
@@ -352,7 +330,7 @@ async function getThisPost(req, res) {
     // 이미지 Key로부터 presigned URL 생성
     let imageUrls = {};
     for (let image of post.images) {
-      imageUrls[image._id] = await generateGetPresignedUrl(image.key);
+      image = await generateGetPresignedUrl(image);
     }
 
     const commentsMap = {};
@@ -408,11 +386,7 @@ async function getThisPost(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
-        images: post.images.map((image) => ({
-          _id: image._id,
-          url: imageUrls[image._id],
-          position: image.position,
-        })),
+        images: imageUrls,
         postLike: false,
         commentsList: Object.values(commentsMap),
       },
@@ -507,7 +481,7 @@ async function getThisPostWithLogin(req, res) {
     // 이미지 Key로부터 presigned URL 생성
     let imageUrls = {};
     for (let image of post.images) {
-      imageUrls[image._id] = await generateGetPresignedUrl(image.key);
+      image = await generateGetPresignedUrl(image);
     }
 
     // 일반 댓글과 대댓글을 구분
@@ -564,11 +538,7 @@ async function getThisPostWithLogin(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
-        images: post.images.map((image) => ({
-          _id: image._id,
-          url: imageUrls[image._id],
-          position: image.position,
-        })),
+        images: imageUrls,
         postLike,
         commentsList: Object.values(commentMap), // 일반 댓글과 대댓글 구조화 완료
       },
@@ -749,12 +719,14 @@ async function getPostsSearchWithLogin(req, res) {
  *             properties:
  *               title:
  *                 type: string
- *               content:
- *                 type: string
+ *               contents:
+ *                 type: array
  *               locationId:
  *                 type: string
  *               tagId:
  *                 type: string
+ *               images:
+ *                 type: array
  *     responses:
  *       201:
  *         description: 게시글 작성 성공
@@ -781,11 +753,11 @@ async function postMyPost(req, res) {
   }
 
   const userId = req.userId;
-  const { title, content, locationId, tagId, images } = req.body;
+  const { title, contents, locationId, tagId, images } = req.body;
   try {
     const post = await newPost(
       title,
-      content,
+      contents,
       userId,
       locationId,
       tagId,
