@@ -85,7 +85,7 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
       //   screen: "PostDetail",
       //   params: { postId: post._id },
       // },
-      token: token,
+      token: fcmToken,
     };
 
     // 시간정보가 들어가는지 확인해보고 넣어야함
