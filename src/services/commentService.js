@@ -51,19 +51,6 @@ async function newComment(userId, postId, commentId, content) {
 
     await createNotification(user, post.author, post, comment, "댓글"); // 게시물 주인에게도 notification 생성
 
-    // fcm 알림
-    // const fcmMessage = {
-    //   notification: {
-    //     title: "댓글이 달렸어요",
-    //     body: `${user.nickname}님이 ${post.title} 게시물에 댓글을 달았어요`,
-    //   },
-    //   data: {
-    //     screen: "PostDetail",
-    //     params: { postId: post._id },
-    //   },
-    //   token: post.author.fcmToken,
-    // };
-
     return comment;
   } catch (error) {
     throw error;

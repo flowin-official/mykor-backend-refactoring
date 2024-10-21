@@ -26,6 +26,7 @@ const {
   commentsOnThisPostWithBlock,
 } = require("../services/commentService");
 const { generateGetPresignedUrl } = require("../services/s3Service");
+const { sendPushNotification } = require("../services/notificationService");
 
 /**
  * @swagger
@@ -956,6 +957,7 @@ async function postLikePost(req, res) {
   const postId = req.params.postId;
   try {
     const postLike = await likePost(postId, userId);
+    await sendPushNotification(userId, "좋아요", postId, null, null);
     res.status(200).json({
       message: "Post liked",
       postLike: {

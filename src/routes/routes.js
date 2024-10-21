@@ -154,7 +154,7 @@ const setupRoutes = (app) => {
   router.get("/notification", authenticateToken, getNotification); // 알림 여부 확인
 
   router.put("/comment/:commentId", authenticateToken, putMyComment); // 내 댓글 수정
-  router.post("/comment", authenticateToken, postMyComment); // 게시물에 댓글 작성
+  router.post("/comment", authenticateToken, postMyComment); // 댓글 작성
   router.delete("/comment/:commentId", authenticateToken, deleteMyComment); // 내 댓글 삭제
 
   router.post("/comment/:commentId/like", authenticateToken, postLikeComment); // 댓글 좋아요
