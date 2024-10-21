@@ -1,4 +1,5 @@
 const { findCommentById } = require("../repositories/commentRepository");
+const { findPostById } = require("../repositories/postRepository");
 const {
   findNotificationsByUserId,
   modifyNotificationsToReadByUserId,
