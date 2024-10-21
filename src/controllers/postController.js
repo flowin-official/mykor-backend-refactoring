@@ -328,7 +328,7 @@ async function getThisPost(req, res) {
     const comments = await commentsOnThisPost(postId);
 
     // 이미지 Key로부터 presigned URL 생성
-    let imageUrls = {};
+    let imageUrls = [];
     for (let image of post.images) {
       image = await generateGetPresignedUrl(image);
     }
@@ -479,7 +479,7 @@ async function getThisPostWithLogin(req, res) {
     }
 
     // 이미지 Key로부터 presigned URL 생성
-    let imageUrls = {};
+    let imageUrls = [];
     for (let image of post.images) {
       image = await generateGetPresignedUrl(image);
     }
