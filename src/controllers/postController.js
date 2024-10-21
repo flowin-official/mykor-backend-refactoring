@@ -116,7 +116,7 @@ async function getPostsInRange(req, res) {
       isHot
     );
 
-    previewImageUrls = {};
+    previewImageUrls = [];
     for (let post of posts) {
       if (post.images.length > 0) {
         previewImageUrls[post._id] = await generateGetPresignedUrl(
@@ -240,7 +240,7 @@ async function getPostsInRangeWithLogin(req, res) {
       userId
     );
 
-    previewImageUrls = {};
+    previewImageUrls = [];
     for (let post of posts) {
       if (post.images.length > 0) {
         previewImageUrls[post._id] = await generateGetPresignedUrl(
@@ -328,7 +328,6 @@ async function getThisPost(req, res) {
     const comments = await commentsOnThisPost(postId);
 
     // 이미지 Key로부터 presigned URL 생성
-    let imageUrls = [];
     for (let image of post.images) {
       image = await generateGetPresignedUrl(image);
     }
@@ -386,7 +385,6 @@ async function getThisPost(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
-        images: imageUrls,
         postLike: false,
         commentsList: Object.values(commentsMap),
       },
@@ -479,7 +477,6 @@ async function getThisPostWithLogin(req, res) {
     }
 
     // 이미지 Key로부터 presigned URL 생성
-    let imageUrls = [];
     for (let image of post.images) {
       image = await generateGetPresignedUrl(image);
     }
@@ -538,7 +535,6 @@ async function getThisPostWithLogin(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
-        images: imageUrls,
         postLike,
         commentsList: Object.values(commentMap), // 일반 댓글과 대댓글 구조화 완료
       },
