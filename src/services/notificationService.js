@@ -6,6 +6,7 @@ const {
   findUnreadNotificationsByUserId,
 } = require("../repositories/notificationRepository");
 const { findUserById } = require("../repositories/userRepository");
+const admin = require("../config/firebase");
 
 async function myNotifications(userId) {
   try {
