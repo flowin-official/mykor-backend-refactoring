@@ -120,9 +120,11 @@ async function getPostsInRange(req, res) {
     previewImages = [];
     for (let post of posts) {
       if (post.images) {
+        const presignedUrl = await generateGetPresignedUrl(post.images[0]);
+
         previewImages[post._id] = {
           key: post.images[0],
-          url: await generateGetPresignedUrl(post.images[0]),
+          url: presignedUrl,
         };
       }
     }
