@@ -71,8 +71,12 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
         if (!comment) {
           throw new Error("Comment not found");
         }
+        const user = findUserById(comment.author);
+        if (!user) {
+          throw new Error("User not found");
+        }
 
-        token = comment.author.fcmToken;
+        token = user.fcmToken;
         parentPostId = post.id;
       } else {
         // 게시물에 달린 댓글인 경우
