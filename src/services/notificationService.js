@@ -67,6 +67,7 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
       } else {
         title = `${user.nickname}님이 댓글을 달았어요`;
         body = content;
+        const post = findPostById(postId);
         fcmToken = post.author.fcmToken;
         parentPostId = postId;
       }
@@ -80,6 +81,7 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
       } else {
         title = `${user.nickname}님이 좋아요를 눌렀어요`;
         body = "클릭해서 확인해보세요";
+        const post = findPostById(postId);
         fcmToken = post.author.fcmToken;
         parentPostId = postId;
       }
