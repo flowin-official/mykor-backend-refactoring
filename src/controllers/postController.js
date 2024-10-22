@@ -336,13 +336,16 @@ async function getThisPost(req, res) {
 
     const comments = await commentsOnThisPost(postId);
 
-    // 이미지 Key로부터 presigned URL 생성
-    const imagesWithUrl = await Promise.all(
-      post.images.map(async (imageKey) => ({
-        key: imageKey,
-        url: await generateGetPresignedUrl(imageKey),
-      }))
-    );
+    // 이미지가 있을 경우에만 presigned URL 생성, 없으면 빈 배열 반환
+    const imagesWithUrl =
+      post.images && post.images.length > 0
+        ? await Promise.all(
+            post.images.map(async (imageKey) => ({
+              key: imageKey,
+              url: await generateGetPresignedUrl(imageKey),
+            }))
+          )
+        : [];
 
     const commentsMap = {};
     const nestedCommentsMap = {};
@@ -489,13 +492,16 @@ async function getThisPostWithLogin(req, res) {
       commentsLikes[comment._id] = await isLikedComment(comment._id, userId);
     }
 
-    // 이미지 Key로부터 presigned URL 생성
-    const imagesWithUrl = await Promise.all(
-      post.images.map(async (imageKey) => ({
-        key: imageKey,
-        url: await generateGetPresignedUrl(imageKey),
-      }))
-    );
+    // 이미지가 있을 경우에만 presigned URL 생성, 없으면 빈 배열 반환
+    const imagesWithUrl =
+      post.images && post.images.length > 0
+        ? await Promise.all(
+            post.images.map(async (imageKey) => ({
+              key: imageKey,
+              url: await generateGetPresignedUrl(imageKey),
+            }))
+          )
+        : [];
 
     // 일반 댓글과 대댓글을 구분
     const commentMap = {};
