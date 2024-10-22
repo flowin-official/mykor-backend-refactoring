@@ -82,10 +82,10 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
         title: title,
         body: body,
       },
-      // data: {
-      //   screen: "PostDetail",
-      //   params: { postId: post._id },
-      // },
+      data: {
+        screen: "게시글",
+        params: { postId: post._id },
+      },
       token: fcmToken,
     };
 
