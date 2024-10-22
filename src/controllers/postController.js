@@ -117,31 +117,32 @@ async function getPostsInRange(req, res) {
       isHot
     );
 
-    previewImages = [];
-    for (let post of posts) {
-      if (post.images) {
-        const presignedUrl = await generateGetPresignedUrl(post.images[0]);
-
-        previewImages[post._id] = {
-          key: post.images[0],
-          url: presignedUrl,
-        };
-      }
-    }
-
     res.status(200).json({
       message: "Get posts in range",
-      posts: posts.map((post) => ({
-        ...post.toObject(),
-        author: {
-          _id: post.author._id,
-          nickname: post.author.nickname,
-          location: post.author.location,
-          deleted: post.author.deleted,
-        },
-        images: post.images ? previewImages[post._id] : [], // 썸네일 이미지가 없는 경우 빈 배열 반환
-        // previewImage: post.images.length > 0 ? previewImageUrls[post._id] : [], // 이미지가 없는 경우 빈 배열 반환
-      })),
+      posts: await Promise.all(
+        posts.map(async (post) => {
+          const previewImageWithUrl =
+            post.images.length > 0
+              ? [
+                  {
+                    key: post.images[0],
+                    url: await generateGetPresignedUrl(post.images[0]),
+                  },
+                ]
+              : [];
+
+          return {
+            ...post.toObject(),
+            author: {
+              _id: post.author._id,
+              nickname: post.author.nickname,
+              location: post.author.location,
+              deleted: post.author.deleted,
+            },
+            images: previewImageWithUrl, // 이미지가 없는 경우 빈 배열 반환
+          };
+        })
+      ),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -244,28 +245,32 @@ async function getPostsInRangeWithLogin(req, res) {
       userId
     );
 
-    previewImageUrls = [];
-    for (let post of posts) {
-      if (post.images.length > 0) {
-        previewImageUrls[post._id] = await generateGetPresignedUrl(
-          post.images[0]
-        );
-      }
-    }
-
     res.status(200).json({
       message: "Get posts in range",
-      posts: posts.map((post) => ({
-        ...post.toObject(),
-        author: {
-          _id: post.author._id,
-          nickname: post.author.nickname,
-          location: post.author.location,
-          deleted: post.author.deleted,
-        },
-        images: post.images.length > 0 ? previewImageUrls[post._id] : [], // 이미지가 없는 경우 빈 배열 반환
-        // previewImage: post.images.length > 0 ? previewImageUrls[post._id] : [], // 이미지가 없는 경우 빈 배열 반환
-      })),
+      posts: await Promise.all(
+        posts.map(async (post) => {
+          const previewImageWithUrl =
+            post.images.length > 0
+              ? [
+                  {
+                    key: post.images[0],
+                    url: await generateGetPresignedUrl(post.images[0]),
+                  },
+                ]
+              : [];
+
+          return {
+            ...post.toObject(),
+            author: {
+              _id: post.author._id,
+              nickname: post.author.nickname,
+              location: post.author.location,
+              deleted: post.author.deleted,
+            },
+            images: previewImageWithUrl, // 이미지가 없는 경우 빈 배열 반환
+          };
+        })
+      ),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
