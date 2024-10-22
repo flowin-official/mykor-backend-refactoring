@@ -1,4 +1,7 @@
-const { findCommentById } = require("../repositories/commentRepository");
+const {
+  findCommentById,
+  findCommentsByPostId,
+} = require("../repositories/commentRepository");
 const { findPostById } = require("../repositories/postRepository");
 const {
   findNotificationsByUserId,
@@ -52,6 +55,7 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
     let title = "";
     let body = "";
     let fcmToken = "";
+    let parentPostId = "";
 
     if (type === "댓글") {
       if (commentId) {
@@ -59,10 +63,12 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
         body = content;
         const comment = findCommentById(commentId);
         fcmToken = comment.author.fcmToken;
+        parentPostId = postId;
       } else {
         title = `${user.nickname}님이 댓글을 달았어요`;
         body = content;
         fcmToken = post.author.fcmToken;
+        parentPostId = postId;
       }
     } else if (type === "좋아요") {
       if (commentId) {
@@ -70,10 +76,12 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
         body = "클릭해서 확인해보세요";
         const comment = findCommentById(commentId);
         fcmToken = comment.author.fcmToken;
+        parentPostId = comment.post.id;
       } else {
         title = `${user.nickname}님이 좋아요를 눌렀어요`;
         body = "클릭해서 확인해보세요";
         fcmToken = post.author.fcmToken;
+        parentPostId = postId;
       }
     }
 
@@ -83,7 +91,7 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
         body: body,
       },
       data: {
-        postId: postId,
+        postId: parentPostId,
       },
       token: fcmToken,
     };
