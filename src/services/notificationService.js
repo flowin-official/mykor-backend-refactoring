@@ -63,52 +63,62 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
       }
 
       if (commentId) {
-        // 대댓글인 경우
-        title = `${user.nickname}님이 대댓글을 달았어요`;
-        body = content;
-
-        const comment = findCommentById(commentId);
+        // 댓글에 대댓글이 달린 경우
+        const comment = await findCommentById(commentId);
         if (!comment) {
           throw new Error("Comment not found");
         }
-        const user = findUserById(comment.author);
-        if (!user) {
+        const commentAuthor = await findUserById(comment.author);
+        if (!commentAuthor) {
           throw new Error("User not found");
         }
 
-        token = user.fcmToken;
+        title = `${user.nickname}님이 댓글에 답글을 남겼습니다`;
+        body = content;
+        token = commentAuthor.fcmToken;
         parentPostId = post.id;
       } else {
-        // 게시물에 달린 댓글인 경우
-        title = `${user.nickname}님이 댓글을 달았어요`;
+        // 게시글에 댓글이 달린 경우
+        const postAuthor = await findUserById(post.author);
+        if (!postAuthor) {
+          throw new Error("User not found");
+        }
+
+        title = `${user.nickname}님이 게시글에 댓글을 남겼습니다`;
         body = content;
-        token = post.author.fcmToken;
+        token = postAuthor.fcmToken;
         parentPostId = post.id;
       }
     } else if (type === "좋아요") {
       if (commentId) {
-        // 댓글 좋아요인 경우
-        title = `${user.nickname}님이 좋아요를 눌렀어요`;
-        body = "클릭해서 확인해보세요";
-
-        const comment = findCommentById(commentId);
+        // 댓글에 좋아요가 달린 경우
+        const comment = await findCommentById(commentId);
         if (!comment) {
           throw new Error("Comment not found");
         }
+        const commentAuthor = await findUserById(comment.author);
+        if (!commentAuthor) {
+          throw new Error("User not found");
+        }
 
-        token = comment.author.fcmToken;
-        parentPostId = comment.post.id; // 댓글 좋아요 시에 댓글이 달린 게시글로 이동
+        title = `${user.nickname}님이 댓글에 좋아요를 눌렀습니다`;
+        body = "댓글을 확인해보세요!";
+        token = commentAuthor.fcmToken;
+        parentPostId = comment.post.id;
       } else {
-        // 게시글 좋아요인 경우
-        title = `${user.nickname}님이 좋아요를 눌렀어요`;
-        body = "클릭해서 확인해보세요";
-
-        const post = findPostById(postId);
+        // 게시글에 좋아요가 달린 경우
+        const post = await findPostById(postId);
         if (!post) {
           throw new Error("Post not found");
         }
+        const postAuthor = await findUserById(post.author);
+        if (!postAuthor) {
+          throw new Error("User not found");
+        }
 
-        token = post.author.fcmToken;
+        title = `${user.nickname}님이 게시글에 좋아요를 눌렀습니다`;
+        body = "게시글을 확인해보세요!";
+        token = postAuthor.fcmToken;
         parentPostId = post.id;
       }
     }
