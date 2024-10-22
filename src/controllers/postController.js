@@ -117,12 +117,13 @@ async function getPostsInRange(req, res) {
       isHot
     );
 
-    previewImageUrls = [];
+    previewImages = [];
     for (let post of posts) {
-      if (post.images.length > 0) {
-        previewImageUrls[post._id] = await generateGetPresignedUrl(
-          post.images[0]
-        );
+      if (post.images) {
+        previewImages[post._id] = {
+          key: post.images[0],
+          url: await generateGetPresignedUrl(post.images[0]),
+        };
       }
     }
 
@@ -136,7 +137,7 @@ async function getPostsInRange(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
-        images: post.images.length > 0 ? previewImageUrls[post._id] : [], // 이미지가 없는 경우 빈 배열 반환
+        images: post.images ? previewImages[post._id] : [], // 썸네일 이미지가 없는 경우 빈 배열 반환
         // previewImage: post.images.length > 0 ? previewImageUrls[post._id] : [], // 이미지가 없는 경우 빈 배열 반환
       })),
     });
