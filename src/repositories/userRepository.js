@@ -155,6 +155,20 @@ const addBlockUser = async (userId, blockedUserId) => {
   }
 };
 
+const refreshFcmToken = async (userId, fcmToken) => {
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        fcmToken,
+      },
+      { new: true }
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createKakaoUser,
   createAppleUser,
@@ -171,4 +185,6 @@ module.exports = {
   withdrawUser,
 
   addBlockUser,
+
+  refreshFcmToken,
 };

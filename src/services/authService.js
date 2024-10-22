@@ -7,6 +7,7 @@ const {
   findUserByAppleUserCode,
   findUserByGoogleUserCode,
   findUserById,
+  refreshFcmToken,
 } = require("../repositories/userRepository");
 const {
   createAccessToken,
@@ -264,6 +265,9 @@ async function loginKakaoUser(authCode, fcmToken) {
         // 유저가 없으면 새로 생성
         if (!user) {
           user = await createKakaoUser(id, fcmToken);
+        } else {
+          // 이미 존재하는 유저라면 fcmToken 갱신
+          await refreshFcmToken(user, fcmToken);
         }
 
         // user._id는 생성된 유저의 db상 id임
