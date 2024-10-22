@@ -83,7 +83,7 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
         body: body,
       },
       data: {
-        postId: post._id,
+        postId: postId,
       },
       token: fcmToken,
     };
