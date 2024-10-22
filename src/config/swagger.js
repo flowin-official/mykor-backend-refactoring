@@ -28,5 +28,5 @@ const options = {
 const swaggerSpec = swaggerJsDoc(options);
 
 module.exports = (app) => {
-  app.use("/mykor/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  // app.use("/mykor/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 };
