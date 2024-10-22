@@ -47,10 +47,10 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
       throw new Error("User not found");
     }
 
-    const post = await findPostById(postId);
-    if (!post) {
-      throw new Error("Post not found");
-    }
+    // const post = await findPostById(postId);
+    // if (!post) {
+    //   throw new Error("Post not found");
+    // }
 
     let title = "";
     let body = "";
@@ -76,7 +76,7 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
         body = "클릭해서 확인해보세요";
         const comment = findCommentById(commentId);
         fcmToken = comment.author.fcmToken;
-        parentPostId = comment.post.id;
+        parentPostId = comment.post.id; // 댓글 좋아요 시에 댓글이 달린 게시글로 이동
       } else {
         title = `${user.nickname}님이 좋아요를 눌렀어요`;
         body = "클릭해서 확인해보세요";
