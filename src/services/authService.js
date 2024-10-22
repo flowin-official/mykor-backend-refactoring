@@ -177,6 +177,9 @@ async function loginAppleUser(authCode, fcmToken) {
     // 유저가 없으면 새로 생성
     if (!user) {
       user = await createAppleUser(userId, fcmToken);
+    } else {
+      // 이미 존재하는 유저라면 fcmToken 갱신
+      await refreshFcmToken(user, fcmToken);
     }
 
     // user._id는 생성된 유저의 db상 id임
@@ -333,6 +336,9 @@ async function loginGoogleUser(authCode, fcmToken) {
         // 유저가 없으면 새로 생성
         if (!user) {
           user = await createGoogleUser(id, fcmToken);
+        } else {
+          // 이미 존재하는 유저라면 fcmToken 갱신
+          await refreshFcmToken(user, fcmToken);
         }
 
         // user._id는 생성된 유저의 db상 id임
