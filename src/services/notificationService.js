@@ -41,49 +41,71 @@ async function unreadNotifications(userId) {
 }
 
 async function sendPushNotification(userId, type, postId, commentId, content) {
+  // 게시글에 댓글 달리면: type댓글, postId있음, commentId널, content있음
+  // 댓글에 대댓글이 달리면: type댓글, postId있음, commentId있음, content있음
+  // 게시글에 좋아요 달리면: type좋아요, postId있음, commentId널, content널
+  // 댓글에 좋아요 달리면: type좋아요, postId없음, commentId있음, content널
   try {
     const user = await findUserById(userId);
     if (!user) {
       throw new Error("User not found");
     }
 
-    // const post = await findPostById(postId);
-    // if (!post) {
-    //   throw new Error("Post not found");
-    // }
-
     let title = "";
     let body = "";
-    let fcmToken = "";
+    let token = "";
     let parentPostId = "";
 
     if (type === "댓글") {
+      const post = await findPostById(postId);
+      if (!post) {
+        throw new Error("Post not found");
+      }
+
       if (commentId) {
+        // 대댓글인 경우
         title = `${user.nickname}님이 대댓글을 달았어요`;
         body = content;
+
         const comment = findCommentById(commentId);
-        fcmToken = comment.author.fcmToken;
-        parentPostId = postId;
+        if (!comment) {
+          throw new Error("Comment not found");
+        }
+
+        token = comment.author.fcmToken;
+        parentPostId = post.id;
       } else {
+        // 게시물에 달린 댓글인 경우
         title = `${user.nickname}님이 댓글을 달았어요`;
         body = content;
-        const post = findPostById(postId);
-        fcmToken = post.author.fcmToken;
-        parentPostId = postId;
+        token = post.author.fcmToken;
+        parentPostId = post.id;
       }
     } else if (type === "좋아요") {
       if (commentId) {
+        // 댓글 좋아요인 경우
         title = `${user.nickname}님이 좋아요를 눌렀어요`;
         body = "클릭해서 확인해보세요";
+
         const comment = findCommentById(commentId);
-        fcmToken = comment.author.fcmToken;
+        if (!comment) {
+          throw new Error("Comment not found");
+        }
+
+        token = comment.author.fcmToken;
         parentPostId = comment.post.id; // 댓글 좋아요 시에 댓글이 달린 게시글로 이동
       } else {
+        // 게시글 좋아요인 경우
         title = `${user.nickname}님이 좋아요를 눌렀어요`;
         body = "클릭해서 확인해보세요";
+
         const post = findPostById(postId);
-        fcmToken = post.author.fcmToken;
-        parentPostId = postId;
+        if (!post) {
+          throw new Error("Post not found");
+        }
+
+        token = post.author.fcmToken;
+        parentPostId = post.id;
       }
     }
 
@@ -95,7 +117,7 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
       data: {
         postId: parentPostId,
       },
-      token: fcmToken,
+      token: token,
     };
 
     // 시간정보가 들어가는지 확인해보고 넣어야함
