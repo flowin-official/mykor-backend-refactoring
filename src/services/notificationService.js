@@ -83,8 +83,7 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
         body: body,
       },
       data: {
-        screen: "게시글",
-        params: { postId: post._id },
+        postId: post._id,
       },
       token: fcmToken,
     };
