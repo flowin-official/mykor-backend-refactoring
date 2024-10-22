@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const setupMongo = require("./src/config/mongoDB");
-const setupSwagger = require("./src/config/swagger");
+// const setupSwagger = require("./src/config/swagger");
 const setupRoutes = require("./src/routes/routes");
 const requestLogger = require("./src/middlewares/loggerMiddleware");
 
