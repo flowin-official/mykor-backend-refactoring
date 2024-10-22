@@ -337,11 +337,12 @@ async function getThisPost(req, res) {
     const comments = await commentsOnThisPost(postId);
 
     // 이미지 Key로부터 presigned URL 생성
-    let imageUrls = [];
-    for (let image of post.images) {
-      const presigendUrl = await generateGetPresignedUrl(image);
-      imageUrls.push(presigendUrl);
-    }
+    const imagesWithUrl = await Promise.all(
+      post.images.map(async (imageKey) => ({
+        key: imageKey,
+        url: await generateGetPresignedUrl(imageKey),
+      }))
+    );
 
     const commentsMap = {};
     const nestedCommentsMap = {};
@@ -396,7 +397,7 @@ async function getThisPost(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
-        images: imageUrls,
+        images: imagesWithUrl, // { key, url } 형태로 반환
         postLike: false,
         commentsList: Object.values(commentsMap),
       },
@@ -489,11 +490,12 @@ async function getThisPostWithLogin(req, res) {
     }
 
     // 이미지 Key로부터 presigned URL 생성
-    let imageUrls = [];
-    for (let image of post.images) {
-      const presigendUrl = await generateGetPresignedUrl(image);
-      imageUrls.push(presignedUrl);
-    }
+    const imagesWithUrl = await Promise.all(
+      post.images.map(async (imageKey) => ({
+        key: imageKey,
+        url: await generateGetPresignedUrl(imageKey),
+      }))
+    );
 
     // 일반 댓글과 대댓글을 구분
     const commentMap = {};
@@ -549,7 +551,7 @@ async function getThisPostWithLogin(req, res) {
           location: post.author.location,
           deleted: post.author.deleted,
         },
-        images: imageUrls,
+        images: imagesWithUrl, // { key, url } 형태로 반환
         postLike,
         commentsList: Object.values(commentMap), // 일반 댓글과 대댓글 구조화 완료
       },
