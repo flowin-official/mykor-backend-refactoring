@@ -216,7 +216,7 @@ async function myPostLikes(userId, lastPostId, size) {
   }
 }
 
-async function modifyMyPost(postId, title, content, userId, tagId) {
+async function modifyMyPost(postId, title, content, userId, tagId, images) {
   try {
     let post = await findPostById(postId);
     if (!post) {
@@ -235,7 +235,7 @@ async function modifyMyPost(postId, title, content, userId, tagId) {
     if (post.author._id.toString() !== user._id.toString()) {
       throw new Error("글 작성자가 아닙니다.");
     } else {
-      post = await updatePost(post, title, content, tag);
+      post = await updatePost(post, title, content, tag, images);
       return post;
     }
   } catch (error) {

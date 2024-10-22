@@ -859,9 +859,16 @@ async function putMyPost(req, res) {
 
   const userId = req.userId;
   const postId = req.params.postId;
-  const { title, content, tagId } = req.body;
+  const { title, content, tagId, images } = req.body;
   try {
-    const post = await modifyMyPost(postId, title, content, userId, tagId);
+    const post = await modifyMyPost(
+      postId,
+      title,
+      content,
+      userId,
+      tagId,
+      images
+    );
     res.status(200).json({
       message: "Post updated",
       post,
