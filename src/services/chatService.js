@@ -11,7 +11,8 @@ async function sendMessage(opponentUserId, userId, message) {
       throw new Error("User not found");
     }
 
-    const roomId = "".join(sorted([opponentUserId, userId])); // 유저 두명의 아이디를 합쳐서 일관적인 방 아이디 생성
+    // 유저 두 명의 아이디를 합쳐서 일관적인 방 아이디 생성
+    const roomId = [opponentUserId, userId].sort().join("");
 
     const messageData = { userId, message, timestamp: Date.now() };
     await saveMessage(roomId, messageData);
