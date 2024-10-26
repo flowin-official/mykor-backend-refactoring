@@ -121,6 +121,7 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
         token = postAuthor.fcmToken;
         parentPostId = post.id;
       }
+    } else if (type === "채팅") {
     }
 
     const message = {

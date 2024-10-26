@@ -1,4 +1,5 @@
 const { sendMessage, messagesInRoom } = require("../services/chatService");
+const { sendPushNotification } = require("../services/notificationService");
 
 /**
  * @swagger
@@ -64,13 +65,12 @@ async function postChatMessage(req, res) {
   const { opponentUserId, message } = req.body;
   try {
     await sendMessage(opponentUserId, userId, message);
+    // await sendPushNotification()
     res.status(200).json({
       message: "Message sent",
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: error.message });
   }
 }
 
