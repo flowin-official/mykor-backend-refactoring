@@ -7,7 +7,10 @@ const {
 } = require("../services/commentService");
 const { reportComment } = require("../services/reportService");
 const { likeComment, dislikeComment } = require("../services/likeService");
-const { sendPushNotification } = require("../services/notificationService");
+const {
+  sendLikePush,
+  sendCommentPush,
+} = require("../services/notificationService");
 
 /**
  * @swagger
@@ -71,7 +74,7 @@ async function postMyComment(req, res) {
   const { postId, commentId, content } = req.body;
   try {
     const comment = await newComment(userId, postId, commentId, content);
-    await sendPushNotification(userId, "댓글", postId, commentId, content); // 알림 전송
+    await sendCommentPush(userId, postId, commentId, content); // 알림 전송
     res.status(200).json({
       message: "Comment created",
       comment: {
@@ -250,7 +253,7 @@ async function postLikeComment(req, res) {
   const commentId = req.params.commentId;
   try {
     const commentLike = await likeComment(commentId, userId);
-    await sendPushNotification(userId, "좋아요", null, commentId, null);
+    await sendLikePush(userId, null, commentId); // 댓글 좋아요는 postId가 null
     res.status(200).json({
       message: "Comment liked",
       commentLike,

@@ -1,7 +1,4 @@
-const {
-  findCommentById,
-  findCommentsByPostId,
-} = require("../repositories/commentRepository");
+const { findCommentById } = require("../repositories/commentRepository");
 const { findPostById } = require("../repositories/postRepository");
 const {
   findNotificationsByUserId,
@@ -9,6 +6,7 @@ const {
   findUnreadNotificationsByUserId,
 } = require("../repositories/notificationRepository");
 const { findUserById } = require("../repositories/userRepository");
+const { findUserInRoom } = require("../repositories/firebaseRepository");
 const admin = require("../config/firebase");
 
 async function myNotifications(userId) {
@@ -40,21 +38,18 @@ async function unreadNotifications(userId) {
   }
 }
 
-async function sendCommentPush(userId) {}
-
-async function sendLikePush(userId) {}
-
-async function sendChatPush(userId) {}
-
-async function sendPushNotification(userId, type, postId, commentId, content) {
-  // 게시글에 댓글 달리면: type댓글, postId있음, commentId널, content있음
-  // 댓글에 대댓글이 달리면: type댓글, postId있음, commentId있음, content있음
-  // 게시글에 좋아요 달리면: type좋아요, postId있음, commentId널, content널
-  // 댓글에 좋아요 달리면: type좋아요, postId없음, commentId있음, content널
+async function sendCommentPush(userId, postId, commentId, content) {
+  // 게시글에 댓글 달리면: postId있음, commentId널, content있음
+  // 댓글에 대댓글이 달리면:  postId있음, commentId있음, content있음
   try {
     const user = await findUserById(userId);
     if (!user) {
       throw new Error("User not found");
+    }
+
+    const post = await findPostById(postId);
+    if (!post) {
+      throw new Error("Post not found");
     }
 
     let title = "";
@@ -62,72 +57,32 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
     let token = "";
     let parentPostId = "";
 
-    if (type === "댓글") {
-      const post = await findPostById(postId);
-      if (!post) {
-        throw new Error("Post not found");
+    if (commentId) {
+      // 댓글에 대댓글이 달린 경우
+      const comment = await findCommentById(commentId);
+      if (!comment) {
+        throw new Error("Comment not found");
+      }
+      const commentAuthor = await findUserById(comment.author);
+      if (!commentAuthor) {
+        throw new Error("CommentAuthor not found");
       }
 
-      if (commentId) {
-        // 댓글에 대댓글이 달린 경우
-        const comment = await findCommentById(commentId);
-        if (!comment) {
-          throw new Error("Comment not found");
-        }
-        const commentAuthor = await findUserById(comment.author);
-        if (!commentAuthor) {
-          throw new Error("User not found");
-        }
-
-        title = `${user.nickname}님이 댓글에 답글을 남겼습니다`;
-        body = content;
-        token = commentAuthor.fcmToken;
-        parentPostId = post.id;
-      } else {
-        // 게시글에 댓글이 달린 경우
-        const postAuthor = await findUserById(post.author);
-        if (!postAuthor) {
-          throw new Error("User not found");
-        }
-
-        title = `${user.nickname}님이 게시글에 댓글을 남겼습니다`;
-        body = content;
-        token = postAuthor.fcmToken;
-        parentPostId = post.id;
+      title = `${user.nickname}님이 댓글에 답글을 남겼습니다`;
+      body = content;
+      token = commentAuthor.fcmToken;
+      parentPostId = post.id;
+    } else {
+      // 게시글에 댓글이 달린 경우
+      const postAuthor = await findUserById(post.author);
+      if (!postAuthor) {
+        throw new Error("User not found");
       }
-    } else if (type === "좋아요") {
-      if (commentId) {
-        // 댓글에 좋아요가 달린 경우
-        const comment = await findCommentById(commentId);
-        if (!comment) {
-          throw new Error("Comment not found");
-        }
-        const commentAuthor = await findUserById(comment.author);
-        if (!commentAuthor) {
-          throw new Error("User not found");
-        }
 
-        title = `${user.nickname}님이 댓글에 좋아요를 눌렀습니다`;
-        body = "댓글을 확인해보세요!";
-        token = commentAuthor.fcmToken;
-        parentPostId = comment.post.id;
-      } else {
-        // 게시글에 좋아요가 달린 경우
-        const post = await findPostById(postId);
-        if (!post) {
-          throw new Error("Post not found");
-        }
-        const postAuthor = await findUserById(post.author);
-        if (!postAuthor) {
-          throw new Error("User not found");
-        }
-
-        title = `${user.nickname}님이 게시글에 좋아요를 눌렀습니다`;
-        body = "게시글을 확인해보세요!";
-        token = postAuthor.fcmToken;
-        parentPostId = post.id;
-      }
-    } else if (type === "채팅") {
+      title = `${user.nickname}님이 게시글에 댓글을 남겼습니다`;
+      body = content;
+      token = postAuthor.fcmToken;
+      parentPostId = post.id;
     }
 
     const message = {
@@ -141,8 +96,111 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
       token: token,
     };
 
-    // 시간정보가 들어가는지 확인해보고 넣어야함
+    // 시간정보가 필요하던가?
     await admin.messaging().send(message);
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function sendLikePush(userId, postId, commentId) {
+  // 게시글에 좋아요 달리면: postId있음, commentId널
+  // 댓글에 좋아요 달리면: postId없음, commentId있음
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    let title = "";
+    let body = "";
+    let token = "";
+    let parentPostId = "";
+
+    if (commentId && !postId) {
+      // 댓글에 좋아요가 달린 경우
+      const comment = await findCommentById(commentId);
+      if (!comment) {
+        throw new Error("Comment not found");
+      }
+      const commentAuthor = await findUserById(comment.author);
+      if (!commentAuthor) {
+        throw new Error("CommentAuthor not found");
+      }
+
+      title = `${user.nickname}님이 댓글에 좋아요를 눌렀습니다`;
+      body = "댓글을 확인해보세요!";
+      token = commentAuthor.fcmToken;
+      parentPostId = comment.post.id;
+    } else {
+      // 게시글에 좋아요가 달린 경우
+      const post = await findPostById(postId);
+      if (!post) {
+        throw new Error("Post not found");
+      }
+      const postAuthor = await findUserById(post.author);
+      if (!postAuthor) {
+        throw new Error("PostAuthor not found");
+      }
+
+      title = `${user.nickname}님이 게시글에 좋아요를 눌렀습니다`;
+      body = "게시글을 확인해보세요!";
+      token = postAuthor.fcmToken;
+      parentPostId = post.id;
+    }
+
+    const message = {
+      notification: {
+        title: title,
+        body: body,
+      },
+      data: {
+        postId: parentPostId,
+      },
+      token: token,
+    };
+
+    await admin.messaging().send(message);
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function sendChatPush(userId, opponentUserId, content) {
+  // 유저의 채팅방 접속 여부를 확인하고 푸시를 보내야 함
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const opponent = await findUserById(opponentUserId);
+    if (!opponent) {
+      throw new Error("Opponent not found");
+    }
+
+    const roomId = [opponentUserId, userId].sort().join("");
+    const isOpponentInRoom = await findUserInRoom(opponent, roomId);
+
+    if (!isOpponentInRoom) {
+      // 상대방이 채팅방에 없는 경우 푸시알림을 보냄
+      const title = `${user.nickname}님이 채팅을 보냈습니다`;
+      const body = content;
+      const token = opponent.fcmToken;
+
+      const message = {
+        notification: {
+          title: title,
+          body: body,
+        },
+        data: {
+          userId: userId,
+        },
+        token: token,
+      };
+
+      await admin.messaging().send(message);
+    }
   } catch (error) {
     throw error;
   }
@@ -151,7 +209,6 @@ async function sendPushNotification(userId, type, postId, commentId, content) {
 module.exports = {
   myNotifications,
   unreadNotifications,
-  sendPushNotification,
 
   sendCommentPush,
   sendLikePush,

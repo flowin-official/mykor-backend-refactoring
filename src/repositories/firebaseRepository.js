@@ -1,13 +1,19 @@
 const admin = require("../config/firebase");
-const firestore = admin.firestore();
-const realtimedb = admin.database();
+const firestoreDB = admin.firestore();
+const realtimeDB = admin.database();
 
 // firestore에 채팅 메시지 저장
-const saveMessage = async (roomId, messageData) => {
-  const chatRef = firestore.collection("chats").doc(roomId);
-
+const saveMessage = async (roomId, userId, message) => {
   try {
-    await chatRef.collection("messages").add(messageData);
+    await firestoreDB
+      .collection("chatRooms")
+      .doc(roomId)
+      .collection("messages")
+      .add({
+        senderId: userId,
+        text: message,
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      });
   } catch (error) {
     throw error;
   }
@@ -31,8 +37,20 @@ const deleteUserInRoom = async (userId, roomId) => {
   }
 };
 
+const findUserInRoom = async (userId, roomId) => {
+  try {
+    const snapshot = await realtimedb
+      .ref(`activeChats/${roomId}/${userId}`)
+      .once("value");
+    return snapshot.val();
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   saveMessage,
   saveUserInRoom,
   deleteUserInRoom,
+  findUserInRoom,
 };

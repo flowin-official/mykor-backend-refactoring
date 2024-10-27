@@ -1,58 +1,11 @@
-const { sendMessage, messagesInRoom } = require("../services/chatService");
+const {
+  sendMessage,
+  enterChatRoom,
+  exitChatRoom,
+} = require("../services/chatService");
 const { sendPushNotification } = require("../services/notificationService");
 
-/**
- * @swagger
- * tags:
- *   name: Chats
- *   description: 채팅 관련 API
- */
-
-/**
- * @swagger
- * /message:
- *   post:
- *     summary: 채팅 메시지 전송
- *     tags: [Chats]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               roomId:
- *                 type: string
- *               message:
- *                 type: string
- *     responses:
- *       200:
- *         description: 채팅 메시지 전송 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 posts:
- *                   type: array
- *                   items:
- *                     type: object
- *       400:
- *         description: 잘못된 요청
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: 서버 에러
- */
+// 채팅 전송
 async function postChatMessage(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
@@ -74,69 +27,50 @@ async function postChatMessage(req, res) {
   }
 }
 
-/**
- * @swagger
- * /messages/{roomId}:
- *   get:
- *     summary: 채팅방 메시지 조회
- *     tags: [Chats]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *       - in: path
- *         name: roomId
- *         required: true
- *         schema:
- *           type: string
- *         description: 채팅방 ID
- *     responses:
- *       200:
- *         description: 범위 내 게시글 조회 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 posts:
- *                   type: array
- *                   items:
- *                     type: object
- *       400:
- *         description: 잘못된 요청
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: 서버 에러
- */
-async function getChatMessages(req, res) {
+// 채팅방 입장
+async function postChatEnter(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
       message: "Unauthorized",
     });
     return;
   }
+  const userId = req.userId;
 
-  const roomId = req.params.roomId;
+  const { opponentUserId } = req.body;
   try {
-    const messages = await messagesInRoom(roomId);
+    await enterChatRoom(userId, opponentUserId);
     res.status(200).json({
-      message: "Messages in room",
-      posts: messages,
+      message: "Entered chat room",
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Server error",
+    res.status(500).json({ message: error.message });
+  }
+}
+
+// 채팅방 퇴장
+async function postChatExit(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
     });
+    return;
+  }
+  const userId = req.userId;
+
+  const { opponentUserId } = req.body;
+  try {
+    await exitChatRoom(userId, opponentUserId);
+    res.status(200).json({
+      message: "Exited chat room",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 }
 
 module.exports = {
   postChatMessage,
-  getChatMessages,
+  postChatEnter,
+  postChatExit,
 };
