@@ -22,7 +22,7 @@ const saveMessage = async (roomId, userId, message) => {
 // realtime db에 유저가 채팅방에 입장 상태임을 저장 (실시간 중요)
 const saveUserInRoom = async (userId, roomId) => {
   try {
-    await realtimedb.ref(`activeChats/${roomId}/${userId}`).set(true);
+    await realtimeDB.ref(`activeChats/${roomId}/${userId}`).set(true);
   } catch (error) {
     throw error;
   }
@@ -31,7 +31,7 @@ const saveUserInRoom = async (userId, roomId) => {
 // realtime db에 유저가 채팅방에서 퇴장 상태임을 저장 (실시간 중요)
 const deleteUserInRoom = async (userId, roomId) => {
   try {
-    await realtimedb.ref(`activeChats/${roomId}/${userId}`).remove();
+    await realtimeDB.ref(`activeChats/${roomId}/${userId}`).remove();
   } catch (error) {
     throw error;
   }

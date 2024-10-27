@@ -3,7 +3,7 @@ const {
   enterChatRoom,
   exitChatRoom,
 } = require("../services/chatService");
-const { sendPushNotification } = require("../services/notificationService");
+const { sendChatPush } = require("../services/notificationService");
 
 // 채팅 전송
 async function postChatMessage(req, res) {
@@ -18,7 +18,7 @@ async function postChatMessage(req, res) {
   const { opponentUserId, message } = req.body;
   try {
     await sendMessage(opponentUserId, userId, message);
-    // await sendPushNotification()
+    await sendChatPush(opponentUserId, userId, message);
     res.status(200).json({
       message: "Message sent",
     });
