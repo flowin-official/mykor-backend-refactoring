@@ -39,7 +39,7 @@ const deleteUserInRoom = async (userId, roomId) => {
 
 const findUserInRoom = async (userId, roomId) => {
   try {
-    const snapshot = await realtimedb
+    const snapshot = await realtimeDB
       .ref(`activeChats/${roomId}/${userId}`)
       .once("value");
     return snapshot.val();
