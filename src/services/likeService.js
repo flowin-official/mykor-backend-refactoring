@@ -21,7 +21,6 @@ const {
 const { findUserById } = require("../repositories/userRepository");
 const {
   createNotification,
-  modifyNotificationsToReadByUserId,
 } = require("../repositories/notificationRepository");
 
 async function likePost(postId, userId) {
