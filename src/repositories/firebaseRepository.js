@@ -1,36 +1,31 @@
 const admin = require("../config/firebase");
-const db = admin.database();
+const firestore = admin.firestore();
+const realtimedb = admin.database();
 
+// firestore에 채팅 메시지 저장
 const saveMessage = async (roomId, messageData) => {
-  const ref = db.ref(`rooms/${roomId}`);
+  const chatRef = firestore.collection("chats").doc(roomId);
+
   try {
-    await ref.push(messageData);
+    await chatRef.collection("messages").add(messageData);
   } catch (error) {
     throw error;
   }
 };
 
-const findMessagesByRoomId = async (roomId) => {
-  const ref = db.ref(`rooms/${roomId}`);
+// realtime db에 유저가 채팅방에 입장 상태임을 저장 (실시간 중요)
+const saveUserInRoom = async (userId, roomId) => {
   try {
-    const snapshot = await ref.once("value");
-    const messages = snapshot.val();
-    return messages;
+    await realtimedb.ref(`activeChats/${roomId}/${userId}`).set(true);
   } catch (error) {
     throw error;
   }
 };
 
-const findRoomIdsByUserId = async (userId) => {
-  const ref = db.ref("rooms");
+// realtime db에 유저가 채팅방에서 퇴장 상태임을 저장 (실시간 중요)
+const deleteUserInRoom = async (userId, roomId) => {
   try {
-    const snapshot = await ref.once("value");
-    const rooms = snapshot.val();
-    const roomIds = Object.keys(rooms).filter((roomId) => {
-      const room = rooms[roomId];
-      return room.members.includes(userId);
-    });
-    return roomIds;
+    await realtimedb.ref(`activeChats/${roomId}/${userId}`).remove();
   } catch (error) {
     throw error;
   }
@@ -38,5 +33,6 @@ const findRoomIdsByUserId = async (userId) => {
 
 module.exports = {
   saveMessage,
-  findMessagesByRoomId,
+  saveUserInRoom,
+  deleteUserInRoom,
 };

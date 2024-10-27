@@ -1,6 +1,7 @@
 const {
   saveMessage,
-  findMessagesByRoomId,
+  saveUserInRoom,
+  deleteUserInRoom,
 } = require("../repositories/firebaseRepository");
 const { findUserById } = require("../repositories/userRepository");
 
@@ -21,10 +22,29 @@ async function sendMessage(opponentUserId, userId, message) {
   }
 }
 
-async function messagesInRoom(roomId) {
+async function enterChatRoom(userId, opponentUserId) {
   try {
-    const messages = await findMessagesByRoomId(roomId);
-    return messages;
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const roomId = [opponentUserId, userId].sort().join("");
+    await saveUserInRoom(userId, roomId);
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function exitChatRoom(userId, opponentUserId) {
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const roomId = [opponentUserId, userId].sort().join("");
+    await deleteUserInRoom(userId, roomId);
   } catch (error) {
     throw error;
   }
@@ -32,5 +52,6 @@ async function messagesInRoom(roomId) {
 
 module.exports = {
   sendMessage,
-  messagesInRoom,
+  enterChatRoom,
+  exitChatRoom,
 };

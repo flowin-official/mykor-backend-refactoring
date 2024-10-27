@@ -169,8 +169,9 @@ const setupRoutes = (app) => {
     postReportComment
   ); // 댓글 신고
 
-  router.post("/message", authenticateToken, postChatMessage);
-  router.get("/messages/:roomId", authenticateToken, getChatMessages);
+  router.post("/chat", authenticateToken, postChatMessage); // 채팅 전송
+  // router.post("/chat/enter", authenticateToken, postChatEnter); // 채팅방 입장 (채팅알림 off)
+  // router.post("/chat/exit", authenticateToken, postChatExit); // 채팅방 퇴장 (채팅알림 on)
 
   router.post("/presigned-url", authenticateToken, postPresignedUrl); // S3 업로드용 사전 서명 URL 생성
 

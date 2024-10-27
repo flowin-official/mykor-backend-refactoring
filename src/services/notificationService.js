@@ -40,6 +40,12 @@ async function unreadNotifications(userId) {
   }
 }
 
+async function sendCommentPush(userId) {}
+
+async function sendLikePush(userId) {}
+
+async function sendChatPush(userId) {}
+
 async function sendPushNotification(userId, type, postId, commentId, content) {
   // 게시글에 댓글 달리면: type댓글, postId있음, commentId널, content있음
   // 댓글에 대댓글이 달리면: type댓글, postId있음, commentId있음, content있음
@@ -146,4 +152,8 @@ module.exports = {
   myNotifications,
   unreadNotifications,
   sendPushNotification,
+
+  sendCommentPush,
+  sendLikePush,
+  sendChatPush,
 };
