@@ -180,7 +180,7 @@ async function sendChatPush(userId, opponentUserId, content) {
     }
 
     const roomId = [opponentUserId, userId].sort().join("");
-    const isOpponentInRoom = await findUserInRoom(opponent, roomId);
+    const isOpponentInRoom = await findUserInRoom(opponentUserId, roomId);
 
     if (!isOpponentInRoom) {
       // 상대방이 채팅방에 없는 경우 푸시알림을 보냄
