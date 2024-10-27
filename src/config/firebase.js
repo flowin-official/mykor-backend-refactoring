@@ -1,10 +1,11 @@
 const admin = require("firebase-admin");
+const { FIREBASE_SERVICE_ACCOUNT_FILE, FIREBASE_DATABASE_URL } = process.env;
 
-const serviceAccount = require("../mykor-430210-firebase-adminsdk-u16ux-d36e9c9da9.json");
+const serviceAccount = require(FIREBASE_SERVICE_ACCOUNT_FILE);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://mykor-430210-default-rtdb.firebaseio.com",
+  databaseURL: FIREBASE_DATABASE_URL,
 });
 
 module.exports = admin;

@@ -12,56 +12,6 @@ const {
   sendCommentPush,
 } = require("../services/notificationService");
 
-/**
- * @swagger
- * tags:
- *   name: Comments
- *   description: 댓글 관련 API
- */
-
-/**
- * @swagger
- * /comment:
- *   post:
- *     summary: 댓글 작성
- *     tags: [Comments]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               postId:
- *                 type: string
- *               commentId:
- *                 type: string
- *               content:
- *                 type: string
- *     responses:
- *       200:
- *         description: 댓글 작성 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 comment:
- *                   type: object
- *       401:
- *         description: 권한 없음
- *       500:
- *         description: 서버 에러
- */
 async function postMyComment(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
