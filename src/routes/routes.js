@@ -58,7 +58,10 @@ const {
   postChatEnter,
   postChatExit,
 } = require("../controllers/chatController");
-const { postPresignedUrl } = require("../controllers/s3Controller");
+const {
+  postPostPresignedUrl,
+  postProfilePresignedUrl,
+} = require("../controllers/s3Controller");
 
 const setupRoutes = (app) => {
   const router = express.Router();
@@ -174,7 +177,12 @@ const setupRoutes = (app) => {
   router.post("/chat/enter", authenticateToken, postChatEnter); // 채팅방 입장 (채팅알림 off)
   router.post("/chat/exit", authenticateToken, postChatExit); // 채팅방 퇴장 (채팅알림 on)
 
-  router.post("/presigned-url", authenticateToken, postPresignedUrl); // S3 업로드용 사전 서명 URL 생성
+  router.post("/post-presigned-url", authenticateToken, postPostPresignedUrl); // 게시글 이미지 S3 업로드용 사전 서명 URL 생성
+  router.post(
+    "/profile-presigned-url",
+    authenticateToken,
+    postProfilePresignedUrl
+  ); // 프로필 이미지 S3 업로드용 사전 서명 URL 생성
 
   // 기본 라우트 설정
   app.use("/mykor/api/v1", router);
