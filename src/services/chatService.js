@@ -12,10 +12,7 @@ async function sendMessage(opponentUserId, userId, message) {
       throw new Error("User not found");
     }
 
-    // 유저 두 명의 아이디를 합쳐서 일관적인 방 아이디 생성
-    const roomId = [opponentUserId, userId].sort().join("");
-
-    await saveMessage(roomId, userId, message);
+    await saveMessage(opponentUserId, userId, message);
   } catch (error) {
     throw error;
   }
@@ -28,8 +25,7 @@ async function enterChatRoom(userId, opponentUserId) {
       throw new Error("User not found");
     }
 
-    const roomId = [opponentUserId, userId].sort().join("");
-    await saveUserInRoom(userId, roomId);
+    await saveUserInRoom(userId, opponentUserId);
   } catch (error) {
     throw error;
   }
@@ -42,8 +38,7 @@ async function exitChatRoom(userId, opponentUserId) {
       throw new Error("User not found");
     }
 
-    const roomId = [opponentUserId, userId].sort().join("");
-    await deleteUserInRoom(userId, roomId);
+    await deleteUserInRoom(userId, opponentUserId);
   } catch (error) {
     throw error;
   }
