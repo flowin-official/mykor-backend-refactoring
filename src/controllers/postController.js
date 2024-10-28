@@ -801,54 +801,7 @@ async function postMyPost(req, res) {
   }
 }
 
-/**
- * @swagger
- * /post/{postId}:
- *   put:
- *     summary: 게시글 수정
- *     tags: [Posts]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *       - in: path
- *         name: postId
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *               content:
- *                 type: string
- *               tagId:
- *                 type: string
- *     responses:
- *       200:
- *         description: 게시글 수정 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 post:
- *                   type: object
- *       401:
- *         description: 토큰 만료
- *       500:
- *         description: 서버 에러
- */
+// 게시글 수정
 async function putMyPost(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
@@ -859,12 +812,12 @@ async function putMyPost(req, res) {
 
   const userId = req.userId;
   const postId = req.params.postId;
-  const { title, content, tagId, images } = req.body;
+  const { title, contents, tagId, images } = req.body;
   try {
     const post = await modifyMyPost(
       postId,
       title,
-      content,
+      contents,
       userId,
       tagId,
       images

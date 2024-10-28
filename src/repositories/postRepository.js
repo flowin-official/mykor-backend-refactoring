@@ -121,11 +121,11 @@ const findPostsByPostLikes = async (postLikes, lastPostId, size) => {
   }
 };
 
-const updatePost = async (postId, title, content, tag, images) => {
+const updatePost = async (postId, title, contents, tag, images) => {
   try {
     const post = await Post.findByIdAndUpdate(
       postId,
-      { title, content, tag, images, updatedAt: Date.now() },
+      { title, contents, tag, images, updatedAt: Date.now() },
       { new: true }
     );
     return post;
