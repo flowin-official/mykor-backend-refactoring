@@ -7,6 +7,7 @@ const {
 } = require("../services/userService");
 
 const { deleteAppleUser } = require("../services/authService");
+const { generateGetPresignedUrl } = require("../services/s3Service");
 
 /**
  * @swagger
@@ -110,9 +111,9 @@ async function putMyInfo(req, res) {
   }
 
   const userId = req.userId;
-  const { nickname, locationId } = req.body;
+  const { nickname, locationId, profileImage } = req.body;
   try {
-    const user = await modifyMyInfo(userId, nickname, locationId);
+    const user = await modifyMyInfo(userId, nickname, locationId, profileImage);
     res.status(200).json({
       message: "User updated",
       user,
@@ -224,6 +225,9 @@ async function getUserInfo(req, res) {
   const userId = req.params.userId; // 헤더의 유저가 아니라 params의 유저 정보를 가져옴
   try {
     const user = await userInfo(userId);
+
+    const profileImageUrl = await generateGetPresignedUrl(user.profileImage);
+
     res.status(200).json({
       message: "User found",
       user: {
@@ -231,6 +235,7 @@ async function getUserInfo(req, res) {
         nickname: user.nickname,
         location: user.location,
         deleted: user.deleted,
+        profileImage: profileImageUrl,
       },
     });
   } catch (error) {

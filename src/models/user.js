@@ -92,6 +92,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+
+  profileImage: {
+    type: String,
+    default: null,
+  },
 });
 
 const User = mongoose.model("User", userSchema);

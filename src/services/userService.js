@@ -19,7 +19,7 @@ async function myInfo(userId) {
   }
 }
 
-async function modifyMyInfo(userId, nickname, locationId) {
+async function modifyMyInfo(userId, nickname, locationId, profileImage) {
   try {
     let user = await findUserById(userId);
     if (!user) {
@@ -31,7 +31,7 @@ async function modifyMyInfo(userId, nickname, locationId) {
       throw new Error("Location not found");
     }
 
-    user = await updateUser(user, nickname, location);
+    user = await updateUser(user, nickname, location, profileImage);
     return user;
   } catch (error) {
     throw error;

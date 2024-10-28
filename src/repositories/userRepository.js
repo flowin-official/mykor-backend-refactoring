@@ -107,13 +107,14 @@ const findUserByGoogleUserCode = async (googleUserCode) => {
   }
 };
 
-const updateUser = async (userId, nickname, locationId) => {
+const updateUser = async (userId, nickname, locationId, profileImage) => {
   try {
     const user = await User.findByIdAndUpdate(
       userId,
       {
         nickname,
         location: locationId,
+        profileImage,
         updatedAt: Date.now(),
       },
       { new: true }
