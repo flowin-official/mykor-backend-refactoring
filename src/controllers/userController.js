@@ -86,7 +86,10 @@ async function getUserInfo(req, res) {
   try {
     const user = await userInfo(userId);
 
-    const profileImageUrl = await generateGetPresignedUrl(user.profileImage);
+    let profileImageUrl = null;
+    if (user.profileImage) {
+      profileImageUrl = await generateGetPresignedUrl(user.profileImage);
+    }
 
     res.status(200).json({
       message: "User found",
