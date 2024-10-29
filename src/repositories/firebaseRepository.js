@@ -27,8 +27,14 @@ const saveMessage = async (opponentUserId, userId, message) => {
 const saveUserInRoom = async (userId, opponentUserId) => {
   try {
     const roomId = [opponentUserId, userId].sort().join("");
+    const roomRef = realtimeDB.ref(`activeChats/${roomId}`);
 
-    await realtimeDB.ref(`activeChats/${roomId}/${userId}`).set(true);
+    const snapshot = await roomRef.once("value");
+    if (!snapshot.exists()) {
+      await roomRef.set({});
+    }
+
+    await roomRef.child(userId).set(true);
   } catch (error) {
     throw error;
   }
@@ -38,8 +44,14 @@ const saveUserInRoom = async (userId, opponentUserId) => {
 const deleteUserInRoom = async (userId, opponentUserId) => {
   try {
     const roomId = [opponentUserId, userId].sort().join("");
+    const roomRef = realtimeDB.ref(`activeChats/${roomId}`);
 
-    await realtimeDB.ref(`activeChats/${roomId}/${userId}`).set(false);
+    const snapshot = await roomRef.once("value");
+    if (!snapshot.exists()) {
+      await roomRef.set({});
+    }
+
+    await roomRef.child(userId).set(false);
   } catch (error) {
     throw error;
   }
