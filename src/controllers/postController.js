@@ -277,51 +277,7 @@ async function getPostsInRangeWithLogin(req, res) {
   }
 }
 
-/**
- * @swagger
- * /post/{postId}:
- *   get:
- *     summary: 게시글 조회(비회원)
- *     tags: [Posts]
- *     parameters:
- *       - in: path
- *         name: postId
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: 특정 게시글 조회 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 post:
- *                   type: object
- *                   properties:
- *                     author:
- *                       type: object
- *                     postLike:
- *                       type: boolean
- *                     commentsList:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           author:
- *                             type: object
- *                           commentLike:
- *                             type: boolean
- *       400:
- *         description: 잘못된 요청
- *       404:
- *         description: 게시글 없음
- *       500:
- *         description: 서버 에러
- */
+// 비회원 게시글 조회(댓글 포함)
 async function getThisPost(req, res) {
   const postId = req.params.postId;
   if (!postId) {
@@ -336,7 +292,7 @@ async function getThisPost(req, res) {
 
     const comments = await commentsOnThisPost(postId);
 
-    // 이미지가 있을 경우에만 presigned URL 생성, 없으면 빈 배열 반환
+    // 게시글 이미지가 있을 경우에만 presigned URL 생성, 없으면 빈 배열 반환
     const imagesWithUrl =
       post.images && post.images.length > 0
         ? await Promise.all(
@@ -350,37 +306,39 @@ async function getThisPost(req, res) {
     const commentsMap = {};
     const nestedCommentsMap = {};
 
-    comments.forEach((comment) => {
-      if (comment.parentComment) {
-        // 대댓글인 경우
-        if (!nestedCommentsMap[comment.parentComment]) {
-          nestedCommentsMap[comment.parentComment] = [];
-        }
-        nestedCommentsMap[comment.parentComment].push({
-          ...comment.toObject(),
-          author: {
-            _id: comment.author._id,
-            nickname: comment.author.nickname,
-            location: comment.author.location,
-            deleted: comment.author.deleted,
-          },
-          commentLike: false,
-        });
-      } else {
-        // 일반댓글인 경우
-        commentsMap[comment._id] = {
-          ...comment.toObject(),
-          author: {
-            _id: comment.author._id,
-            nickname: comment.author.nickname,
-            location: comment.author.location,
-            deleted: comment.author.deleted,
-          },
-          commentLike: false,
-          nestedCommentsList: [],
+    await Promise.all(
+      comments.map(async (comment) => {
+        const authorProfileImageUrl = comment.author.profileImage
+          ? await generateGetPresignedUrl(comment.author.profileImage)
+          : null;
+
+        const authorData = {
+          _id: comment.author._id,
+          nickname: comment.author.nickname,
+          location: comment.author.location,
+          deleted: comment.author.deleted,
+          profileImage: authorProfileImageUrl,
         };
-      }
-    });
+
+        if (comment.parentComment) {
+          if (!nestedCommentsMap[comment.parentComment]) {
+            nestedCommentsMap[comment.parentComment] = [];
+          }
+          nestedCommentsMap[comment.parentComment].push({
+            ...comment.toObject(),
+            author: authorData,
+            commentLike: false,
+          });
+        } else {
+          commentsMap[comment._id] = {
+            ...comment.toObject(),
+            author: authorData,
+            commentLike: false,
+            nestedCommentsList: [],
+          };
+        }
+      })
+    );
 
     // 대댓글을 일반댓글에 넣어줌
     Object.keys(nestedCommentsMap).forEach((parentCommentId) => {
@@ -389,6 +347,11 @@ async function getThisPost(req, res) {
           nestedCommentsMap[parentCommentId];
       }
     });
+
+    // 게시글 author의 profileImage URL 변환
+    const postAuthorProfileImageUrl = post.author.profileImage
+      ? await generateGetPresignedUrl(post.author.profileImage)
+      : null;
 
     res.status(200).json({
       message: "This post",
@@ -399,6 +362,7 @@ async function getThisPost(req, res) {
           nickname: post.author.nickname,
           location: post.author.location,
           deleted: post.author.deleted,
+          profileImage: postAuthorProfileImageUrl,
         },
         images: imagesWithUrl, // { key, url } 형태로 반환
         postLike: false,
@@ -410,59 +374,7 @@ async function getThisPost(req, res) {
   }
 }
 
-/**
- * @swagger
- * /post/{postId}/user:
- *   get:
- *     summary: 게시글 조회(회원/댓글차단반영)
- *     tags: [Posts]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *       - in: path
- *         name: postId
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: 특정 게시글 조회 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 post:
- *                   type: object
- *                   properties:
- *                     author:
- *                       type: object
- *                     postLike:
- *                       type: boolean
- *                     commentsList:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           author:
- *                             type: object
- *                           commentLike:
- *                             type: boolean
- *       400:
- *         description: 잘못된 요청
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: 게시글 없음
- *       500:
- *         description: 서버 에러
- */
+// 게시글 조회 (로그인 기준, 댓글/대댓글 포함, 이미지 추가)
 async function getThisPostWithLogin(req, res) {
   if (!req.isAuthenticated) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -507,37 +419,39 @@ async function getThisPostWithLogin(req, res) {
     const commentMap = {};
     const nestedCommentsMap = {};
 
-    comments.forEach((comment) => {
-      if (comment.parentComment) {
-        // 대댓글인 경우
-        if (!nestedCommentsMap[comment.parentComment]) {
-          nestedCommentsMap[comment.parentComment] = [];
-        }
-        nestedCommentsMap[comment.parentComment].push({
-          ...comment.toObject(),
-          author: {
-            _id: comment.author._id,
-            nickname: comment.author.nickname,
-            location: comment.author.location,
-            deleted: comment.author.deleted,
-          },
-          commentLike: commentsLikes[comment._id] || false,
-        });
-      } else {
-        // 일반 댓글인 경우
-        commentMap[comment._id] = {
-          ...comment.toObject(),
-          author: {
-            _id: comment.author._id,
-            nickname: comment.author.nickname,
-            location: comment.author.location,
-            deleted: comment.author.deleted,
-          },
-          commentLike: commentsLikes[comment._id] || false,
-          nestedCommentsList: [],
+    await Promise.all(
+      comments.map(async (comment) => {
+        const authorProfileImageUrl = comment.author.profileImage
+          ? await generateGetPresignedUrl(comment.author.profileImage)
+          : null;
+
+        const authorData = {
+          _id: comment.author._id,
+          nickname: comment.author.nickname,
+          location: comment.author.location,
+          deleted: comment.author.deleted,
+          profileImage: authorProfileImageUrl,
         };
-      }
-    });
+
+        if (comment.parentComment) {
+          if (!nestedCommentsMap[comment.parentComment]) {
+            nestedCommentsMap[comment.parentComment] = [];
+          }
+          nestedCommentsMap[comment.parentComment].push({
+            ...comment.toObject(),
+            author: authorData,
+            commentLike: commentsLikes[comment._id] || false,
+          });
+        } else {
+          commentMap[comment._id] = {
+            ...comment.toObject(),
+            author: authorData,
+            commentLike: commentsLikes[comment._id] || false,
+            nestedCommentsList: [],
+          };
+        }
+      })
+    );
 
     // 각 일반 댓글에 대댓글 추가
     Object.keys(nestedCommentsMap).forEach((parentCommentId) => {
@@ -546,6 +460,11 @@ async function getThisPostWithLogin(req, res) {
           nestedCommentsMap[parentCommentId];
       }
     });
+
+    // 게시글 author의 profileImage URL 변환
+    const postAuthorProfileImageUrl = post.author.profileImage
+      ? await generateGetPresignedUrl(post.author.profileImage)
+      : null;
 
     res.status(200).json({
       message: "This post",
@@ -556,6 +475,7 @@ async function getThisPostWithLogin(req, res) {
           nickname: post.author.nickname,
           location: post.author.location,
           deleted: post.author.deleted,
+          profileImage: postAuthorProfileImageUrl,
         },
         images: imagesWithUrl, // { key, url } 형태로 반환
         postLike,
