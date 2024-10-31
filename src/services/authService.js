@@ -22,7 +22,7 @@ const {
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const qs = require("qs");
-const logger = require("../utils/logger");
+const { generateFirebaseCustomToken } = require("../utils/fct");
 
 // async function registerUser(email, password, name) {
 //   try {
@@ -189,7 +189,10 @@ async function loginAppleUser(authCode, fcmToken) {
     // redis에 리프레시 토큰 저장
     await saveRefreshToken(user._id, refreshToken);
 
-    return { user, accessToken, refreshToken };
+    // fct 발급
+    const firebaseCustomToken = await generateFirebaseCustomToken(userId);
+
+    return { user, accessToken, refreshToken, firebaseCustomToken };
   } catch (error) {
     throw error;
   }
@@ -280,7 +283,10 @@ async function loginKakaoUser(authCode, fcmToken) {
         // redis에 리프레시 토큰 저장
         await saveRefreshToken(user._id, refreshToken);
 
-        return { user, accessToken, refreshToken };
+        // fct 발급
+        const firebaseCustomToken = await generateFirebaseCustomToken(userId);
+
+        return { user, accessToken, refreshToken, firebaseCustomToken };
       } catch (error) {
         throw error;
       }
@@ -348,7 +354,10 @@ async function loginGoogleUser(authCode, fcmToken) {
         // redis에 리프레시 토큰 저장
         await saveRefreshToken(user._id, refreshToken);
 
-        return { user, accessToken, refreshToken };
+        // fct 발급
+        const firebaseCustomToken = await generateFirebaseCustomToken(userId);
+
+        return { user, accessToken, refreshToken, firebaseCustomToken };
       } catch (error) {
         throw error;
       }
@@ -377,7 +386,10 @@ async function refreshNewTokens(refreshToken) {
     // redis에 저장된 리프레시 토큰 갱신
     await saveRefreshToken(userId, newRefreshToken);
 
-    return { user, newAccessToken, newRefreshToken };
+    // fct 발급
+    const firebaseCustomToken = await generateFirebaseCustomToken(userId);
+
+    return { user, newAccessToken, newRefreshToken, firebaseCustomToken };
   } catch (error) {
     throw error;
   }
