@@ -54,9 +54,10 @@ const {
   deleteDummyComment,
 } = require("../dummy/dummyComment");
 const {
-  postChatMessage,
-  postChatEnter,
+  postChatSend,
   postChatExit,
+  postChatOnline,
+  postChatOffline,
 } = require("../controllers/chatController");
 const {
   postPostPresignedUrl,
@@ -173,9 +174,10 @@ const setupRoutes = (app) => {
     postReportComment
   ); // 댓글 신고
 
-  router.post("/message", authenticateToken, postChatMessage); // 채팅 전송
-  router.post("/chat/enter", authenticateToken, postChatEnter); // 채팅방 입장 (채팅알림 off)
-  router.post("/chat/exit", authenticateToken, postChatExit); // 채팅방 퇴장 (채팅알림 on)
+  router.post("/chat/send", authenticateToken, postChatSend); // 채팅 메시지 전송
+  router.post("/chat/exit", authenticateToken, postChatExit); // 채팅방 나가기
+  router.post("/chat/online", authenticateToken, postChatOnline); // 채팅방 입장 (채팅알림 off)
+  router.post("/chat/offline", authenticateToken, postChatOffline); // 채팅방 퇴장 (채팅알림 on)
 
   router.post("/post-presigned-url", authenticateToken, postPostPresignedUrl); // 게시글 이미지 S3 업로드용 사전 서명 URL 생성
   router.post(

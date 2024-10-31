@@ -1,12 +1,13 @@
 const {
   sendMessage,
-  enterChatRoom,
   exitChatRoom,
+  onlineChatRoom,
+  offlineChatRoom,
 } = require("../services/chatService");
 const { sendChatPush } = require("../services/notificationService");
 
 // 채팅 전송
-async function postChatMessage(req, res) {
+async function postChatSend(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
       message: "Unauthorized",
@@ -17,8 +18,8 @@ async function postChatMessage(req, res) {
 
   const { opponentUserId, message } = req.body;
   try {
-    await sendMessage(opponentUserId, userId, message);
-    await sendChatPush(opponentUserId, userId, message);
+    await sendMessage(userId, opponentUserId, message);
+    await sendChatPush(userId, opponentUserId, message);
     res.status(200).json({
       message: "Message sent",
     });
@@ -27,28 +28,7 @@ async function postChatMessage(req, res) {
   }
 }
 
-// 채팅방 입장
-async function postChatEnter(req, res) {
-  if (!req.isAuthenticated) {
-    res.status(401).json({
-      message: "Unauthorized",
-    });
-    return;
-  }
-  const userId = req.userId;
-
-  const { opponentUserId } = req.body;
-  try {
-    await enterChatRoom(userId, opponentUserId);
-    res.status(200).json({
-      message: "Entered chat room",
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-// 채팅방 퇴장
+// 채팅방 나가기
 async function postChatExit(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
@@ -58,9 +38,51 @@ async function postChatExit(req, res) {
   }
   const userId = req.userId;
 
-  const { opponentUserId } = req.body;
+  const { roomId } = req.body;
   try {
-    await exitChatRoom(userId, opponentUserId);
+    await exitChatRoom(userId, roomId);
+    res.status(200).json({
+      message: "Exited chat room",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+// 채팅방 온라인
+async function postChatOnline(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+  const userId = req.userId;
+
+  const { roomId } = req.body;
+  try {
+    await onlineChatRoom(userId, roomId);
+    res.status(200).json({
+      message: "Entered chat room",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+// 채팅방 오프라인
+async function postChatOffline(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+  const userId = req.userId;
+
+  const { roomId } = req.body;
+  try {
+    await offlineChatRoom(userId, roomId);
     res.status(200).json({
       message: "Exited chat room",
     });
@@ -70,7 +92,8 @@ async function postChatExit(req, res) {
 }
 
 module.exports = {
-  postChatMessage,
-  postChatEnter,
+  postChatSend,
   postChatExit,
+  postChatOnline,
+  postChatOffline,
 };
