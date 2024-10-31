@@ -53,10 +53,12 @@ const deleteParticipant = async (userId, roomId) => {
 const findRoomByParticipants = async (userId, opponentUserId) => {
   try {
     // userId와 opponentUserId를 모두 participants로 가지는 채팅방 조회
+    // 두 ID를 알파벳 순으로 정렬
+    const sortedParticipants = [userId, opponentUserId].sort();
+
     const chatRoomsRef = firestoreDB.collection("chatRooms");
     const snapshot = await chatRoomsRef
-      .where("participants", "array-contains", userId)
-      .where("participants", "array-contains", opponentUserId)
+      .where("participants", "==", sortedParticipants)
       .get();
 
     if (snapshot.empty) {
