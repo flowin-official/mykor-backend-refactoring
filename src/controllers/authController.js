@@ -8,14 +8,15 @@ const {
 async function postKakaoLogin(req, res) {
   const { authCode, fcmToken } = req.body;
   try {
-    const { user, accessToken, refreshToken, firebaseCustomToken } =
-      await loginKakaoUser(authCode, fcmToken);
+    const { user, accessToken, refreshToken } = await loginKakaoUser(
+      authCode,
+      fcmToken
+    );
     res.status(200).json({
       message: "User logged in successfully",
       user,
       accessToken,
       refreshToken,
-      firebaseCustomToken,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -25,14 +26,15 @@ async function postKakaoLogin(req, res) {
 async function postAppleLogin(req, res) {
   const { authCode, fcmToken } = req.body;
   try {
-    const { user, accessToken, refreshToken, firebaseCustomToken } =
-      await loginAppleUser(authCode, fcmToken);
+    const { user, accessToken, refreshToken } = await loginAppleUser(
+      authCode,
+      fcmToken
+    );
     res.status(200).json({
       message: "User logged in successfully",
       user,
       accessToken,
       refreshToken,
-      firebaseCustomToken,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -42,14 +44,15 @@ async function postAppleLogin(req, res) {
 async function postGoogleLogin(req, res) {
   const { authCode, fcmToken } = req.body;
   try {
-    const { user, accessToken, refreshToken, firebaseCustomToken } =
-      await loginGoogleUser(authCode, fcmToken);
+    const { user, accessToken, refreshToken } = await loginGoogleUser(
+      authCode,
+      fcmToken
+    );
     res.status(200).json({
       message: "User logged in successfully",
       user,
       accessToken,
       refreshToken,
-      firebaseCustomToken,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -64,14 +67,14 @@ async function postRefresh(req, res) {
   }
 
   try {
-    const { user, newAccessToken, newRefreshToken, firebaseCustomToken } =
-      await refreshNewTokens(refreshToken);
+    const { user, newAccessToken, newRefreshToken } = await refreshNewTokens(
+      refreshToken
+    );
     res.status(200).json({
       message: "Tokens refreshed",
       user,
       newAccessToken,
       newRefreshToken,
-      firebaseCustomToken,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

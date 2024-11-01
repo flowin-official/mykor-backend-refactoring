@@ -190,9 +190,10 @@ async function loginAppleUser(authCode, fcmToken) {
     await saveRefreshToken(user._id, refreshToken);
 
     // fct 발급
-    const firebaseCustomToken = await generateFirebaseCustomToken(user._id);
+    // const firebaseCustomToken = await generateFirebaseCustomToken(user._id);
 
-    return { user, accessToken, refreshToken, firebaseCustomToken };
+    // return { user, accessToken, refreshToken, firebaseCustomToken };
+    return { user, accessToken, refreshToken };
   } catch (error) {
     throw error;
   }
@@ -284,9 +285,10 @@ async function loginKakaoUser(authCode, fcmToken) {
         await saveRefreshToken(user._id, refreshToken);
 
         // fct 발급
-        const firebaseCustomToken = await generateFirebaseCustomToken(user._id);
+        // const firebaseCustomToken = await generateFirebaseCustomToken(user._id);
 
-        return { user, accessToken, refreshToken, firebaseCustomToken };
+        // return { user, accessToken, refreshToken, firebaseCustomToken };
+        return { user, accessToken, refreshToken };
       } catch (error) {
         throw error;
       }
@@ -355,9 +357,10 @@ async function loginGoogleUser(authCode, fcmToken) {
         await saveRefreshToken(user._id, refreshToken);
 
         // fct 발급
-        const firebaseCustomToken = await generateFirebaseCustomToken(user._id);
+        // const firebaseCustomToken = await generateFirebaseCustomToken(user._id);
 
-        return { user, accessToken, refreshToken, firebaseCustomToken };
+        // return { user, accessToken, refreshToken, firebaseCustomToken };
+        return { user, accessToken, refreshToken };
       } catch (error) {
         throw error;
       }
@@ -387,9 +390,10 @@ async function refreshNewTokens(refreshToken) {
     await saveRefreshToken(userId, newRefreshToken);
 
     // fct 발급
-    const firebaseCustomToken = await generateFirebaseCustomToken(userId);
+    // const firebaseCustomToken = await generateFirebaseCustomToken(userId);
 
-    return { user, newAccessToken, newRefreshToken, firebaseCustomToken };
+    // return { user, newAccessToken, newRefreshToken, firebaseCustomToken };
+    return { user, newAccessToken, newRefreshToken };
   } catch (error) {
     throw error;
   }
