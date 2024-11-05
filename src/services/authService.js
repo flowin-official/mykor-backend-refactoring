@@ -284,7 +284,9 @@ async function loginKakaoUser(authCode, fcmToken) {
         await saveRefreshToken(user._id, refreshToken);
 
         // fct 발급
+        console.log(user._id);
         const firebaseCustomToken = await generateFirebaseToken(user._id);
+        console.log(firebaseCustomToken);
 
         return { user, accessToken, refreshToken, firebaseCustomToken };
       } catch (error) {
