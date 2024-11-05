@@ -10,7 +10,6 @@ const saveRoomAndParticipants = async (userId, opponentUserId, roomId) => {
     await chatRef.set({
       participants: [userId, opponentUserId],
     });
-    // TODO: 채팅방 내의 모든 유저가 알림을 킨 상태를 기본값으로 저장
   } catch (error) {
     throw error;
   }
@@ -125,10 +124,10 @@ const findUserInActiveRoom = async (userId, roomId) => {
   }
 };
 
-// 유저 채팅방 알림 킨 상태로 저장
-const saveUserTrueInNotification = async (userId, roomId) => {
+// 유저 채팅방 알림 끄기
+const saveUserTrueInBlockRoom = async (userId, roomId) => {
   try {
-    const roomRef = realtimeDB.ref(`notifications/${roomId}`);
+    const roomRef = realtimeDB.ref(`blockRooms/${roomId}`);
 
     const snapshot = await roomRef.once("value");
     if (!snapshot.exists()) {
@@ -141,10 +140,10 @@ const saveUserTrueInNotification = async (userId, roomId) => {
   }
 };
 
-// 유저 채팅방 알림 끈 상태로 저장
-const saveUserFalseInNotification = async (userId, roomId) => {
+// 유저 채팅방 알림 켜기
+const saveUserFalseInBlockRoom = async (userId, roomId) => {
   try {
-    const roomRef = realtimeDB.ref(`notifications/${roomId}`);
+    const roomRef = realtimeDB.ref(`blockRooms/${roomId}`);
 
     const snapshot = await roomRef.once("value");
     if (!snapshot.exists()) {
@@ -157,11 +156,11 @@ const saveUserFalseInNotification = async (userId, roomId) => {
   }
 };
 
-// 유저 채팅방 알림 상태 조회
-const findUserInNotification = async (userId, roomId) => {
+// 유저 채팅방 알림 차단 상태 조회
+const findUserInBlockRoom = async (userId, roomId) => {
   try {
     const snapshot = await realtimeDB
-      .ref(`notifications/${roomId}/${userId}`)
+      .ref(`blockRooms/${roomId}/${userId}`)
       .once("value");
     return snapshot.val();
   } catch (error) {
@@ -179,7 +178,7 @@ module.exports = {
   saveUserFalseInActiveRoom,
   findUserInActiveRoom,
 
-  saveUserTrueInNotification,
-  saveUserFalseInNotification,
-  findUserInNotification,
+  saveUserTrueInBlockRoom,
+  saveUserFalseInBlockRoom,
+  findUserInBlockRoom,
 };

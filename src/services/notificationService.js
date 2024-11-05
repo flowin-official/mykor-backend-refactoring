@@ -9,7 +9,7 @@ const { findUserById } = require("../repositories/userRepository");
 const {
   findUserInActiveRoom,
   findRoomByParticipants,
-  findUserInNotification,
+  findUserInBlockRoom,
 } = require("../repositories/firebaseRepository");
 const admin = require("../config/firebase");
 
@@ -192,7 +192,7 @@ async function sendChatPush(userId, opponentUserId, content) {
     }
 
     // 상대방이 채팅방 알림을 끈지 확인
-    const isOpponentInNotification = await findUserInNotification(
+    const isOpponentBlockTheRoom = await findUserInBlockRoom(
       opponentUserId,
       roomId
     );
@@ -200,7 +200,7 @@ async function sendChatPush(userId, opponentUserId, content) {
     // 상대방이 채팅방에 접속중인지 확인
     const isOpponentInRoom = await findUserInActiveRoom(opponentUserId, roomId);
 
-    if (!isOpponentInRoom && isOpponentInNotification) {
+    if (!isOpponentInRoom && !isOpponentBlockTheRoom) {
       // 상대방이 알림을 켜놨고, 채팅방에 없는 경우 푸시알림을 보냄
       const title = `${user.nickname}님이 채팅을 보냈습니다`;
       const body = content;

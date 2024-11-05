@@ -75,9 +75,7 @@ const setupRoutes = (app) => {
     const accessToken = createAccessToken({ id: userId });
     const user = {
       _id: userId,
-      location: "66c010709cab1badf1eade78",
       nickname: "test",
-      kakaoUserCode: "1",
     };
     res.json({
       message: "test user",
@@ -90,9 +88,7 @@ const setupRoutes = (app) => {
     const accessToken = createAccessToken({ id: userId });
     const user = {
       _id: userId,
-      location: "66c010709cab1badf1eade7a",
       nickname: "test2",
-      kakaoUserCode: "2",
     };
     res.json({
       message: "test user2",

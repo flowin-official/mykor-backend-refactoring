@@ -7,8 +7,8 @@ const {
   saveUserTrueInActiveRoom,
   saveUserFalseInActiveRoom,
 
-  saveUserTrueInNotification,
-  saveUserFalseInNotification,
+  saveUserTrueInBlockRoom,
+  saveUserFalseInBlockRoom,
 } = require("../repositories/firebaseRepository");
 const { findUserById } = require("../repositories/userRepository");
 const { generateRoomId } = require("../utils/roomId");
@@ -33,6 +33,7 @@ async function sendMessage(userId, opponentUserId, message) {
       roomId = generateRoomId(userId, opponentUserId);
       await saveRoomAndParticipants(userId, opponentUserId, roomId);
       await saveUserTrueInActiveRoom(userId, roomId); // 접속시작
+      await saveUserFalseInBlockRoom(userId, roomId); // 차단해제
     }
 
     await saveMessage(userId, roomId, message);
@@ -93,7 +94,7 @@ async function turnOnChatNotification(userId, roomId) {
       throw new Error("User not found");
     }
 
-    await saveUserTrueInNotification(userId, roomId);
+    await saveUserFalseInBlockRoom(userId, roomId);
   } catch (error) {
     throw error;
   }
@@ -107,7 +108,7 @@ async function turnOffChatNotification(userId, roomId) {
       throw new Error("User not found");
     }
 
-    await saveUserFalseInNotification(userId, roomId);
+    await saveUserTrueInBlockRoom(userId, roomId);
   } catch (error) {
     throw error;
   }
