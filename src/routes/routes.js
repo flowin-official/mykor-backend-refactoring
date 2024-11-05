@@ -63,7 +63,6 @@ const {
   postPostPresignedUrl,
   postProfilePresignedUrl,
 } = require("../controllers/s3Controller");
-const { fctTest } = require("../controllers/fctTest");
 
 const setupRoutes = (app) => {
   const router = express.Router();
@@ -99,8 +98,6 @@ const setupRoutes = (app) => {
       accessToken,
     });
   });
-
-  router.post("/fct", fctTest); // FCT 테스트
 
   // 헬스체크 라우트
   router.get("/healthcheck", (req, res) => {
