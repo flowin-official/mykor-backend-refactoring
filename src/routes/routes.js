@@ -63,11 +63,12 @@ const {
   postPostPresignedUrl,
   postProfilePresignedUrl,
 } = require("../controllers/s3Controller");
+const { fctTest } = require("../controllers/fctTest");
 
 const setupRoutes = (app) => {
   const router = express.Router();
 
-  // 테스트용 액세스토큰 발급, fct 추가
+  // 테스트용 액세스토큰 발급
   router.post("/test", (req, res) => {
     const userId = "66c2f9ac6cbec92da7aa3182";
     const accessToken = createAccessToken({ id: userId });
@@ -98,6 +99,8 @@ const setupRoutes = (app) => {
       accessToken,
     });
   });
+
+  router.post("/fct", fctTest); // FCT 테스트
 
   // 헬스체크 라우트
   router.get("/healthcheck", (req, res) => {

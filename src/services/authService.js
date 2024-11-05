@@ -22,6 +22,7 @@ const {
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const qs = require("qs");
+const { generateFirebaseToken } = require("../utils/fct");
 
 // async function registerUser(email, password, name) {
 //   try {
@@ -189,10 +190,9 @@ async function loginAppleUser(authCode, fcmToken) {
     await saveRefreshToken(user._id, refreshToken);
 
     // fct 발급
-    // const firebaseCustomToken = await generateFirebaseCustomToken(user._id);
+    const firebaseCustomToken = await generateFirebaseToken(user._id);
 
-    // return { user, accessToken, refreshToken, firebaseCustomToken };
-    return { user, accessToken, refreshToken };
+    return { user, accessToken, refreshToken, firebaseCustomToken };
   } catch (error) {
     throw error;
   }
@@ -284,10 +284,9 @@ async function loginKakaoUser(authCode, fcmToken) {
         await saveRefreshToken(user._id, refreshToken);
 
         // fct 발급
-        // const firebaseCustomToken = await generateFirebaseCustomToken(user._id);
+        const firebaseCustomToken = await generateFirebaseToken(user._id);
 
-        // return { user, accessToken, refreshToken, firebaseCustomToken };
-        return { user, accessToken, refreshToken };
+        return { user, accessToken, refreshToken, firebaseCustomToken };
       } catch (error) {
         throw error;
       }
@@ -356,10 +355,9 @@ async function loginGoogleUser(authCode, fcmToken) {
         await saveRefreshToken(user._id, refreshToken);
 
         // fct 발급
-        // const firebaseCustomToken = await generateFirebaseCustomToken(user._id);
+        const firebaseCustomToken = await generateFirebaseToken(user._id);
 
-        // return { user, accessToken, refreshToken, firebaseCustomToken };
-        return { user, accessToken, refreshToken };
+        return { user, accessToken, refreshToken, firebaseCustomToken };
       } catch (error) {
         throw error;
       }
@@ -389,10 +387,9 @@ async function refreshNewTokens(refreshToken) {
     await saveRefreshToken(userId, newRefreshToken);
 
     // fct 발급
-    // const firebaseCustomToken = await generateFirebaseCustomToken(userId);
+    const firebaseCustomToken = await generateFirebaseToken(userId);
 
-    // return { user, newAccessToken, newRefreshToken, firebaseCustomToken };
-    return { user, newAccessToken, newRefreshToken };
+    return { user, newAccessToken, newRefreshToken, firebaseCustomToken };
   } catch (error) {
     throw error;
   }
