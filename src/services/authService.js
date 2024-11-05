@@ -190,7 +190,9 @@ async function loginAppleUser(authCode, fcmToken) {
     await saveRefreshToken(user._id, refreshToken);
 
     // fct 발급
-    const firebaseCustomToken = await generateFirebaseToken(user._id);
+    const firebaseCustomToken = await generateFirebaseToken(
+      user._id.toString()
+    );
 
     return { user, accessToken, refreshToken, firebaseCustomToken };
   } catch (error) {
@@ -284,9 +286,9 @@ async function loginKakaoUser(authCode, fcmToken) {
         await saveRefreshToken(user._id, refreshToken);
 
         // fct 발급
-        console.log(user._id);
-        const firebaseCustomToken = await generateFirebaseToken(user._id);
-        console.log(firebaseCustomToken);
+        const firebaseCustomToken = await generateFirebaseToken(
+          user._id.toString()
+        );
 
         return { user, accessToken, refreshToken, firebaseCustomToken };
       } catch (error) {
@@ -357,7 +359,9 @@ async function loginGoogleUser(authCode, fcmToken) {
         await saveRefreshToken(user._id, refreshToken);
 
         // fct 발급
-        const firebaseCustomToken = await generateFirebaseToken(user._id);
+        const firebaseCustomToken = await generateFirebaseToken(
+          user._id.toString()
+        );
 
         return { user, accessToken, refreshToken, firebaseCustomToken };
       } catch (error) {
