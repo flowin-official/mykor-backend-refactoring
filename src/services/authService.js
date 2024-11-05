@@ -22,7 +22,6 @@ const {
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const qs = require("qs");
-const { generateFirebaseCustomToken } = require("../utils/fct");
 
 // async function registerUser(email, password, name) {
 //   try {
