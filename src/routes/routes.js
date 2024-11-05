@@ -63,14 +63,16 @@ const {
   postPostPresignedUrl,
   postProfilePresignedUrl,
 } = require("../controllers/s3Controller");
+const { generateFirebaseCustomToken } = require("../utils/fct");
 
 const setupRoutes = (app) => {
   const router = express.Router();
 
-  // 테스트용 액세스토큰 발급 라우트
+  // 테스트용 액세스토큰 발급, fct 추가
   router.post("/test", (req, res) => {
     const userId = "66c2f9ac6cbec92da7aa3182";
     const accessToken = createAccessToken({ id: userId });
+    const firebaseCustomToken = generateFirebaseCustomToken(userId);
     const user = {
       _id: userId,
       location: "66c010709cab1badf1eade78",
@@ -81,6 +83,7 @@ const setupRoutes = (app) => {
       message: "test user",
       user,
       accessToken,
+      firebaseCustomToken,
     });
   });
   router.post("/test2", (req, res) => {
