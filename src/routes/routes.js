@@ -63,7 +63,7 @@ const {
   postPostPresignedUrl,
   postProfilePresignedUrl,
 } = require("../controllers/s3Controller");
-const { generateFirebaseCustomToken } = require("../utils/fct");
+const { generateFirebaseCustomToken } = require("../config/firebase");
 
 const setupRoutes = (app) => {
   const router = express.Router();
