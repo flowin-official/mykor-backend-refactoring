@@ -9,6 +9,7 @@ const { findUserById } = require("../repositories/userRepository");
 const {
   findUserInActiveRoom,
   findRoomByParticipants,
+  findUserInNotification,
 } = require("../repositories/firebaseRepository");
 const admin = require("../config/firebase");
 
@@ -93,6 +94,7 @@ async function sendCommentPush(userId, postId, commentId, content) {
         title: title,
         body: body,
       },
+      // messageType: "comment",
       data: {
         postId: parentPostId,
       },
@@ -157,6 +159,7 @@ async function sendLikePush(userId, postId, commentId) {
         title: title,
         body: body,
       },
+      // messageType: "like",
       data: {
         postId: parentPostId,
       },
@@ -170,7 +173,7 @@ async function sendLikePush(userId, postId, commentId) {
 }
 
 async function sendChatPush(userId, opponentUserId, content) {
-  // 유저의 채팅방 접속 여부를 확인하고 푸시를 보내야 함
+  // 상대방 유저의 채팅방 차단 여부, 접속 여부를 확인
   try {
     // 유저 유효성 검사
     const user = await findUserById(userId);
@@ -188,10 +191,17 @@ async function sendChatPush(userId, opponentUserId, content) {
       throw new Error("Chat room not found");
     }
 
+    // 상대방이 채팅방 알림을 끈지 확인
+    const isOpponentInNotification = await findUserInNotification(
+      opponentUserId,
+      roomId
+    );
+
+    // 상대방이 채팅방에 접속중인지 확인
     const isOpponentInRoom = await findUserInActiveRoom(opponentUserId, roomId);
 
-    if (!isOpponentInRoom) {
-      // 상대방이 채팅방에 없는 경우 푸시알림을 보냄
+    if (!isOpponentInRoom && isOpponentInNotification) {
+      // 상대방이 알림을 켜놨고, 채팅방에 없는 경우 푸시알림을 보냄
       const title = `${user.nickname}님이 채팅을 보냈습니다`;
       const body = content;
       const token = opponent.fcmToken;
@@ -201,8 +211,9 @@ async function sendChatPush(userId, opponentUserId, content) {
           title: title,
           body: body,
         },
+        messageType: "chat",
         data: {
-          userId: userId,
+          roomId: roomId,
         },
         token: token,
       };

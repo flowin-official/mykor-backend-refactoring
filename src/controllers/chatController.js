@@ -3,6 +3,8 @@ const {
   exitChatRoom,
   onlineChatRoom,
   offlineChatRoom,
+  turnOnChatNotification,
+  turnOffChatNotification,
 } = require("../services/chatService");
 const { sendChatPush } = require("../services/notificationService");
 
@@ -91,9 +93,53 @@ async function postChatOffline(req, res) {
   }
 }
 
+// 채팅방 알람 켜기
+async function postChatOn(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+  const userId = req.userId;
+
+  const { roomId } = req.body;
+  try {
+    await turnOnChatNotification(userId, roomId);
+    res.status(200).json({
+      message: "Chat alarm on",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+// 채팅방 알람 끄기
+async function postChatOff(req, res) {
+  if (!req.isAuthenticated) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+  const userId = req.userId;
+
+  const { roomId } = req.body;
+  try {
+    await turnOffChatNotification(userId, roomId);
+    res.status(200).json({
+      message: "Chat alarm off",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   postChatSend,
   postChatExit,
   postChatOnline,
   postChatOffline,
+  postChatOn,
+  postChatOff,
 };

@@ -10,6 +10,7 @@ const saveRoomAndParticipants = async (userId, opponentUserId, roomId) => {
     await chatRef.set({
       participants: [userId, opponentUserId],
     });
+    // TODO: 채팅방 내의 모든 유저가 알림을 킨 상태를 기본값으로 저장
   } catch (error) {
     throw error;
   }
@@ -19,10 +20,17 @@ const saveRoomAndParticipants = async (userId, opponentUserId, roomId) => {
 const saveMessage = async (userId, roomId, message) => {
   try {
     const chatRef = firestoreDB.collection("chatRooms").doc(roomId);
+
     await chatRef.collection("messages").add({
       userId: userId,
       message: message,
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    // 마지막 전송한 메시지 필드 업데이트
+    await chatRef.update({
+      lastMessage: message,
+      lastMessageTimestamp: admin.firestore.FieldValue.serverTimestamp(),
     });
   } catch (error) {
     throw error;
@@ -74,7 +82,7 @@ const findRoomByParticipants = async (userId, opponentUserId) => {
 
 // realtime db
 // realtime db에 유저가 채팅방에 입장 상태임을 저장 (실시간 중요)
-const saveUserTrueInRoom = async (userId, roomId) => {
+const saveUserTrueInActiveRoom = async (userId, roomId) => {
   try {
     const roomRef = realtimeDB.ref(`activeChats/${roomId}`);
 
@@ -90,7 +98,7 @@ const saveUserTrueInRoom = async (userId, roomId) => {
 };
 
 // realtime db에 유저가 채팅방에서 퇴장 상태임을 저장 (실시간 중요)
-const saveUserFalseInRoom = async (userId, roomId) => {
+const saveUserFalseInActiveRoom = async (userId, roomId) => {
   try {
     const roomRef = realtimeDB.ref(`activeChats/${roomId}`);
 
@@ -117,13 +125,61 @@ const findUserInActiveRoom = async (userId, roomId) => {
   }
 };
 
+// 유저 채팅방 알림 킨 상태로 저장
+const saveUserTrueInNotification = async (userId, roomId) => {
+  try {
+    const roomRef = realtimeDB.ref(`notifications/${roomId}`);
+
+    const snapshot = await roomRef.once("value");
+    if (!snapshot.exists()) {
+      await roomRef.set({});
+    }
+
+    await roomRef.child(userId).set(true);
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 유저 채팅방 알림 끈 상태로 저장
+const saveUserFalseInNotification = async (userId, roomId) => {
+  try {
+    const roomRef = realtimeDB.ref(`notifications/${roomId}`);
+
+    const snapshot = await roomRef.once("value");
+    if (!snapshot.exists()) {
+      await roomRef.set({});
+    }
+
+    await roomRef.child(userId).set(false);
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 유저 채팅방 알림 상태 조회
+const findUserInNotification = async (userId, roomId) => {
+  try {
+    const snapshot = await realtimeDB
+      .ref(`notifications/${roomId}/${userId}`)
+      .once("value");
+    return snapshot.val();
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   saveRoomAndParticipants,
   saveMessage,
   deleteParticipant,
   findRoomByParticipants,
 
-  saveUserTrueInRoom,
-  saveUserFalseInRoom,
+  saveUserTrueInActiveRoom,
+  saveUserFalseInActiveRoom,
   findUserInActiveRoom,
+
+  saveUserTrueInNotification,
+  saveUserFalseInNotification,
+  findUserInNotification,
 };

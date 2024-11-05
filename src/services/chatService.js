@@ -4,8 +4,11 @@ const {
   deleteParticipant,
   findRoomByParticipants,
 
-  saveUserTrueInRoom,
-  saveUserFalseInRoom,
+  saveUserTrueInActiveRoom,
+  saveUserFalseInActiveRoom,
+
+  saveUserTrueInNotification,
+  saveUserFalseInNotification,
 } = require("../repositories/firebaseRepository");
 const { findUserById } = require("../repositories/userRepository");
 const { generateRoomId } = require("../utils/roomId");
@@ -29,7 +32,7 @@ async function sendMessage(userId, opponentUserId, message) {
       // 없으면 새로 생성
       roomId = generateRoomId(userId, opponentUserId);
       await saveRoomAndParticipants(userId, opponentUserId, roomId);
-      await saveUserTrueInRoom(userId, roomId); // 접속시작
+      await saveUserTrueInActiveRoom(userId, roomId); // 접속시작
     }
 
     await saveMessage(userId, roomId, message);
@@ -48,7 +51,7 @@ async function exitChatRoom(userId, roomId) {
     }
 
     await deleteParticipant(userId, roomId);
-    await saveUserFalseInRoom(userId, roomId); // 접속종료
+    await saveUserFalseInActiveRoom(userId, roomId); // 접속종료
   } catch (error) {
     throw error;
   }
@@ -62,7 +65,7 @@ async function onlineChatRoom(userId, roomId) {
       throw new Error("User not found");
     }
 
-    await saveUserTrueInRoom(userId, roomId);
+    await saveUserTrueInActiveRoom(userId, roomId);
   } catch (error) {
     throw error;
   }
@@ -76,7 +79,35 @@ async function offlineChatRoom(userId, roomId) {
       throw new Error("User not found");
     }
 
-    await saveUserFalseInRoom(userId, roomId);
+    await saveUserFalseInActiveRoom(userId, roomId);
+  } catch (error) {
+    throw error;
+  }
+}
+
+// 채팅 알림 켜기
+async function turnOnChatNotification(userId, roomId) {
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await saveUserTrueInNotification(userId, roomId);
+  } catch (error) {
+    throw error;
+  }
+}
+
+// 채팅 알림 끄기
+async function turnOffChatNotification(userId, roomId) {
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await saveUserFalseInNotification(userId, roomId);
   } catch (error) {
     throw error;
   }
@@ -87,4 +118,6 @@ module.exports = {
   exitChatRoom,
   onlineChatRoom,
   offlineChatRoom,
+  turnOnChatNotification,
+  turnOffChatNotification,
 };
