@@ -8,16 +8,4 @@ admin.initializeApp({
   databaseURL: FIREBASE_DATABASE_URL,
 });
 
-async function generateFirebaseCustomToken(userId) {
-  try {
-    await admin.auth().createCustomToken(userId);
-  } catch (error) {
-    console.error("Error creating custom token:", error);
-  }
-}
-
-// module.exports = admin;
-
-module.exports = {
-  generateFirebaseCustomToken,
-};
+module.exports = admin;

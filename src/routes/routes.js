@@ -63,7 +63,6 @@ const {
   postPostPresignedUrl,
   postProfilePresignedUrl,
 } = require("../controllers/s3Controller");
-const { generateFirebaseCustomToken } = require("../config/firebase");
 
 const setupRoutes = (app) => {
   const router = express.Router();
@@ -72,7 +71,6 @@ const setupRoutes = (app) => {
   router.post("/test", (req, res) => {
     const userId = "66c2f9ac6cbec92da7aa3182";
     const accessToken = createAccessToken({ id: userId });
-    const firebaseCustomToken = generateFirebaseCustomToken(userId);
     const user = {
       _id: userId,
       location: "66c010709cab1badf1eade78",
@@ -83,7 +81,6 @@ const setupRoutes = (app) => {
       message: "test user",
       user,
       accessToken,
-      firebaseCustomToken,
     });
   });
   router.post("/test2", (req, res) => {
