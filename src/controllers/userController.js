@@ -88,7 +88,10 @@ async function getUserInfo(req, res) {
 
     let profileImageUrl = null;
     if (user.profileImage) {
-      profileImageUrl = await generateGetPresignedUrl(user.profileImage);
+      profileImageUrl = {
+        key: user.profileImage,
+        url: await generateGetPresignedUrl(user.profileImage),
+      };
     }
 
     res.status(200).json({
