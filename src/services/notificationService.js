@@ -214,6 +214,7 @@ async function sendChatPush(userId, opponentUserId, content) {
         data: {
           roomId: roomId,
           messageType: "chat",
+          userId: userId,
         },
         token: token,
       };
