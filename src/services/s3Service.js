@@ -19,7 +19,8 @@ const generateProfilePresignedUrl = async (userId) => {
 
   // PutObjectCommand와 getSignedUrl을 사용하여 presigned URL 생성
   const command = new PutObjectCommand(params);
-  return await getSignedUrl(s3, command, { expiresIn: 60 }); // 유효기간 60초
+  const url = await getSignedUrl(s3, command, { expiresIn: 60 }); // 유효기간 60초
+  return { url, key };
 };
 
 const generatePostPresignedUrl = async (userId, count) => {
