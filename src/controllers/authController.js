@@ -16,8 +16,8 @@ async function postKakaoLogin(req, res) {
     let profileImageData = null;
     if (user.profileImage) {
       profileImageData = {
-        key: user.profileImage.key,
-        url: await generateGetPresignedUrl(user.profileImage.key),
+        key: user.profileImage,
+        url: await generateGetPresignedUrl(user.profileImage),
       };
     }
 
@@ -43,8 +43,8 @@ async function postAppleLogin(req, res) {
     let profileImageData = null;
     if (user.profileImage) {
       profileImageData = {
-        key: user.profileImage.key,
-        url: await generateGetPresignedUrl(user.profileImage.key),
+        key: user.profileImage,
+        url: await generateGetPresignedUrl(user.profileImage),
       };
     }
 
@@ -70,8 +70,8 @@ async function postGoogleLogin(req, res) {
     let profileImageData = null;
     if (user.profileImage) {
       profileImageData = {
-        key: user.profileImage.key,
-        url: await generateGetPresignedUrl(user.profileImage.key),
+        key: user.profileImage,
+        url: await generateGetPresignedUrl(user.profileImage),
       };
     }
 
