@@ -4,15 +4,26 @@ const {
   loginGoogleUser,
   refreshNewTokens,
 } = require("../services/authService");
+const { generateGetPresignedUrl } = require("../services/s3Service");
 
 async function postKakaoLogin(req, res) {
   const { authCode, fcmToken } = req.body;
   try {
     const { user, accessToken, refreshToken, firebaseCustomToken } =
       await loginKakaoUser(authCode, fcmToken);
+
+    // user객체의 프로필 이미지 presigned url로 변환 후 key, url 순서쌍으로 저장
+    let profileImageData = null;
+    if (user.profileImage) {
+      profileImageData = {
+        key: user.profileImage.key,
+        url: await generateGetPresignedUrl(user.profileImage.key),
+      };
+    }
+
     res.status(200).json({
       message: "User logged in successfully",
-      user,
+      user: { ...user, profileImage: profileImageData },
       accessToken,
       refreshToken,
       firebaseCustomToken,
@@ -27,9 +38,19 @@ async function postAppleLogin(req, res) {
   try {
     const { user, accessToken, refreshToken, firebaseCustomToken } =
       await loginAppleUser(authCode, fcmToken);
+
+    // user객체의 프로필 이미지 presigned url로 변환 후 key, url 순서쌍으로 저장
+    let profileImageData = null;
+    if (user.profileImage) {
+      profileImageData = {
+        key: user.profileImage.key,
+        url: await generateGetPresignedUrl(user.profileImage.key),
+      };
+    }
+
     res.status(200).json({
       message: "User logged in successfully",
-      user,
+      user: { ...user, profileImage: profileImageData },
       accessToken,
       refreshToken,
       firebaseCustomToken,
@@ -44,9 +65,19 @@ async function postGoogleLogin(req, res) {
   try {
     const { user, accessToken, refreshToken, firebaseCustomToken } =
       await loginGoogleUser(authCode, fcmToken);
+
+    // user객체의 프로필 이미지 presigned url로 변환 후 key, url 순서쌍으로 저장
+    let profileImageData = null;
+    if (user.profileImage) {
+      profileImageData = {
+        key: user.profileImage.key,
+        url: await generateGetPresignedUrl(user.profileImage.key),
+      };
+    }
+
     res.status(200).json({
       message: "User logged in successfully",
-      user,
+      user: { ...user, profileImage: profileImageData },
       accessToken,
       refreshToken,
       firebaseCustomToken,
