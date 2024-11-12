@@ -23,7 +23,10 @@ async function postKakaoLogin(req, res) {
 
     res.status(200).json({
       message: "User logged in successfully",
-      user: { ...user, profileImage: profileImageData },
+      user: {
+        ...user.toObject(),
+        profileImage: profileImageData,
+      },
       accessToken,
       refreshToken,
       firebaseCustomToken,
@@ -50,7 +53,10 @@ async function postAppleLogin(req, res) {
 
     res.status(200).json({
       message: "User logged in successfully",
-      user: { ...user, profileImage: profileImageData },
+      user: {
+        ...user.toObject(),
+        profileImage: profileImageData,
+      },
       accessToken,
       refreshToken,
       firebaseCustomToken,
@@ -77,7 +83,10 @@ async function postGoogleLogin(req, res) {
 
     res.status(200).json({
       message: "User logged in successfully",
-      user: { ...user, profileImage: profileImageData },
+      user: {
+        ...user.toObject(),
+        profileImage: profileImageData,
+      },
       accessToken,
       refreshToken,
       firebaseCustomToken,
