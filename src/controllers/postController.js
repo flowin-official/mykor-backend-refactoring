@@ -88,68 +88,6 @@ async function getPostsInRange(req, res) {
   }
 }
 
-/**
- * @swagger
- * /posts/user:
- *   get:
- *     summary: 범위 내 게시글 가져오기(회원/게시글차단반영)
- *     tags: [Posts]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *       - in: query
- *         name: locationId
- *         required: true
- *         schema:
- *           type: string
- *         description: 게시글을 가져올 국가코드
- *       - in: query
- *         name: tagId
- *         schema:
- *           type: string
- *         description: 게시글의 태그
- *       - in: query
- *         name: lastPostId
- *         schema:
- *           type: string
- *         description: 이전 페이지의 마지막 게시글 ID
- *       - in: query
- *         name: size
- *         required: true
- *         schema:
- *           type: integer
- *         description: 한 페이지에 가져올 게시글 수
- *       - in: query
- *         name: hot
- *         required: true
- *         schema:
- *           type: boolean
- *         description: 인기순 정렬 여부
- *     responses:
- *       200:
- *         description: 범위 내 게시글 조회 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 posts:
- *                   type: array
- *                   items:
- *                     type: object
- *       400:
- *         description: 잘못된 요청
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: 서버 에러
- */
 async function getPostsInRangeWithLogin(req, res) {
   if (!req.isAuthenticated) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -245,10 +183,14 @@ async function getThisPost(req, res) {
     const commentsMap = {};
     const nestedCommentsMap = {};
 
+    // 댓글 처리
     await Promise.all(
       comments.map(async (comment) => {
-        const authorProfileImageUrl = comment.author.profileImage
-          ? await generateGetPresignedUrl(comment.author.profileImage)
+        const authorProfileImageData = comment.author.profileImage
+          ? {
+              key: comment.author.profileImage,
+              url: await generateGetPresignedUrl(comment.author.profileImage),
+            }
           : null;
 
         const authorData = {
@@ -256,7 +198,7 @@ async function getThisPost(req, res) {
           nickname: comment.author.nickname,
           location: comment.author.location,
           deleted: comment.author.deleted,
-          profileImage: authorProfileImageUrl,
+          profileImage: authorProfileImageData,
         };
 
         if (comment.parentComment) {
@@ -360,8 +302,11 @@ async function getThisPostWithLogin(req, res) {
 
     await Promise.all(
       comments.map(async (comment) => {
-        const authorProfileImageUrl = comment.author.profileImage
-          ? await generateGetPresignedUrl(comment.author.profileImage)
+        const authorProfileImageData = comment.author.profileImage
+          ? {
+              key: comment.author.profileImage,
+              url: await generateGetPresignedUrl(comment.author.profileImage),
+            }
           : null;
 
         const authorData = {
@@ -369,7 +314,7 @@ async function getThisPostWithLogin(req, res) {
           nickname: comment.author.nickname,
           location: comment.author.location,
           deleted: comment.author.deleted,
-          profileImage: authorProfileImageUrl,
+          profileImage: authorProfileImageData,
         };
 
         if (comment.parentComment) {
