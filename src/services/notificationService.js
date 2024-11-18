@@ -200,7 +200,11 @@ async function sendChatPush(userId, opponentUserId, content) {
     // 상대방이 채팅방에 접속중인지 확인
     const isOpponentInRoom = await findUserInActiveRoom(opponentUserId, roomId);
 
-    if (!isOpponentInRoom && !isOpponentBlockTheRoom) {
+    if (
+      !isOpponentInRoom &&
+      !isOpponentBlockTheRoom &&
+      !!opponent.blockUserList.includes(user) // 상대방이 나를 차단안했으면
+    ) {
       // 상대방이 알림을 켜놨고, 채팅방에 없는 경우 푸시알림을 보냄
       const title = `${user.nickname}님이 채팅을 보냈습니다`;
       const body = content;

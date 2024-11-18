@@ -106,9 +106,21 @@ async function postRefresh(req, res) {
   try {
     const { user, newAccessToken, newRefreshToken, firebaseCustomToken } =
       await refreshNewTokens(refreshToken);
+
+    // user객체의 프로필 이미지 presigned url로 변환 후 key, url 순서쌍으로 저장
+    let profileImageData = null;
+    if (user.profileImage) {
+      profileImageData = {
+        key: user.profileImage,
+        url: await generateGetPresignedUrl(user.profileImage),
+      };
+    }
     res.status(200).json({
       message: "Tokens refreshed",
-      user,
+      user: {
+        ...user.toObject(),
+        profileImage: profileImageData,
+      },
       newAccessToken,
       newRefreshToken,
       firebaseCustomToken,

@@ -174,10 +174,10 @@ const setupRoutes = (app) => {
 
   router.post("/chat/send", authenticateToken, postChatSend); // 채팅 메시지 전송
   router.post("/chat/exit", authenticateToken, postChatExit); // 채팅방 나가기
-  router.post("/chat/online", authenticateToken, postChatOnline); // 채팅방 입장 (채팅알림 off)
-  router.post("/chat/offline", authenticateToken, postChatOffline); // 채팅방 퇴장 (채팅알림 on)
-  router.post("/chat/on", authenticateToken, postChatOn); // 채팅 알람 on
-  router.post("/chat/off", authenticateToken, postChatOff); // 채팅 알람 off
+  router.post("/chat/online", authenticateToken, postChatOnline); // 채팅방 입장 (해당 채팅방 알람 off)
+  router.post("/chat/offline", authenticateToken, postChatOffline); // 채팅방 퇴장 (해당 채팅방 알람 on)
+  router.post("/chat/on", authenticateToken, postChatOn); // 채팅방 알람 on
+  router.post("/chat/off", authenticateToken, postChatOff); // 채팅방 알람 off
 
   router.post("/post-presigned-url", authenticateToken, postPostPresignedUrl); // 게시글 이미지 S3 업로드용 사전 서명 URL 생성
   router.post(
