@@ -185,6 +185,11 @@ async function sendChatPush(userId, opponentUserId, content) {
       throw new Error("Opponent not found");
     }
 
+    // 상대방이 나를 차단했는지 확인
+    const isOpponentBlockMe = opponent.blockedUsers.includes(userId)
+      ? true
+      : false;
+
     // 상대방과 내가 모두 참여 중인 채팅방이 있는지 확인 (없으면 에러반환)
     const roomId = await findRoomByParticipants(userId, opponentUserId);
     if (!roomId) {
@@ -200,12 +205,8 @@ async function sendChatPush(userId, opponentUserId, content) {
     // 상대방이 채팅방에 접속중인지 확인
     const isOpponentInRoom = await findUserInActiveRoom(opponentUserId, roomId);
 
-    if (
-      !isOpponentInRoom &&
-      !isOpponentBlockTheRoom &&
-      !!opponent.blockUserList.includes(user) // 상대방이 나를 차단안했으면
-    ) {
-      // 상대방이 알림을 켜놨고, 채팅방에 없는 경우 푸시알림을 보냄
+    if (!isOpponentInRoom && !isOpponentBlockTheRoom && !isOpponentBlockMe) {
+      // 상대방이 알림을 켜놨고, 채팅방에 없는 경우, 나를 차단하지 않았을 경우 푸시알림을 보냄
       const title = `${user.nickname}님이 채팅을 보냈습니다`;
       const body = content;
       const token = opponent.fcmToken;
