@@ -167,10 +167,22 @@ async function getThisPost(req, res) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    const comments = await commentsOnThisPost(postId);
+    // 게시글 작성자의 프로필 이미지 URL 변환
+    const postAuthorProfileImageData = post.author.profileImage
+      ? {
+          key: post.author.profileImage,
+          url: await generateGetPresignedUrl(post.author.profileImage),
+        }
+      : null;
 
-    // 게시글 이미지가 있을 경우에만 presigned URL 생성, 없으면 빈 배열 반환
-    const imagesWithUrl =
+    // 게시글 작성자 데이터
+    let postAuthorData = {
+      ...post.author.toObject(),
+      profileImage: postAuthorProfileImageData,
+    };
+
+    // 게시글 이미지 데이터 변환
+    const postImageData =
       post.images && post.images.length > 0
         ? await Promise.all(
             post.images.map(async (imageKey) => ({
@@ -180,40 +192,56 @@ async function getThisPost(req, res) {
           )
         : [];
 
+    // 게시글 데이터
+    let postData = {
+      ...post.toObject(),
+      author: postAuthorData,
+      images: postImageData, // { key, url }을 담은 배열로 반환
+      postLike: false, // 비회원은 false가 디폴트
+      // 댓글 데이터 추가 예정
+      // commentsList: Object.values(commentsMap),
+    };
+
+    // 댓글 데이터
+    const comments = await commentsOnThisPost(postId);
+
     const commentsMap = {};
     const nestedCommentsMap = {};
 
     // 댓글 처리
     await Promise.all(
       comments.map(async (comment) => {
-        const authorProfileImageData = comment.author.profileImage
+        // 댓글 작성자 프로필 이미지 데이터
+        const commentAuthorProfileImageData = comment.author.profileImage
           ? {
               key: comment.author.profileImage,
               url: await generateGetPresignedUrl(comment.author.profileImage),
             }
           : null;
 
-        const authorData = {
-          _id: comment.author._id,
-          nickname: comment.author.nickname,
-          location: comment.author.location,
-          deleted: comment.author.deleted,
-          profileImage: authorProfileImageData,
+        // 댓글 작성자 데이터
+        const commentAuthorData = {
+          ...comment.author.toObject(),
+          profileImage: commentAuthorProfileImageData,
         };
 
         if (comment.parentComment) {
+          // 대댓글인 경우
           if (!nestedCommentsMap[comment.parentComment]) {
             nestedCommentsMap[comment.parentComment] = [];
           }
           nestedCommentsMap[comment.parentComment].push({
             ...comment.toObject(),
-            author: authorData,
+            post: postData,
+            author: commentAuthorData,
             commentLike: false,
           });
         } else {
+          // 일반 댓글인 경우
           commentsMap[comment._id] = {
             ...comment.toObject(),
-            author: authorData,
+            post: postData,
+            author: commentAuthorData,
             commentLike: false,
             nestedCommentsList: [],
           };
@@ -229,26 +257,12 @@ async function getThisPost(req, res) {
       }
     });
 
-    // 게시글 author의 profileImage URL 변환
-    const postAuthorProfileImageUrl = post.author.profileImage
-      ? await generateGetPresignedUrl(post.author.profileImage)
-      : null;
+    // 게시글 데이터에 댓글 데이터 추가
+    postData.commentsList = Object.values(commentsMap);
 
     res.status(200).json({
       message: "This post",
-      post: {
-        ...post.toObject(),
-        author: {
-          _id: post.author._id,
-          nickname: post.author.nickname,
-          location: post.author.location,
-          deleted: post.author.deleted,
-          profileImage: postAuthorProfileImageUrl,
-        },
-        images: imagesWithUrl, // { key, url } 형태로 반환
-        postLike: false,
-        commentsList: Object.values(commentsMap),
-      },
+      post: postData,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
