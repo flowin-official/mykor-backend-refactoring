@@ -183,9 +183,9 @@ async function getThisPost(req, res) {
     const postImageData =
       post.images.length > 0
         ? await Promise.all(
-            post.images.map(async (imageKey) => ({
-              key: imageKey,
-              url: await generateGetPresignedUrl(imageKey),
+            post.images.map(async (imageData) => ({
+              key: imageData.key,
+              url: await generateGetPresignedUrl(imageData.key),
             }))
           )
         : [];
@@ -251,6 +251,7 @@ async function getThisPost(req, res) {
         ...post.toObject(),
         author: postAuthorData,
         images: postImageData,
+        postLike: false,
         commentsList: Object.values(commentsMap),
       },
     });
