@@ -63,7 +63,7 @@ const createPost = async (title, contents, author, location, tag, images) => {
 
 const findPostById = async (postId) => {
   try {
-    const post = await Post.findById(postId).populate("author");
+    const post = await Post.findById(postId).populate("author"); // 게시글 작성자 객체화해서 반환
     return post;
   } catch (error) {
     throw error;

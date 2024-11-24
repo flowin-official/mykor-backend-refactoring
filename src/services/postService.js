@@ -100,8 +100,21 @@ async function newPost(title, contents, userId, locationId, tagId, images) {
       throw new Error("User not found");
     }
 
+    // images 배열이 있을 경우에 key와 url로 맵핑해서 저장
+    const imagesData = images.map((image) => ({
+      key: image,
+      url: null,
+    }));
+
     // 해당 지역 게시판에 글 작성
-    const post = await createPost(title, contents, user, location, tag, images);
+    const post = await createPost(
+      title,
+      contents,
+      user,
+      location,
+      tag,
+      imagesData
+    );
     return post;
   } catch (error) {
     throw error;
@@ -235,7 +248,11 @@ async function modifyMyPost(postId, title, contents, userId, tagId, images) {
     if (post.author._id.toString() !== user._id.toString()) {
       throw new Error("글 작성자가 아닙니다.");
     } else {
-      post = await updatePost(post, title, contents, tag, images);
+      const imagesData = images.map((image) => ({
+        key: image,
+        url: null,
+      }));
+      post = await updatePost(post, title, contents, tag, imagesData);
       return post;
     }
   } catch (error) {

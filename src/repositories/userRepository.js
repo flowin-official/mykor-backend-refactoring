@@ -114,7 +114,10 @@ const updateUser = async (userId, nickname, locationId, profileImage) => {
       {
         nickname,
         location: locationId,
-        profileImage,
+        profileImage: {
+          key: profileImage,
+          url: null,
+        },
         updatedAt: Date.now(),
       },
       { new: true }

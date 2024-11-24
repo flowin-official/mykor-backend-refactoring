@@ -5,6 +5,7 @@ const {
   addBlockUser,
 } = require("../repositories/userRepository");
 const { findLocationById } = require("../repositories/locationRepository");
+const { profile } = require("winston");
 
 async function myInfo(userId) {
   try {

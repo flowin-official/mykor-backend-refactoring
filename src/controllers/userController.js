@@ -86,13 +86,16 @@ async function getUserInfo(req, res) {
   try {
     const user = await userInfo(userId);
 
-    let profileImageUrl = null;
-    if (user.profileImage) {
-      profileImageUrl = {
-        key: user.profileImage,
-        url: await generateGetPresignedUrl(user.profileImage),
-      };
-    }
+    // key가 있으면 이미지 url을 가져옴
+    const profileImageUrl = user.profileImage.key
+      ? await generateGetPresignedUrl(user.profileImage.key)
+      : null;
+
+    // 프로필 이미지 데이터에 url추가
+    const profileImageData = {
+      key: user.profileImage.key,
+      url: profileImageUrl,
+    };
 
     res.status(200).json({
       message: "User found",
@@ -101,7 +104,7 @@ async function getUserInfo(req, res) {
         nickname: user.nickname,
         location: user.location,
         deleted: user.deleted,
-        profileImage: profileImageUrl,
+        profileImage: profileImageData,
       },
     });
   } catch (error) {
@@ -109,36 +112,6 @@ async function getUserInfo(req, res) {
   }
 }
 
-/**
- * @swagger
- * /user/{blockedUserId}/block:
- *   post:
- *     summary: 유저 차단
- *     tags: [Users]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               blockedUserId:
- *                 type: string
- *     responses:
- *       200:
- *         description: 유저 차단 성공
- *       401:
- *         description: 권한 없음
- *       500:
- *         description: 서버 에러
- */
 async function postBlockUser(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({

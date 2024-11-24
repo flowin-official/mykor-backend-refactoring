@@ -168,22 +168,22 @@ async function getThisPost(req, res) {
     }
 
     // 게시글 작성자의 프로필 이미지 URL 변환
-    const postAuthorProfileImageData = post.author.profileImage
+    const postAuthorProfileImageData = post.author.profileImage.key
       ? {
-          key: post.author.profileImage,
-          url: await generateGetPresignedUrl(post.author.profileImage),
+          key: post.author.profileImage.key,
+          url: await generateGetPresignedUrl(post.author.profileImage.key),
         }
       : null;
 
-    // 게시글 작성자 데이터
+    // 게시글 작성자 데이터에 추가
     const postAuthorData = {
       ...post.author.toObject(),
       profileImage: postAuthorProfileImageData,
     };
 
-    // 게시글 이미지 데이터 변환
+    // 게시글 이미지에 {key, null}을 {key, url} 데이터로 변환
     const postImageData =
-      post.images && post.images.length > 0
+      post.images.length > 0
         ? await Promise.all(
             post.images.map(async (imageKey) => ({
               key: imageKey,
@@ -192,11 +192,11 @@ async function getThisPost(req, res) {
           )
         : [];
 
-    // 게시글 데이터
+    // 게시글에 이미지, 작성자 데이터 추가
     const postData = {
       ...post.toObject(),
       author: postAuthorData,
-      images: postImageData, // { key, url }을 담은 배열로 반환
+      images: postImageData, // { key, url } 순서쌍을 담은 배열로 반환
       postLike: false, // 비회원은 false가 디폴트
       // 댓글 데이터 추가 예정
     };
@@ -211,10 +211,12 @@ async function getThisPost(req, res) {
     await Promise.all(
       comments.map(async (comment) => {
         // 댓글 작성자 프로필 이미지 데이터
-        const commentAuthorProfileImageData = comment.author.profileImage
+        const commentAuthorProfileImageData = comment.author.profileImage.key
           ? {
-              key: comment.author.profileImage,
-              url: await generateGetPresignedUrl(comment.author.profileImage),
+              key: comment.author.profileImage.key,
+              url: await generateGetPresignedUrl(
+                comment.author.profileImage.key
+              ),
             }
           : null;
 
@@ -231,7 +233,6 @@ async function getThisPost(req, res) {
           }
           nestedCommentsMap[comment.parentComment].push({
             ...comment.toObject(),
-            post: postData,
             author: commentAuthorData,
             commentLike: false,
           });
@@ -239,7 +240,6 @@ async function getThisPost(req, res) {
           // 일반 댓글인 경우
           commentsMap[comment._id] = {
             ...comment.toObject(),
-            post: postData,
             author: commentAuthorData,
             commentLike: false,
             nestedCommentsList: [],
@@ -287,10 +287,10 @@ async function getThisPostWithLogin(req, res) {
     }
 
     // 게시글 작성자의 프로필 이미지 URL 변환
-    const postAuthorProfileImageData = post.author.profileImage
+    const postAuthorProfileImageData = post.author.profileImage.key
       ? {
-          key: post.author.profileImage,
-          url: await generateGetPresignedUrl(post.author.profileImage),
+          key: post.author.profileImage.key,
+          url: await generateGetPresignedUrl(post.author.profileImage.key),
         }
       : null;
 
@@ -302,7 +302,7 @@ async function getThisPostWithLogin(req, res) {
 
     // 게시글 이미지 데이터 변환
     const postImageData =
-      post.images && post.images.length > 0
+      post.images.length > 0
         ? await Promise.all(
             post.images.map(async (imageKey) => ({
               key: imageKey,
@@ -338,10 +338,12 @@ async function getThisPostWithLogin(req, res) {
     await Promise.all(
       comments.map(async (comment) => {
         // 댓글 작성자 프로필 이미지 데이터
-        const commentAuthorProfileImageData = comment.author.profileImage
+        const commentAuthorProfileImageData = comment.author.profileImage.key
           ? {
-              key: comment.author.profileImage,
-              url: await generateGetPresignedUrl(comment.author.profileImage),
+              key: comment.author.profileImage.key,
+              url: await generateGetPresignedUrl(
+                comment.author.profileImage.key
+              ),
             }
           : null;
 
@@ -358,7 +360,6 @@ async function getThisPostWithLogin(req, res) {
           }
           nestedCommentsMap[comment.parentComment].push({
             ...comment.toObject(),
-            post: postData,
             author: commentAuthorData,
             commentLike: commentsLikes[comment._id] || false,
           });
@@ -366,7 +367,6 @@ async function getThisPostWithLogin(req, res) {
           // 일반 댓글인 경우
           commentMap[comment._id] = {
             ...comment.toObject(),
-            post: postData,
             author: commentAuthorData,
             commentLike: commentsLikes[comment._id] || false,
             nestedCommentsList: [],
@@ -395,52 +395,6 @@ async function getThisPostWithLogin(req, res) {
   }
 }
 
-/**
- * @swagger
- * /posts/search:
- *   get:
- *     summary: 게시글 검색(비회원)
- *     tags: [Posts]
- *     parameters:
- *       - in: query
- *         name: locationId
- *         schema:
- *           type: string
- *         description: 게시글을 검색할 국가
- *       - in: query
- *         name: keyword
- *         schema:
- *           type: string
- *         description: 검색할 키워드
- *       - in: query
- *         name: lastPostId
- *         schema:
- *           type: string
- *         description: 이전 페이지의 마지막 게시글 ID
- *       - in: query
- *         name: size
- *         schema:
- *           type: string
- *         description: 한 페이지에 가져올 게시글 수
- *     responses:
- *       200:
- *         description: 게시글 검색 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 posts:
- *                   type: array
- *                   items:
- *                     type: object
- *       400:
- *         description: 잘못된 요청
- *       500:
- *         description: 서버 에러
- */
 async function getPostsSearch(req, res) {
   const locationId = req.query.locationId;
   const keyword = req.query.keyword;
@@ -461,58 +415,6 @@ async function getPostsSearch(req, res) {
   }
 }
 
-/**
- * @swagger
- * /posts/search/user:
- *   get:
- *     summary: 게시글 검색(회원전용/게시글차단반영)
- *     tags: [Posts]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *       - in: query
- *         name: locationId
- *         schema:
- *           type: string
- *         description: 게시글을 검색할 국가
- *       - in: query
- *         name: keyword
- *         schema:
- *           type: string
- *         description: 검색할 키워드
- *       - in: query
- *         name: lastPostId
- *         schema:
- *           type: string
- *         description: 이전 페이지의 마지막 게시글 ID
- *       - in: query
- *         name: size
- *         schema:
- *           type: string
- *         description: 한 페이지에 가져올 게시글 수
- *     responses:
- *       200:
- *         description: 게시글 검색 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 posts:
- *                   type: array
- *                   items:
- *                     type: object
- *       400:
- *         description: 잘못된 요청
- *       500:
- *         description: 서버 에러
- */
 async function getPostsSearchWithLogin(req, res) {
   if (!req.isAuthenticated) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -544,53 +446,6 @@ async function getPostsSearchWithLogin(req, res) {
   }
 }
 
-/**
- * @swagger
- * /post:
- *   post:
- *     summary: 게시글 작성
- *     tags: [Posts]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *               contents:
- *                 type: array
- *               locationId:
- *                 type: string
- *               tagId:
- *                 type: string
- *               images:
- *                 type: array
- *     responses:
- *       201:
- *         description: 게시글 작성 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 post:
- *                   type: object
- *       401:
- *         description: 토큰 만료
- *       500:
- *         description: 서버 에러
- */
 async function postMyPost(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
@@ -659,41 +514,6 @@ async function putMyPost(req, res) {
   }
 }
 
-/**
- * @swagger
- * /post/{postId}:
- *   delete:
- *     summary: 게시글 삭제
- *     tags: [Posts]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *       - in: path
- *         name: postId
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: 게시글 삭제 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 post:
- *                   type: object
- *       401:
- *         description: 토큰 만료
- *       500:
- *         description: 서버 에러
- */
 async function deleteMyPost(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
@@ -714,41 +534,6 @@ async function deleteMyPost(req, res) {
   }
 }
 
-/**
- * @swagger
- * /post/{postId}/like:
- *   post:
- *     summary: 게시글 좋아요
- *     tags: [Posts]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *       - in: path
- *         name: postId
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: 게시글 좋아요 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 post:
- *                   type: object
- *       401:
- *         description: 토큰 만료
- *       500:
- *         description: 서버 에러
- */
 async function postLikePost(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
@@ -775,39 +560,6 @@ async function postLikePost(req, res) {
   }
 }
 
-/**
- * @swagger
- * /post/{postId}/like:
- *   delete:
- *     summary: 게시글 좋아요 취소
- *     tags: [Posts]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *       - in: path
- *         name: postId
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: 게시글 좋아요 취소 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *       401:
- *         description: 토큰 만료
- *       500:
- *         description: 서버 에러
- */
 async function deleteLikePost(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
@@ -828,52 +580,6 @@ async function deleteLikePost(req, res) {
   }
 }
 
-/**
- * @swagger
- * /post/{postId}/report:
- *   post:
- *     summary: 게시글 신고
- *     tags: [Posts]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *       - in: path
- *         name: postId
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               reason:
- *                 type: string
- *               content:
- *                 type: string
- *     responses:
- *       200:
- *         description: 게시글 신고완료
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 post:
- *                   type: object
- *       401:
- *         description: 토큰 만료
- *       500:
- *         description: 서버 에러
- */
 async function postReportPost(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
@@ -896,53 +602,6 @@ async function postReportPost(req, res) {
   }
 }
 
-/**
- * @swagger
- * /my/posts:
- *   get:
- *     summary: 내 게시글 가져오기
- *     tags: [Users]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *       - in: query
- *         name: lastPostId
- *         schema:
- *           type: string
- *         description: 이전 페이지의 마지막 게시글 ID
- *       - in: query
- *         name: size
- *         required: true
- *         schema:
- *           type: integer
- *         description: 한 페이지에 가져올 게시글 수
- *     responses:
- *       200:
- *         description: 범위 내 게시글 조회 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 countAllPosts:
- *                   type: integer
- *                 posts:
- *                   type: array
- *                   items:
- *                     type: object
- *       400:
- *         description: 잘못된 요청
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: 서버 에러
- */
 async function getMyPosts(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
@@ -966,53 +625,6 @@ async function getMyPosts(req, res) {
   }
 }
 
-/**
- * @swagger
- * /user/{userId}/posts:
- *   get:
- *     summary: 유저 게시글 가져오기
- *     tags: [Users]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *       - in: query
- *         name: lastPostId
- *         schema:
- *           type: string
- *         description: 이전 페이지의 마지막 게시글 ID
- *       - in: query
- *         name: size
- *         required: true
- *         schema:
- *           type: integer
- *         description: 한 페이지에 가져올 게시글 수
- *     responses:
- *       200:
- *         description: 범위 내 게시글 조회 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 countAllPosts:
- *                   type: integer
- *                 posts:
- *                   type: array
- *                   items:
- *                     type: object
- *       400:
- *         description: 잘못된 요청
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: 서버 에러
- */
 async function getUserPosts(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
@@ -1036,53 +648,6 @@ async function getUserPosts(req, res) {
   }
 }
 
-/**
- * @swagger
- * /my/postlikes:
- *   get:
- *     summary: 내가 좋아요한 게시글 가져오기
- *     tags: [Users]
- *     parameters:
- *       - in: header
- *         name: x-access-token
- *         required: true
- *         schema:
- *           type: string
- *         description: JWT token
- *       - in: query
- *         name: lastPostId
- *         schema:
- *           type: string
- *         description: 이전 페이지의 마지막 게시글 ID
- *       - in: query
- *         name: size
- *         required: true
- *         schema:
- *           type: integer
- *         description: 한 페이지에 가져올 게시글 수
- *     responses:
- *       200:
- *         description: 범위 내 게시글 조회 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 countAllPosts:
- *                   type: integer
- *                 posts:
- *                   type: array
- *                   items:
- *                     type: object
- *       400:
- *         description: 잘못된 요청
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: 서버 에러
- */
 async function getMyPostLikes(req, res) {
   if (!req.isAuthenticated) {
     res.status(401).json({
