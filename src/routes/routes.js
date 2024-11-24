@@ -76,22 +76,13 @@ const setupRoutes = (app) => {
     const user = {
       _id: userId,
       nickname: "test",
+      profileImage: {
+        key: null,
+        url: null,
+      },
     };
     res.json({
       message: "test user",
-      user,
-      accessToken,
-    });
-  });
-  router.post("/test2", (req, res) => {
-    const userId = "66c2f9df6cbec92da7aa3183";
-    const accessToken = createAccessToken({ id: userId });
-    const user = {
-      _id: userId,
-      nickname: "test2",
-    };
-    res.json({
-      message: "test user2",
       user,
       accessToken,
     });
