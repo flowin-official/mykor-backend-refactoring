@@ -96,7 +96,7 @@ const userSchema = new mongoose.Schema({
   profileImage: {
     type: {
       key: { type: String },
-      url: { type: String, default: null },
+      url: { type: String },
     },
     default: null,
     validate: {
