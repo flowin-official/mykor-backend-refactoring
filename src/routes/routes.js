@@ -76,10 +76,7 @@ const setupRoutes = (app) => {
     const user = {
       _id: userId,
       nickname: "test",
-      profileImage: {
-        key: null,
-        url: null,
-      },
+      profileImage: null,
     };
     res.json({
       message: "test user",
