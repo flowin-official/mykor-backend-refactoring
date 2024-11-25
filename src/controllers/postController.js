@@ -64,8 +64,8 @@ async function getPostsInRange(req, res) {
             post.images.length > 0
               ? [
                   {
-                    key: post.images[0],
-                    url: await generateGetPresignedUrl(post.images[0]),
+                    key: post.images[0].key,
+                    url: await generateGetPresignedUrl(post.images[0].key),
                   },
                 ]
               : [];
@@ -138,8 +138,8 @@ async function getPostsInRangeWithLogin(req, res) {
             post.images.length > 0
               ? [
                   {
-                    key: post.images[0],
-                    url: await generateGetPresignedUrl(post.images[0]),
+                    key: post.images[0].key,
+                    url: await generateGetPresignedUrl(post.images[0].key),
                   },
                 ]
               : [];
