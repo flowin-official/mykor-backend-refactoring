@@ -77,6 +77,14 @@ async function getPostsInRange(req, res) {
               nickname: post.author.nickname,
               location: post.author.location,
               deleted: post.author.deleted,
+              profileImage: post.author.profileImage
+                ? {
+                    key: post.author.profileImage.key,
+                    url: await generateGetPresignedUrl(
+                      post.author.profileImage.key
+                    ),
+                  }
+                : null,
             },
             images: previewImageWithUrl, // 이미지가 없는 경우 빈 배열 반환
           };
@@ -143,6 +151,14 @@ async function getPostsInRangeWithLogin(req, res) {
               nickname: post.author.nickname,
               location: post.author.location,
               deleted: post.author.deleted,
+              profileImage: post.author.profileImage
+                ? {
+                    key: post.author.profileImage.key,
+                    url: await generateGetPresignedUrl(
+                      post.author.profileImage.key
+                    ),
+                  }
+                : null,
             },
             images: previewImageWithUrl, // 이미지가 없는 경우 빈 배열 반환
           };
@@ -171,12 +187,14 @@ async function getThisPost(req, res) {
     const postAuthorData = {
       _id: post.author._id,
       nickname: post.author.nickname,
-      profileImage: post.author.profileImage.key
+      location: post.author.location,
+      deleted: post.author.deleted,
+      profileImage: post.author.profileImage
         ? {
             key: post.author.profileImage.key,
             url: await generateGetPresignedUrl(post.author.profileImage.key),
           }
-        : post.author.profileImage,
+        : null,
     };
 
     // 게시글 이미지에 {key, null}을 {key, url} 데이터로 변환
@@ -203,14 +221,16 @@ async function getThisPost(req, res) {
         const commentAuthorData = {
           _id: comment.author._id,
           nickname: comment.author.nickname,
-          profileImage: comment.author.profileImage.key
+          location: comment.author.location,
+          deleted: comment.author.deleted,
+          profileImage: comment.author.profileImage
             ? {
                 key: comment.author.profileImage.key,
                 url: await generateGetPresignedUrl(
                   comment.author.profileImage.key
                 ),
               }
-            : comment.author.profileImage,
+            : null,
         };
 
         if (comment.parentComment) {
@@ -282,12 +302,14 @@ async function getThisPostWithLogin(req, res) {
     const postAuthorData = {
       _id: post.author._id,
       nickname: post.author.nickname,
-      profileImage: post.author.profileImage.key
+      location: post.author.location,
+      deleted: post.author.deleted,
+      profileImage: post.author.profileImage
         ? {
             key: post.author.profileImage.key,
             url: await generateGetPresignedUrl(post.author.profileImage.key),
           }
-        : post.author.profileImage,
+        : null,
     };
 
     // 게시글 이미지에 {key, null}을 {key, url} 데이터로 변환
@@ -322,14 +344,16 @@ async function getThisPostWithLogin(req, res) {
         const commentAuthorData = {
           _id: comment.author._id,
           nickname: comment.author.nickname,
-          profileImage: comment.author.profileImage.key
+          location: comment.author.location,
+          deleted: comment.author.deleted,
+          profileImage: comment.author.profileImage
             ? {
                 key: comment.author.profileImage.key,
                 url: await generateGetPresignedUrl(
                   comment.author.profileImage.key
                 ),
               }
-            : comment.author.profileImage,
+            : null,
         };
 
         if (comment.parentComment) {
