@@ -329,7 +329,7 @@ async function getThisPostWithLogin(req, res) {
     // 댓글 데이터 (회원 기준)
     const comments = await commentsOnThisPostWithBlock(postId, userId);
 
-    const commentMap = {};
+    const commentsMap = {};
     const nestedCommentsMap = {};
 
     // 댓글 좋아요 여부 확인
@@ -368,7 +368,7 @@ async function getThisPostWithLogin(req, res) {
           });
         } else {
           // 일반 댓글인 경우
-          commentMap[comment._id] = {
+          commentsMap[comment._id] = {
             ...comment.toObject(),
             author: commentAuthorData,
             commentLike: commentsLikes[comment._id] || false,
@@ -380,8 +380,8 @@ async function getThisPostWithLogin(req, res) {
 
     // 대댓글을 일반댓글에 넣어줌
     Object.keys(nestedCommentsMap).forEach((parentCommentId) => {
-      if (commentMap[parentCommentId]) {
-        commentMap[parentCommentId].nestedCommentsList =
+      if (commentsMap[parentCommentId]) {
+        commentsMap[parentCommentId].nestedCommentsList =
           nestedCommentsMap[parentCommentId];
       }
     });
