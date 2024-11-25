@@ -16,12 +16,12 @@ async function postKakaoLogin(req, res) {
       message: "User logged in successfully",
       user: {
         ...user.toObject(),
-        profileImage: user.profileImage.key
+        profileImage: user.profileImage
           ? {
               key: user.profileImage.key,
               url: await generateGetPresignedUrl(user.profileImage.key),
             }
-          : user.profileImage,
+          : null,
       },
       accessToken,
       refreshToken,
@@ -42,12 +42,12 @@ async function postAppleLogin(req, res) {
       message: "User logged in successfully",
       user: {
         ...user.toObject(),
-        profileImage: user.profileImage.key
+        profileImage: user.profileImage
           ? {
               key: user.profileImage.key,
               url: await generateGetPresignedUrl(user.profileImage.key),
             }
-          : user.profileImage,
+          : null,
       },
       accessToken,
       refreshToken,
@@ -68,12 +68,12 @@ async function postGoogleLogin(req, res) {
       message: "User logged in successfully",
       user: {
         ...user.toObject(),
-        profileImage: user.profileImage.key
+        profileImage: user.profileImage
           ? {
               key: user.profileImage.key,
               url: await generateGetPresignedUrl(user.profileImage.key),
             }
-          : user.profileImage,
+          : null,
       },
       accessToken,
       refreshToken,
@@ -99,12 +99,12 @@ async function postRefresh(req, res) {
       message: "Tokens refreshed",
       user: {
         ...user.toObject(),
-        profileImage: user.profileImage.key
+        profileImage: user.profileImage
           ? {
               key: user.profileImage.key,
               url: await generateGetPresignedUrl(user.profileImage.key),
             }
-          : user.profileImage,
+          : null,
       },
       newAccessToken,
       newRefreshToken,
