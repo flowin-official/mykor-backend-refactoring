@@ -58,7 +58,7 @@ async function sendCommentPush(userId, postId, commentId, content) {
 
     let title = "";
     let body = "";
-    let token = "";
+    let token = null;
     let parentPostId = "";
 
     if (commentId) {
@@ -109,7 +109,9 @@ async function sendCommentPush(userId, postId, commentId, content) {
       token: token,
     };
 
-    await admin.messaging().send(message);
+    if (token) {
+      await admin.messaging().send(message);
+    }
   } catch (error) {
     throw error;
   }
