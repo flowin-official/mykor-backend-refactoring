@@ -12,20 +12,16 @@ async function postKakaoLogin(req, res) {
     const { user, accessToken, refreshToken, firebaseCustomToken } =
       await loginKakaoUser(authCode, fcmToken);
 
-    // user객체의 프로필 이미지 presigned url로 변환 후 key, url 순서쌍으로 저장
-    let profileImageData = null;
-    if (user.profileImage) {
-      profileImageData = {
-        key: user.profileImage,
-        url: await generateGetPresignedUrl(user.profileImage),
-      };
-    }
-
     res.status(200).json({
       message: "User logged in successfully",
       user: {
         ...user.toObject(),
-        profileImage: profileImageData,
+        profileImage: user.profileImage.key
+          ? {
+              key: user.profileImage.key,
+              url: await generateGetPresignedUrl(user.profileImage.key),
+            }
+          : user.profileImage,
       },
       accessToken,
       refreshToken,
@@ -42,20 +38,16 @@ async function postAppleLogin(req, res) {
     const { user, accessToken, refreshToken, firebaseCustomToken } =
       await loginAppleUser(authCode, fcmToken);
 
-    // user객체의 프로필 이미지 presigned url로 변환 후 key, url 순서쌍으로 저장
-    let profileImageData = null;
-    if (user.profileImage) {
-      profileImageData = {
-        key: user.profileImage,
-        url: await generateGetPresignedUrl(user.profileImage),
-      };
-    }
-
     res.status(200).json({
       message: "User logged in successfully",
       user: {
         ...user.toObject(),
-        profileImage: profileImageData,
+        profileImage: user.profileImage.key
+          ? {
+              key: user.profileImage.key,
+              url: await generateGetPresignedUrl(user.profileImage.key),
+            }
+          : user.profileImage,
       },
       accessToken,
       refreshToken,
@@ -72,20 +64,16 @@ async function postGoogleLogin(req, res) {
     const { user, accessToken, refreshToken, firebaseCustomToken } =
       await loginGoogleUser(authCode, fcmToken);
 
-    // user객체의 프로필 이미지 presigned url로 변환 후 key, url 순서쌍으로 저장
-    let profileImageData = null;
-    if (user.profileImage) {
-      profileImageData = {
-        key: user.profileImage,
-        url: await generateGetPresignedUrl(user.profileImage),
-      };
-    }
-
     res.status(200).json({
       message: "User logged in successfully",
       user: {
         ...user.toObject(),
-        profileImage: profileImageData,
+        profileImage: user.profileImage.key
+          ? {
+              key: user.profileImage.key,
+              url: await generateGetPresignedUrl(user.profileImage.key),
+            }
+          : user.profileImage,
       },
       accessToken,
       refreshToken,
@@ -107,19 +95,16 @@ async function postRefresh(req, res) {
     const { user, newAccessToken, newRefreshToken, firebaseCustomToken } =
       await refreshNewTokens(refreshToken);
 
-    // user객체의 프로필 이미지 presigned url로 변환 후 key, url 순서쌍으로 저장
-    let profileImageData = null;
-    if (user.profileImage) {
-      profileImageData = {
-        key: user.profileImage,
-        url: await generateGetPresignedUrl(user.profileImage),
-      };
-    }
     res.status(200).json({
       message: "Tokens refreshed",
       user: {
         ...user.toObject(),
-        profileImage: profileImageData,
+        profileImage: user.profileImage.key
+          ? {
+              key: user.profileImage.key,
+              url: await generateGetPresignedUrl(user.profileImage.key),
+            }
+          : user.profileImage,
       },
       newAccessToken,
       newRefreshToken,
