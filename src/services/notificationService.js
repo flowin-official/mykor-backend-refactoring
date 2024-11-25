@@ -56,6 +56,11 @@ async function sendCommentPush(userId, postId, commentId, content) {
       throw new Error("Post not found");
     }
 
+    // 본인의 게시글에 댓글을 달았을 경우 푸시알림을 보내지 않음
+    if (post.author === userId) {
+      return;
+    }
+
     let title = "";
     let body = "";
     let token = "";
