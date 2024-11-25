@@ -94,8 +94,22 @@ const userSchema = new mongoose.Schema({
   },
 
   profileImage: {
-    key: { type: String, default: null },
-    url: { type: String, default: null },
+    type: {
+      key: { type: String },
+      url: { type: String, default: null },
+    },
+    default: null,
+    validate: {
+      validator: function (value) {
+        // value가 null이거나, 순서쌍에 key와 url 둘 다 포함된 경우만 유효
+        return (
+          value === null ||
+          (typeof value.key === "string" && typeof value.url === "string")
+        );
+      },
+      message:
+        'profileImage must be null or an object containing "key" and "url".',
+    },
   },
 });
 
