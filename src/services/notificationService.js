@@ -44,7 +44,7 @@ async function unreadNotifications(userId) {
 
 async function sendCommentPush(userId, postId, commentId, content) {
   // 게시글에 댓글 달리면: postId있음, commentId널, content있음
-  // 댓글에 대댓글이 달리면:  postId있음, commentId있음, content있음
+  // 댓글에 대댓글이 달리면: postId있음, commentId있음, content있음
   try {
     const user = await findUserById(userId);
     if (!user) {
@@ -54,11 +54,6 @@ async function sendCommentPush(userId, postId, commentId, content) {
     const post = await findPostById(postId);
     if (!post) {
       throw new Error("Post not found");
-    }
-
-    // 본인의 게시글에 댓글을 달았을 경우 푸시알림을 보내지 않음
-    if (post.author === userId) {
-      return;
     }
 
     let title = "";
@@ -77,6 +72,10 @@ async function sendCommentPush(userId, postId, commentId, content) {
         throw new Error("CommentAuthor not found");
       }
 
+      if (commentAuthor._id === userId) {
+        return;
+      }
+
       title = `${user.nickname}님이 댓글에 답글을 남겼습니다`;
       body = content;
       token = commentAuthor.fcmToken;
@@ -86,6 +85,10 @@ async function sendCommentPush(userId, postId, commentId, content) {
       const postAuthor = await findUserById(post.author);
       if (!postAuthor) {
         throw new Error("User not found");
+      }
+
+      if (postAuthor._id === userId) {
+        return;
       }
 
       title = `${user.nickname}님이 게시글에 댓글을 남겼습니다`;
@@ -99,14 +102,13 @@ async function sendCommentPush(userId, postId, commentId, content) {
         title: title,
         body: body,
       },
-      // messageType: "comment",
       data: {
         postId: parentPostId,
+        // messageType: "comment",
       },
       token: token,
     };
 
-    // 시간정보가 필요하던가?
     await admin.messaging().send(message);
   } catch (error) {
     throw error;
