@@ -92,6 +92,13 @@ const setupRoutes = (app) => {
     });
   });
 
+  // 버전체크
+  router.get("/version", (req, res) => {
+    res.status(200).json({
+      message: "1.0.0",
+    });
+  });
+
   router.post("/dummy/post", postDummyPost); // 게시글 더미 데이터 생성
   router.delete("/dummy/post", deleteDummyPost); // 게시글 더미 데이터 삭제
 
