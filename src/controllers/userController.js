@@ -93,7 +93,7 @@ async function getUserInfo(req, res) {
         nickname: user.nickname,
         location: user.location,
         deleted: user.deleted,
-        profileImage: user.profileImage.key
+        profileImage: user.profileImage
           ? {
               key: user.profileImage.key,
               url: await generateGetPresignedUrl(user.profileImage.key),
