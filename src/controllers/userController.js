@@ -86,17 +86,6 @@ async function getUserInfo(req, res) {
   try {
     const user = await userInfo(userId);
 
-    // key가 있으면 이미지 url을 가져옴
-    const profileImageUrl = user.profileImage.key
-      ? await generateGetPresignedUrl(user.profileImage.key)
-      : null;
-
-    // 프로필 이미지 데이터에 url추가
-    const profileImageData = {
-      key: user.profileImage.key,
-      url: profileImageUrl,
-    };
-
     res.status(200).json({
       message: "User found",
       user: {
@@ -104,7 +93,12 @@ async function getUserInfo(req, res) {
         nickname: user.nickname,
         location: user.location,
         deleted: user.deleted,
-        profileImage: profileImageData,
+        profileImage: user.profileImage.key
+          ? {
+              key: user.profileImage.key,
+              url: await generateGetPresignedUrl(user.profileImage.key),
+            }
+          : null,
       },
     });
   } catch (error) {
