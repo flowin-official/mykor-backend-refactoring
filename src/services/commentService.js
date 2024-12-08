@@ -37,19 +37,26 @@ async function newComment(userId, postId, commentId, content) {
         throw new Error("부모 댓글을 찾을 수 없습니다");
       }
 
-      await createNotification(
-        user,
-        parentComment.author,
-        post,
-        parentComment,
-        "대댓글"
-      ); // 댓글 주인에게 notification 생성
+      if (parentComment.author._id.toString() !== user._id.toString()) {
+        // 자신의 댓글에 대댓글을 다는게 아니면
+        await createNotification(
+          user,
+          parentComment.author,
+          post,
+          parentComment,
+          "대댓글"
+        ); // 댓글 주인에게 notification 생성
+      }
     }
 
     const comment = await createComment(user, post, commentId, content); // 댓글 생성
     await increasePostComment(post._id); // 게시글의 댓글 카운트 증가
 
-    await createNotification(user, post.author, post, comment, "댓글"); // 게시물 주인에게도 notification 생성
+    // 댓글일 경우 게시글 주인에게 notification 생성
+    if (post.author._id.toString() !== user._id.toString()) {
+      // 게시물 주인이 댓글 작성자가 아닐 경우
+      await createNotification(user, post.author, post, comment, "댓글"); // 게시물 주인에게도 notification 생성
+    }
 
     return comment;
   } catch (error) {

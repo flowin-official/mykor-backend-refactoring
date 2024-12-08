@@ -56,11 +56,6 @@ async function sendCommentPush(userId, postId, commentId, content) {
       throw new Error("Post not found");
     }
 
-    let title = "";
-    let body = "";
-    let token = null;
-    let parentPostId = "";
-
     if (commentId) {
       // 댓글에 대댓글이 달린 경우
       const comment = await findCommentById(commentId);
@@ -72,14 +67,22 @@ async function sendCommentPush(userId, postId, commentId, content) {
         throw new Error("CommentAuthor not found");
       }
 
-      if (commentAuthor._id === userId) {
-        return;
-      }
+      const message = {
+        notification: {
+          title: `${user.nickname}님이 댓글에 답글을 남겼습니다`,
+          body: content,
+        },
+        data: {
+          postId: post.id,
+          // messageType: "comment",
+        },
+        token: commentAuthor.fcmToken,
+      };
 
-      title = `${user.nickname}님이 댓글에 답글을 남겼습니다`;
-      body = content;
-      token = commentAuthor.fcmToken;
-      parentPostId = post.id;
+      if (commentAuthor._id.toString() !== userId) {
+        // 자신이 댓글에 대댓글을 달았을 경우 푸시알림을 보내지 않음
+        await admin.messaging().send(message);
+      }
     } else {
       // 게시글에 댓글이 달린 경우
       const postAuthor = await findUserById(post.author);
@@ -87,30 +90,22 @@ async function sendCommentPush(userId, postId, commentId, content) {
         throw new Error("User not found");
       }
 
-      if (postAuthor._id === userId) {
-        return;
+      const message = {
+        notification: {
+          title: `${user.nickname}님이 게시글에 댓글을 남겼습니다`,
+          body: content,
+        },
+        data: {
+          postId: post.id,
+          // messageType: "comment",
+        },
+        token: postAuthor.fcmToken,
+      };
+
+      if (commentAuthor._id.toString() !== userId) {
+        // 자신이 게시글에 댓글을 달았을 경우 푸시알림을 보내지 않음
+        await admin.messaging().send(message);
       }
-
-      title = `${user.nickname}님이 게시글에 댓글을 남겼습니다`;
-      body = content;
-      token = postAuthor.fcmToken;
-      parentPostId = post.id;
-    }
-
-    const message = {
-      notification: {
-        title: title,
-        body: body,
-      },
-      data: {
-        postId: parentPostId,
-        // messageType: "comment",
-      },
-      token: token,
-    };
-
-    if (token) {
-      await admin.messaging().send(message);
     }
   } catch (error) {
     throw error;
