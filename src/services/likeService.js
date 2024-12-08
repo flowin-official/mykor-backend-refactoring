@@ -38,8 +38,8 @@ async function likePost(postId, userId) {
     if (postLike) {
       throw new Error("이미 좋아요한 게시글입니다.");
     } else {
-      if (post.author !== null) {
-        // 탈퇴한 사용자의 게시물이 아닐 경우
+      if (post.author !== null && post.author._id !== user._id) {
+        // 탈퇴한 사용자의 게시물이 아닐 경우, 자신의 게시물이 아닐 경우에만 알림 생성
         await createNotification(user, post.author, post, null, "좋아요"); // 알림 생성
       }
       postLike = await createPostLike(post, user);
@@ -90,8 +90,8 @@ async function likeComment(commentId, userId) {
     if (commentLike) {
       throw new Error("이미 좋아요한 댓글입니다.");
     } else {
-      if (comment.author !== null) {
-        // 탈퇴한 사용자의 댓글이 아닐 경우
+      if (comment.author !== null && comment.author._id !== user._id) {
+        // 탈퇴한 사용자의 댓글이 아닐 경우 자신의 댓글이 아닐 경우에만 알림 생성
         await createNotification(
           user,
           comment.author,

@@ -121,11 +121,6 @@ async function sendLikePush(userId, postId, commentId) {
       throw new Error("User not found");
     }
 
-    let title = "";
-    let body = "";
-    let token = "";
-    let parentPostId = "";
-
     if (commentId && !postId) {
       // 댓글에 좋아요가 달린 경우
       const comment = await findCommentById(commentId);
@@ -137,10 +132,22 @@ async function sendLikePush(userId, postId, commentId) {
         throw new Error("CommentAuthor not found");
       }
 
-      title = `${user.nickname}님이 댓글에 좋아요를 눌렀습니다`;
-      body = "댓글을 확인해보세요!";
-      token = commentAuthor.fcmToken;
-      parentPostId = comment.post.id;
+      const message = {
+        notification: {
+          title: `${user.nickname}님이 댓글에 좋아요를 눌렀습니다`,
+          body: "댓글을 확인해보세요!",
+        },
+        data: {
+          postId: comment.post.id,
+          // messageType: "like",
+        },
+        token: commentAuthor.fcmToken,
+      };
+
+      if (commentAuthor._id.toString() !== userId) {
+        // 자신이 댓글에 좋아요를 눌렀을 경우 푸시알림을 보내지 않음
+        await admin.messaging().send(message);
+      }
     } else {
       // 게시글에 좋아요가 달린 경우
       const post = await findPostById(postId);
@@ -152,25 +159,23 @@ async function sendLikePush(userId, postId, commentId) {
         throw new Error("PostAuthor not found");
       }
 
-      title = `${user.nickname}님이 게시글에 좋아요를 눌렀습니다`;
-      body = "게시글을 확인해보세요!";
-      token = postAuthor.fcmToken;
-      parentPostId = post.id;
+      const message = {
+        notification: {
+          title: `${user.nickname}님이 게시글에 좋아요를 눌렀습니다`,
+          body: "게시글을 확인해보세요!",
+        },
+        data: {
+          postId: post.id,
+          // messageType: "like",
+        },
+        token: postAuthor.fcmToken,
+      };
+
+      if (postAuthor._id.toString() !== userId) {
+        // 자신이 게시글에 좋아요를 눌렀을 경우 푸시알림을 보내지 않음
+        await admin.messaging().send(message);
+      }
     }
-
-    const message = {
-      notification: {
-        title: title,
-        body: body,
-      },
-      // messageType: "like",
-      data: {
-        postId: parentPostId,
-      },
-      token: token,
-    };
-
-    await admin.messaging().send(message);
   } catch (error) {
     throw error;
   }
