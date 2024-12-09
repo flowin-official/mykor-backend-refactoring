@@ -59,21 +59,25 @@ const deleteParticipant = async (userId, roomId) => {
 // firestore 채팅방에서 유저 참여 여부 조회
 const findRoomByParticipants = async (userId, opponentUserId) => {
   try {
-    // userId와 opponentUserId를 모두 participants로 가지는 채팅방 조회
-    // 두 ID를 알파벳 순으로 정렬
-    const sortedParticipants = [userId, opponentUserId].sort();
-
+    // chatRooms 컬렉션 참조
     const chatRoomsRef = firestoreDB.collection("chatRooms");
+
+    // userId와 opponentUserId가 participants 배열에 모두 포함된 채팅방 조회
     const snapshot = await chatRoomsRef
-      .where("participants", "==", sortedParticipants)
+      .where("participants", "array-contains", userId)
       .get();
 
     if (snapshot.empty) {
       return null;
     }
 
-    // roomId 반환
-    return snapshot.docs[0].id;
+    // snapshot에서 participants에 opponentUserId가 포함된 문서 찾기
+    const matchingRoom = snapshot.docs.find((doc) =>
+      doc.data().participants.includes(opponentUserId)
+    );
+
+    // roomId 반환 또는 null 반환
+    return matchingRoom ? matchingRoom.id : null;
   } catch (error) {
     throw error;
   }
