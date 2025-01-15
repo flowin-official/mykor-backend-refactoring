@@ -174,22 +174,22 @@ async function loginAppleUser(authCode, fcmToken) {
     // 유저 코드를 기반으로 유저 찾기
     let user = await findUserByAppleUserCode(userId);
 
-    // fct 재발급
-    const firebaseCustomToken = await generateFirebaseToken(
-      user._id.toString()
-    );
-
     // 유저가 없으면 새로 생성
     if (!user) {
-      user = await createAppleUser(userId, firebaseCustomToken);
+      user = await createAppleUser(userId, fcmToken);
     } else {
       // 이미 존재하는 유저라면 fcmToken 갱신
-      await refreshFcmToken(user, firebaseCustomToken);
+      await refreshFcmToken(user, fcmToken);
     }
 
     // user._id는 생성된 유저의 db상 id임
     const accessToken = createAccessToken({ id: user._id });
     const refreshToken = createRefreshToken({ id: user._id });
+
+    // fct 재발급
+    const firebaseCustomToken = await generateFirebaseToken(
+      user._id.toString()
+    );
 
     // redis에 리프레시 토큰 저장
     await saveRefreshToken(user._id, refreshToken);
@@ -270,22 +270,22 @@ async function loginKakaoUser(authCode, fcmToken) {
         // 유저 코드를 기반으로 유저 찾기
         let user = await findUserByKakaoUserCode(id);
 
-        // fct 재발급
-        const firebaseCustomToken = await generateFirebaseToken(
-          user._id.toString()
-        );
-
         // 유저가 없으면 새로 생성
         if (!user) {
-          user = await createKakaoUser(id, firebaseCustomToken);
+          user = await createKakaoUser(id, fcmToken);
         } else {
           // 이미 존재하는 유저라면 fcmToken 갱신
-          await refreshFcmToken(user, firebaseCustomToken);
+          await refreshFcmToken(user, fcmToken);
         }
 
         // user._id는 생성된 유저의 db상 id임
         const accessToken = createAccessToken({ id: user._id });
         const refreshToken = createRefreshToken({ id: user._id });
+
+        // fct 재발급
+        const firebaseCustomToken = await generateFirebaseToken(
+          user._id.toString()
+        );
 
         // redis에 리프레시 토큰 저장
         await saveRefreshToken(user._id, refreshToken);
@@ -343,22 +343,22 @@ async function loginGoogleUser(authCode, fcmToken) {
         // 유저 코드를 기반으로 유저 찾기
         let user = await findUserByGoogleUserCode(id);
 
-        // fct 재발급
-        const firebaseCustomToken = await generateFirebaseToken(
-          user._id.toString()
-        );
-
         // 유저가 없으면 새로 생성
         if (!user) {
-          user = await createGoogleUser(id, firebaseCustomToken);
+          user = await createGoogleUser(id, fcmToken);
         } else {
           // 이미 존재하는 유저라면 fcmToken 갱신
-          await refreshFcmToken(user, firebaseCustomToken);
+          await refreshFcmToken(user, fcmToken);
         }
 
         // user._id는 생성된 유저의 db상 id임
         const accessToken = createAccessToken({ id: user._id });
         const refreshToken = createRefreshToken({ id: user._id });
+
+        // fct 재발급
+        const firebaseCustomToken = await generateFirebaseToken(
+          user._id.toString()
+        );
 
         // redis에 리프레시 토큰 저장
         await saveRefreshToken(user._id, refreshToken);
