@@ -102,7 +102,7 @@ async function sendCommentPush(userId, postId, commentId, content) {
         token: postAuthor.fcmToken,
       };
 
-      if (commentAuthor._id.toString() !== userId) {
+      if (postAuthor._id.toString() !== userId) {
         // 자신이 게시글에 댓글을 달았을 경우 푸시알림을 보내지 않음
         await admin.messaging().send(message);
       }
