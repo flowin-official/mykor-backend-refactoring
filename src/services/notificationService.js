@@ -102,13 +102,13 @@ async function sendCommentPush(userId, postId, commentId, content) {
         token: postAuthor.fcmToken,
       };
 
-      if (postAuthor._id.toString() !== userId) {
+      if (postAuthor._id.toString() !== userId || postAuthor.fcmToken !== "") {
         // 자신이 게시글에 댓글을 달았을 경우 푸시알림을 보내지 않음
         await admin.messaging().send(message);
       }
     }
   } catch (error) {
-    throw error;
+    console.error(error);
   }
 }
 
@@ -171,13 +171,13 @@ async function sendLikePush(userId, postId, commentId) {
         token: postAuthor.fcmToken,
       };
 
-      if (postAuthor._id.toString() !== userId) {
+      if (postAuthor._id.toString() !== userId || postAuthor.fcmToken !== "") {
         // 자신이 게시글에 좋아요를 눌렀을 경우 푸시알림을 보내지 않음
         await admin.messaging().send(message);
       }
     }
   } catch (error) {
-    throw error;
+    console.error(error);
   }
 }
 
@@ -236,7 +236,7 @@ async function sendChatPush(userId, opponentUserId, content) {
       await admin.messaging().send(message);
     }
   } catch (error) {
-    throw error;
+    console.error(error);
   }
 }
 
