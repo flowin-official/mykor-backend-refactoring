@@ -33,11 +33,10 @@ const findPostsInRangeByLocationTag = async (
       sortOption = { likes: -1, _id: -1 };
     }
 
-    // 쿼리 실행: 정렬, 제한 및 author 필드 populate
+    // 쿼리 실행: 정렬, 제한
     const posts = await Post.find(query)
       .sort(sortOption) // hot에 따라 정렬 옵션 적용
-      .limit(size) // size만큼 제한
-      .populate("author"); // author 필드를 populate하여 User 정보 가져옴
+      .limit(size); // size만큼 제한
 
     return posts;
   } catch (error) {
@@ -47,7 +46,7 @@ const findPostsInRangeByLocationTag = async (
 
 const createPost = async (title, contents, author, location, tag, images) => {
   try {
-    const post = await Post.create({
+    await Post.create({
       title,
       contents,
       author,
@@ -55,7 +54,6 @@ const createPost = async (title, contents, author, location, tag, images) => {
       tag,
       images,
     });
-    return post;
   } catch (error) {
     throw error;
   }
@@ -63,7 +61,7 @@ const createPost = async (title, contents, author, location, tag, images) => {
 
 const findPostById = async (postId) => {
   try {
-    const post = await Post.findById(postId).populate("author"); // 게시글 작성자 객체화해서 반환
+    const post = await Post.findById(postId);
     return post;
   } catch (error) {
     throw error;
@@ -82,7 +80,7 @@ const findPostsByUserId = async (userId, lastPostId, size) => {
       query._id = { $lt: lastPostId };
     }
 
-    // 쿼리 실행: 정렬, 제한 및 author 필드 populate
+    // 쿼리 실행: 정렬, 제한
     const posts = await Post.find(query)
       .sort({ _id: -1 })
       .limit(size)
@@ -109,11 +107,8 @@ const findPostsByPostLikes = async (postLikes, lastPostId, size) => {
       query._id = { $lt: lastPostId };
     }
 
-    // 쿼리 실행: 정렬, 제한 및 author 필드 populate
-    const posts = await Post.find(query)
-      .sort({ _id: -1 })
-      .limit(size)
-      .populate("author");
+    // 쿼리 실행: 정렬, 제한
+    const posts = await Post.find(query).sort({ _id: -1 }).limit(size);
 
     return posts;
   } catch (error) {

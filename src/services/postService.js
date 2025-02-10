@@ -100,7 +100,7 @@ async function newPost(title, contents, userId, locationId, tagId, images) {
       throw new Error("User not found");
     }
 
-    // images 배열이 있을 경우에 key와 url로 맵핑해서 저장
+    // images가 있다면 key와 url로 맵핑해서 저장
     const imagesData = images.map((image) => ({
       key: image,
       url: null,
@@ -115,7 +115,6 @@ async function newPost(title, contents, userId, locationId, tagId, images) {
       tag,
       imagesData
     );
-    return post;
   } catch (error) {
     throw error;
   }

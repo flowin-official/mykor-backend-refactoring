@@ -5,7 +5,6 @@ const {
   addBlockUser,
 } = require("../repositories/userRepository");
 const { findLocationById } = require("../repositories/locationRepository");
-const { profile } = require("winston");
 
 async function myInfo(userId) {
   try {
@@ -65,6 +64,23 @@ async function userInfo(userId) {
   }
 }
 
+async function usersInfo(userIds) {
+  try {
+    const users = [];
+    for (const userId of userIds) {
+      const user = await findUserById(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      users.push(user);
+    }
+
+    return users;
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function newBlockUser(userId, blockedUserId) {
   try {
     const user = await findUserById(userId);
@@ -88,4 +104,5 @@ module.exports = {
   removeMyInfo,
   userInfo,
   newBlockUser,
+  usersInfo,
 };

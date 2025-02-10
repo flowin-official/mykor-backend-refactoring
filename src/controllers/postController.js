@@ -27,69 +27,67 @@ const {
 } = require("../services/commentService");
 const { generateGetPresignedUrl } = require("../services/s3Service");
 const { sendLikePush } = require("../services/notificationService");
+const { usersInfo } = require("../services/userService");
 
 async function getPostsInRange(req, res) {
   const locationId = req.query.locationId;
   const tagId = req.query.tagId;
   const lastPostId = req.query.lastPostId;
   const size = req.query.size;
-  const hot = req.query.hot;
+  const hot =
+    req.query.hot === "true" ? true : req.query.hot === "false" ? false : null;
   try {
-    if (
-      !locationId ||
-      !size ||
-      hot === undefined ||
-      hot === null ||
-      (hot !== "true" && hot !== "false")
-    ) {
+    if (!locationId || !size || hot === null) {
       return res.status(400).json({ message: "잘못된 요청" });
     }
-
-    // hot 값을 boolean으로 변환
-    const isHot = hot === "true";
 
     const posts = await postsInRangeByLocationTag(
       locationId,
       tagId,
       lastPostId,
       size,
-      isHot
+      hot
+    );
+
+    // 게시글 작성자 정보 모음 (중복제거)
+    const authorIds = [
+      ...new Set(posts.map((post) => post.author._id.toString())),
+    ];
+    const users = await usersInfo(authorIds);
+
+    // 게시글 썸네일 이미지 변환
+    const postsWithImage = await Promise.all(
+      posts.map(async (post) => ({
+        ...post.toObject(),
+        images:
+          post.images.length > 0
+            ? [
+                {
+                  key: post.images[0].key,
+                  url: await generateGetPresignedUrl(post.images[0].key),
+                },
+              ]
+            : [],
+      }))
+    );
+
+    // 유저 프로필 이미지 변환
+    const usersWithProfileImage = await Promise.all(
+      users.map(async (user) => ({
+        ...user.toObject(),
+        profileImage: user.profileImage
+          ? {
+              key: user.profileImage.key,
+              url: await generateGetPresignedUrl(user.profileImage.key),
+            }
+          : null,
+      }))
     );
 
     res.status(200).json({
-      message: "Get posts in range",
-      posts: await Promise.all(
-        posts.map(async (post) => {
-          const previewImageWithUrl =
-            post.images.length > 0
-              ? [
-                  {
-                    key: post.images[0].key,
-                    url: await generateGetPresignedUrl(post.images[0].key),
-                  },
-                ]
-              : [];
-
-          return {
-            ...post.toObject(),
-            author: {
-              _id: post.author._id,
-              nickname: post.author.nickname,
-              location: post.author.location,
-              deleted: post.author.deleted,
-              profileImage: post.author.profileImage
-                ? {
-                    key: post.author.profileImage.key,
-                    url: await generateGetPresignedUrl(
-                      post.author.profileImage.key
-                    ),
-                  }
-                : null,
-            },
-            images: previewImageWithUrl, // 이미지가 없는 경우 빈 배열 반환
-          };
-        })
-      ),
+      message: "게시글 리스트 조회 (비회원)",
+      posts: postsWithImage,
+      users: usersWithProfileImage,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -106,64 +104,61 @@ async function getPostsInRangeWithLogin(req, res) {
   const tagId = req.query.tagId;
   const lastPostId = req.query.lastPostId;
   const size = req.query.size;
-  const hot = req.query.hot;
+  const hot =
+    req.query.hot === "true" ? true : req.query.hot === "false" ? false : null;
   try {
-    if (
-      !locationId ||
-      !size ||
-      hot === undefined ||
-      hot === null ||
-      (hot !== "true" && hot !== "false")
-    ) {
+    if (!locationId || !size || hot === null) {
       return res.status(400).json({ message: "잘못된 요청" });
     }
-
-    // hot 값을 boolean으로 변환
-    const isHot = hot === "true";
 
     const posts = await postsInRangeByLocationTagWithBlock(
       locationId,
       tagId,
       lastPostId,
       size,
-      isHot,
+      hot,
       userId
     );
 
-    res.status(200).json({
-      message: "Get posts in range",
-      posts: await Promise.all(
-        posts.map(async (post) => {
-          const previewImageWithUrl =
-            post.images.length > 0
-              ? [
-                  {
-                    key: post.images[0].key,
-                    url: await generateGetPresignedUrl(post.images[0].key),
-                  },
-                ]
-              : [];
+    // 게시글 작성자 정보 모음 (중복제거)
+    const authorIds = [
+      ...new Set(posts.map((post) => post.author._id.toString())),
+    ];
+    const users = await usersInfo(authorIds);
 
-          return {
-            ...post.toObject(),
-            author: {
-              _id: post.author._id,
-              nickname: post.author.nickname,
-              location: post.author.location,
-              deleted: post.author.deleted,
-              profileImage: post.author.profileImage
-                ? {
-                    key: post.author.profileImage.key,
-                    url: await generateGetPresignedUrl(
-                      post.author.profileImage.key
-                    ),
-                  }
-                : null,
-            },
-            images: previewImageWithUrl, // 이미지가 없는 경우 빈 배열 반환
-          };
-        })
-      ),
+    // 게시글 썸네일 이미지 변환
+    const postsWithImage = await Promise.all(
+      posts.map(async (post) => ({
+        ...post.toObject(),
+        images:
+          post.images.length > 0
+            ? [
+                {
+                  key: post.images[0].key,
+                  url: await generateGetPresignedUrl(post.images[0].key),
+                },
+              ]
+            : [],
+      }))
+    );
+
+    // 유저 프로필 이미지 변환
+    const usersWithProfileImage = await Promise.all(
+      users.map(async (user) => ({
+        ...user.toObject(),
+        profileImage: user.profileImage
+          ? {
+              key: user.profileImage.key,
+              url: await generateGetPresignedUrl(user.profileImage.key),
+            }
+          : null,
+      }))
+    );
+
+    res.status(200).json({
+      message: "게시글 리스트 조회 (회원)",
+      posts: postsWithImage,
+      users: usersWithProfileImage,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -469,21 +464,9 @@ async function postMyPost(req, res) {
   }
 
   try {
-    const post = await newPost(
-      title,
-      contents,
-      userId,
-      locationId,
-      tagId,
-      images
-    );
+    await newPost(title, contents, userId, locationId, tagId, images);
     res.status(201).json({
-      message: "Post created",
-      post: {
-        ...post.toObject(),
-        location: post.location._id,
-        tag: post.tag._id,
-      },
+      message: "게시글 작성 완료",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
